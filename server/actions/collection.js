@@ -19,13 +19,15 @@ const getCollection = async (username) => {
   }
 };
 
-const getCardsAvailablesForRent = ({ username, collection }) => {
+const filterAllCardsAvailablesForRent = ({ username, collection }) => {
   try {
-    console.log("cardAvailbleForRent start");
+    console.log("filterAllCardsAvailablesForRent start");
 
     const cardsAvailableForRent = [];
 
     const cardsOnRentalCooldown = [];
+
+    const cardsBeingRentedOut = [];
 
     collection.forEach((card) => {
       if (
@@ -45,12 +47,21 @@ const getCardsAvailablesForRent = ({ username, collection }) => {
           );
           cardsAvailableForRent.push(card);
         }
-      }
+      } else if (
+        card.player === username &&
+        card.market_listing_type === "RENT"
+      ) {
+        cardsBeingRentedOut.push(card);
+      } // other conditions dont matter because these are the only ones available for rentals
     });
-    console.log("getCardsAvailablesForRent done");
-    return { cardsAvailableForRent, cardsOnRentalCooldown };
+    console.log("filterAllCardsAvailablesForRent done");
+    return {
+      cardsAvailableForRent,
+      cardsOnRentalCooldown,
+      cardsBeingRentedOut,
+    };
   } catch (err) {
-    console.error(`cardsAvailablesForRent error: ${err.message}`);
+    console.error(`filterAllCardsAvailablesForRent error: ${err.message}`);
     throw err;
   }
 };
@@ -84,5 +95,5 @@ const isOnCooldown = (date) => {
 
 module.exports = {
   getCollection,
-  getCardsAvailablesForRent,
+  filterAllCardsAvailablesForRent,
 };
