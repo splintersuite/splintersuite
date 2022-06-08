@@ -1,6 +1,6 @@
 "use strict";
 
-const { axiosInstance } = require("./axios_retry_instance");
+const { axiosInstance } = require("../requests/axiosGetInstance");
 
 const getCollection = async (username) => {
   try {
