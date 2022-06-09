@@ -1,8 +1,3 @@
-// EXAMPLE
-const formatFud = (fud) => {
-    // formats fud and returns formatted fud
-};
-
 const success = (data) => {
     return {
         code: 1,

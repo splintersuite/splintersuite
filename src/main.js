@@ -16,6 +16,7 @@ const createWindow = () => {
         width: 1200,
         height: 800,
         webPreferences: {
+            sandbox: true,
             contextIsolation: true,
             preload: path.join(__dirname, 'preload.js'),
         },
@@ -37,8 +38,11 @@ app.on('ready', () => {
     ipcMain.handle('user:login', user.login);
     ipcMain.handle('user:logout', user.logout);
     ipcMain.handle('user:get', user.get);
+
     ipcMain.handle('bot:start', bot.start);
     ipcMain.handle('bot:stop', bot.stop);
+    ipcMain.handle('bot:getSettings', bot.getSettings);
+    ipcMain.handle('bot:updateSettings', bot.updateSettings);
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
