@@ -9,7 +9,7 @@ import {
     Indicator,
 } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserNinja } from '@fortawesome/free-solid-svg-icons';
+import { faRobot } from '@fortawesome/free-solid-svg-icons';
 import { useForm } from '@mantine/form';
 
 import Label from '../../components/Label.jsx';
@@ -40,7 +40,7 @@ const Controls = () => {
         },
     });
 
-    const [botState, setBotState] = useState('stopped');
+    const [botActive, setBotState] = useState(false);
     const [botStatusColor, setBotStatusColor] = useState('red');
     const [botStatusText, setBotStatusText] = useState('Start');
 
@@ -49,16 +49,25 @@ const Controls = () => {
     };
 
     const handleBotStateChange = () => {
-        if (botState == 'stopped') {
-            setBotState('running');
+        if (botActive) {
+            setBotState(false);
             setBotStatusColor('green');
             setBotStatusText('Stop');
         } else {
-            setBotState('stopped');
+            setBotState(true);
             setBotStatusColor('red');
             setBotStatusText('Start');
         }
     };
+
+    const handleStartClick = async () => {
+        const res = window.api.bot.start();
+    };
+
+    const handleStopClick = async () => {
+        const res = window.api.bot.stop();
+    };
+
     return (
         <DashboardPage>
             <h1>Settings</h1>
@@ -189,10 +198,14 @@ const Controls = () => {
                     size={14}
                     style={{ margin: '1em 0' }}
                 >
-                    <FontAwesomeIcon size={'2x'} icon={faUserNinja} />
+                    <FontAwesomeIcon size={'2x'} icon={faRobot} />
                 </Indicator>
                 <StyledRow>
-                    <Button onClick={handleBotStateChange}>
+                    <Button
+                        color={botActive ? 'primary' : 'red'}
+                        active={botActive}
+                        onClick={handleBotStateChange}
+                    >
                         {botStatusText}
                     </Button>
                 </StyledRow>
