@@ -170,7 +170,7 @@ const Controls = () => {
                         />
                         <NumberInput
                             style={{ width: '72px' }}
-                            {...form.getInputProps('summonersRegularAmount', {
+                            {...form.getInputProps('summonersGoldAmount', {
                                 type: 'number',
                             })}
                         />
