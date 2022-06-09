@@ -8,9 +8,9 @@ import {
 
 import Landing from '../pages/Landing.jsx';
 import Dashboard from '../pages/Dashboard/Dashboard.jsx';
-import DashboardControls from '../pages/Dashboard/Controls.jsx';
-import DashboardStats from '../pages/Dashboard/Stats.jsx';
 import DashboardSettings from '../pages/Dashboard/Settings.jsx';
+import DashboardStats from '../pages/Dashboard/Stats.jsx';
+import DashboardAccount from '../pages/Dashboard/Account.jsx';
 
 const RoutesContainer = () => {
     return (
@@ -21,17 +21,14 @@ const RoutesContainer = () => {
                 <Route path="/app" element={<Dashboard />}>
                     <Route
                         path="/app"
-                        element={<Navigate to="/app/controls" />}
+                        element={<Navigate to="/app/settings" />}
                     />
-                    <Route
-                        path="/app/controls"
-                        element={<DashboardControls />}
-                    />
-                    <Route path="/app/stats" element={<DashboardStats />} />
                     <Route
                         path="/app/settings"
                         element={<DashboardSettings />}
                     />
+                    <Route path="/app/stats" element={<DashboardStats />} />
+                    <Route path="/app/account" element={<DashboardAccount />} />
                 </Route>
             </Routes>
         </Router>

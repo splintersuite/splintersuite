@@ -1,53 +1,96 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { Button, Input } from '@mantine/core';
-import { useForm } from '@mantine/form';
+import { Button, Radio, RadioGroup, Select, NumberInput } from '@mantine/core';
 
 import Label from '../../components/Label.jsx';
 import Text from '../../components/Text.jsx';
+import Row from '../../components/Row.jsx';
 import DashboardPage from '../../components/DashboardPage.jsx';
 
-const Settings = () => {
-    const form = useForm({
-        initialValues: {
-            username: '',
-            activeKey: '',
-        },
-    });
+const StyledRow = styled(Row)`
+    width: 200px;
+`;
 
-    // handles submission of form data to server route
-    const handleSubmit = (values) => {
-        console.log(values);
-    };
-
+const Controls = () => {
     return (
         <DashboardPage>
             <h1>Settings</h1>
-            <form onSubmit={form.onSubmit(handleSubmit)}>
-                <Label htmlFor={'username'}>
-                    <Text>Username</Text>
-                    <Input
-                        label="Username"
-                        style={{ width: '256px' }}
-                        placeholder="Tameshon"
-                        {...form.getInputProps('username')}
+            <Label>
+                <Text>List Price</Text>
+                <RadioGroup>
+                    <Radio value="low" label="Undercut lowest price" />
+                    <Radio value="average" label="Undercut average price" />
+                </RadioGroup>
+            </Label>
+
+            <Label>
+                <Text>Monsters - Regular</Text>
+                <Row>
+                    <Select
+                        style={{ paddingRight: '16px' }}
+                        data={['CP', 'BCX']}
                     />
-                </Label>
-                <Label htmlFor={'activeKey'}>
-                    <Text>Active Key</Text>
-                    <Input
-                        label="Active Key"
-                        style={{ width: '256px' }}
-                        placeholder="12312324123"
-                        {...form.getInputProps('activeKey')}
+                    <Select
+                        style={{ paddingRight: '16px' }}
+                        data={['Greater than', 'Equal to', 'Less than']}
                     />
-                </Label>
-                <Button type="submit" style={{ marginTop: '2em' }}>
-                    Submit
-                </Button>
-            </form>
+                    <NumberInput style={{ width: '72px' }} />
+                </Row>
+            </Label>
+
+            <Label>
+                <Text>Monsters - Gold</Text>
+                <Row>
+                    <Select
+                        style={{ paddingRight: '16px' }}
+                        data={['CP', 'BCX']}
+                    />
+                    <Select
+                        style={{ paddingRight: '16px' }}
+                        data={['Greater than', 'Equal to', 'Less than']}
+                    />
+                    <NumberInput style={{ width: '72px' }} />
+                </Row>
+            </Label>
+
+            <Label>
+                <Text>Summoners - Regular</Text>
+                <Row>
+                    <Select
+                        style={{ paddingRight: '16px' }}
+                        data={['CP', 'BCX']}
+                    />
+                    <Select
+                        style={{ paddingRight: '16px' }}
+                        data={['Greater than', 'Equal to', 'Less than']}
+                    />
+                    <NumberInput style={{ width: '72px' }} />
+                </Row>
+            </Label>
+
+            <Label>
+                <Text>Summoners - Gold</Text>
+                <Row>
+                    <Select
+                        style={{ paddingRight: '16px' }}
+                        data={['CP', 'BCX']}
+                    />
+                    <Select
+                        style={{ paddingRight: '16px' }}
+                        data={['Greater than', 'Equal to', 'Less than']}
+                    />
+                    <NumberInput style={{ width: '72px' }} />
+                </Row>
+            </Label>
+            <Label>
+                <Text>Bot Status</Text>
+                <StyledRow>
+                    <Button>Start</Button>
+                    <Button>Stop</Button>
+                </StyledRow>
+            </Label>
         </DashboardPage>
     );
 };
 
-export default Settings;
+export default Controls;
