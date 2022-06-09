@@ -95,6 +95,7 @@
     "@mantine/core": "^4.2.8",
     "@mantine/form": "^4.2.8",
     "@mantine/hooks": "^4.2.8",
+    "crypto-js": "^4.1.1",
     "electron-squirrel-startup": "^1.0.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
