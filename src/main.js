@@ -1,5 +1,7 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+
+const user = require('./api/controllers/user').default;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -12,6 +14,10 @@ const createWindow = () => {
     const mainWindow = new BrowserWindow({
         width: 1200,
         height: 800,
+        webPreferences: {
+            contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js'),
+        },
     });
 
     // and load the index.html of the app.
@@ -20,6 +26,10 @@ const createWindow = () => {
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
 };
+
+ipcMain.on('test', (event, message) => {
+    user.login({ key: message });
+});
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
