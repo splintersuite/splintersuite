@@ -11,13 +11,12 @@ const Settings = () => {
     const form = useForm({
         initialValues: {
             username: '',
-            activeKey: '',
+            key: '',
         },
     });
 
-    // handles submission of form data to server route
-    const handleSubmit = (values) => {
-        console.log(values);
+    const handleSubmit = async (values) => {
+        const res = await window.api.user.login(values);
     };
 
     return (
@@ -33,13 +32,13 @@ const Settings = () => {
                         {...form.getInputProps('username')}
                     />
                 </Label>
-                <Label htmlFor={'activeKey'}>
+                <Label htmlFor={'key'}>
                     <Text>Active Key</Text>
                     <Input
                         label="Active Key"
                         style={{ width: '256px' }}
                         placeholder="12312324123"
-                        {...form.getInputProps('activeKey')}
+                        {...form.getInputProps('key')}
                     />
                 </Label>
                 <Button type="submit" style={{ marginTop: '2em' }}>
