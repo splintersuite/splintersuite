@@ -12,6 +12,14 @@ const StyledRow = styled(Row)`
 `;
 
 const Controls = () => {
+    const handleStartClick = async () => {
+        const res = window.api.bot.start();
+    };
+
+    const handleStopClick = async () => {
+        const res = window.api.bot.stop();
+    };
+
     return (
         <DashboardPage>
             <h1>Settings</h1>
@@ -85,8 +93,8 @@ const Controls = () => {
             <Label>
                 <Text>Bot Status</Text>
                 <StyledRow>
-                    <Button>Start</Button>
-                    <Button>Stop</Button>
+                    <Button onClick={handleStartClick}>Start</Button>
+                    <Button onClick={handleStopClick}>Stop</Button>
                 </StyledRow>
             </Label>
         </DashboardPage>

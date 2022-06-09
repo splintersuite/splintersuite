@@ -7,8 +7,10 @@ import {
     faUserNinja,
     faChartLine,
 } from '@fortawesome/free-solid-svg-icons';
+import { Button } from '@mantine/core';
 
 import logo from '../assets/images/logo.png';
+import { useUser } from '../contexts/UserContext.jsx';
 
 const Nav = styled.nav`
     display: flex;
@@ -49,34 +51,58 @@ const Icon = styled(FontAwesomeIcon)`
     margin-right: ${({ theme }) => theme.space(2)};
 `;
 
+const LogoutButton = styled(Button)`
+    margin-top: auto;
+    margin-right: ${({ theme }) => theme.space(4)};
+    margin-left: ${({ theme }) => theme.space(4)};
+    background: ${({ theme }) => theme.colors.grey[800]};
+`;
+
 const Sidenav = (props) => {
     const navigate = useNavigate();
     const { pathname } = useLocation();
+    const { username, handleLogout } = useUser();
+
+    const handleLogoutClick = () => {
+        handleLogout();
+    };
+
+    const handleNavigateClick = (route) => {
+        if (!username && route !== 'account') {
+        } else {
+            navigate(route);
+            // prevent navigation when not logged in
+        }
+    };
 
     return (
         <Nav>
             <Logo src={logo} />
             <Item
                 active={pathname === '/app/settings'}
-                onClick={() => navigate('settings')}
+                onClick={() => handleNavigateClick('settings')}
             >
                 <Icon icon={faRobot} />
                 Settings
             </Item>
             <Item
                 active={pathname === '/app/stats'}
-                onClick={() => navigate('stats')}
+                onClick={() => handleNavigateClick('stats')}
             >
                 <Icon icon={faChartLine} />
                 Stats
             </Item>
             <Item
                 active={pathname === '/app/account'}
-                onClick={() => navigate('account')}
+                onClick={() => handleNavigateClick('account')}
             >
                 <Icon icon={faUserNinja} />
                 Account
             </Item>
+
+            {username && (
+                <LogoutButton onClick={handleLogoutClick}>Logout</LogoutButton>
+            )}
         </Nav>
     );
 };

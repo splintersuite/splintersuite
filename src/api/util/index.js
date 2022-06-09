@@ -3,19 +3,19 @@ const formatFud = (fud) => {
     // formats fud and returns formatted fud
 };
 
-const success = () => {
+const success = (data) => {
     return {
         code: 1,
+        data,
         message: 'success',
-        error: null,
     };
 };
 
 const error = (error) => {
     return {
         code: 0,
-        message: 'error',
         error,
+        message: 'error',
     };
 };
 

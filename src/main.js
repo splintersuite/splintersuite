@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
 const user = require('./api/controllers/user').default;
+const bot = require('./api/controllers/bot').default;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -34,8 +35,10 @@ app.on('ready', () => {
     createWindow();
 
     ipcMain.handle('user:login', user.login);
-    ipcMain.handle('user:start', user.start);
-    ipcMain.handle('user:stop', user.stop);
+    ipcMain.handle('user:logout', user.logout);
+    ipcMain.handle('user:get', user.get);
+    ipcMain.handle('bot:start', bot.start);
+    ipcMain.handle('bot:stop', bot.stop);
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

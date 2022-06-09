@@ -21,7 +21,7 @@ const RoutesContainer = () => {
                 <Route path="/app" element={<Dashboard />}>
                     <Route
                         path="/app"
-                        element={<Navigate to="/app/settings" />}
+                        element={<Navigate to={`/app/account`} />}
                     />
                     <Route
                         path="/app/settings"
