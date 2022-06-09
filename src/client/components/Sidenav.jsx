@@ -35,6 +35,7 @@ const Item = styled.div`
     opacity: ${({ active }) => (active ? 1 : 0.8)};
     background: ${({ theme, active }) =>
         active ? theme.colors.grey[800] : 'transparent'};
+    transition: ${({ theme }) => theme.transition};
 
     &:hover {
         background: ${({ theme }) => theme.colors.grey[800]};

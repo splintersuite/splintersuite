@@ -11,6 +11,7 @@ const theme = {
     },
     type: {},
     space: (factor) => 8 * factor + 'px',
+    transition: 'all 0.25s cubic-bezier(0.53, 0.21, 0, 1)',
 };
 
 export default theme;
