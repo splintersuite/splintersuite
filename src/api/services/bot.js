@@ -36,4 +36,8 @@ const setSettings = (settings) => {
 export default {
     start,
     stop,
+    getActive,
+    setActive,
+    getSettings,
+    setSettings,
 };

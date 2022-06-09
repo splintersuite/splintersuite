@@ -95,6 +95,7 @@
     "@mantine/core": "^4.2.8",
     "@mantine/form": "^4.2.8",
     "@mantine/hooks": "^4.2.8",
+    "axios": "^0.27.2",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.1",
     "keytar": "^7.9.0",
