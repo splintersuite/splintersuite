@@ -3,8 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faGamepad,
-    faCogs,
+    faRobot,
+    faUserNinja,
     faChartLine,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -57,11 +57,11 @@ const Sidenav = (props) => {
         <Nav>
             <Logo src={logo} />
             <Item
-                active={pathname === '/app/controls'}
-                onClick={() => navigate('controls')}
+                active={pathname === '/app/settings'}
+                onClick={() => navigate('settings')}
             >
-                <Icon icon={faGamepad} />
-                Controls
+                <Icon icon={faRobot} />
+                Settings
             </Item>
             <Item
                 active={pathname === '/app/stats'}
@@ -71,11 +71,11 @@ const Sidenav = (props) => {
                 Stats
             </Item>
             <Item
-                active={pathname === '/app/settings'}
-                onClick={() => navigate('settings')}
+                active={pathname === '/app/account'}
+                onClick={() => navigate('account')}
             >
-                <Icon icon={faCogs} />
-                Settings
+                <Icon icon={faUserNinja} />
+                Account
             </Item>
         </Nav>
     );
