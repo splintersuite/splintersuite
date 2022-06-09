@@ -1,16 +1,27 @@
-import crypto from 'crypto-js';
+import util from '../util';
+import userService from '../services/user';
 
-const login = (event, payload) => {
-    const { account, key } = payload;
+const login = async (event, payload) => {
+    const { username, key } = payload;
 
-    // Encrypt
-    const ciphertext = crypto.AES.encrypt(key, 'secret key 123').toString();
+    userService.setKey(username, key);
+    userService.setUsername(username);
 
-    // Decrypt
-    const bytes = crypto.AES.decrypt(ciphertext, 'secret key 123');
-    const originalText = bytes.toString(crypto.enc.Utf8);
-
-    console.log('USER CONTROLLER RECEIVED: ', originalText);
+    return util.success();
 };
 
-export default { login };
+const logout = async (event) => {
+    const username = userService.getUsername();
+
+    userService.removeKey(username);
+    userService.removeUsername();
+
+    return util.success();
+};
+
+const get = (event) => {
+    const username = userService.getUsername();
+    return util.success({ username });
+};
+
+export default { login, logout, get };
