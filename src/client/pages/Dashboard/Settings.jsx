@@ -1,6 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from '@emotion/styled';
-import { Button, Radio, RadioGroup, Select, NumberInput } from '@mantine/core';
+import {
+    Button,
+    Radio,
+    RadioGroup,
+    Select,
+    NumberInput,
+    Indicator,
+} from '@mantine/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserNinja } from '@fortawesome/free-solid-svg-icons';
 import { useForm } from '@mantine/form';
 
 import Label from '../../components/Label.jsx';
@@ -31,8 +40,24 @@ const Controls = () => {
         },
     });
 
+    const [botState, setBotState] = useState('stopped');
+    const [botStatusColor, setBotStatusColor] = useState('red');
+    const [botStatusText, setBotStatusText] = useState('Start');
+
     const handleSubmit = (values) => {
         console.log(values);
+    };
+
+    const handleBotStateChange = () => {
+        if (botState == 'stopped') {
+            setBotState('running');
+            setBotStatusColor('green');
+            setBotStatusText('Stop');
+        } else {
+            setBotState('stopped');
+            setBotStatusColor('red');
+            setBotStatusText('Start');
+        }
     };
     return (
         <DashboardPage>
@@ -156,10 +181,20 @@ const Controls = () => {
                 </Button>
             </form>
             <Label>
-                <Text>Bot Status</Text>
                 <StyledRow>
-                    <Button>Start</Button>
-                    <Button>Stop</Button>
+                    <Text>Bot Status</Text>
+                </StyledRow>
+                <Indicator
+                    color={botStatusColor}
+                    size={14}
+                    style={{ margin: '1em 0' }}
+                >
+                    <FontAwesomeIcon size={'2x'} icon={faUserNinja} />
+                </Indicator>
+                <StyledRow>
+                    <Button onClick={handleBotStateChange}>
+                        {botStatusText}
+                    </Button>
                 </StyledRow>
             </Label>
         </DashboardPage>
