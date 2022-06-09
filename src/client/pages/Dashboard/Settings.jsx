@@ -203,7 +203,6 @@ const Controls = () => {
                 <StyledRow>
                     <Button
                         color={botActive ? 'primary' : 'red'}
-                        active={botActive}
                         onClick={handleBotStateChange}
                     >
                         {botStatusText}

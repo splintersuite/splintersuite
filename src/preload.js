@@ -9,5 +9,6 @@ contextBridge.exposeInMainWorld('api', {
     bot: {
         start: () => ipcRenderer.invoke('bot:start'),
         stop: () => ipcRenderer.invoke('bot:stop'),
+        get: () => ipcRenderer.invoke('bot:get'),
     },
 });
