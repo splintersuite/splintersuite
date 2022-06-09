@@ -1,6 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from '@emotion/styled';
-import { Button, Radio, RadioGroup, Select, NumberInput } from '@mantine/core';
+import {
+    Button,
+    Radio,
+    RadioGroup,
+    Select,
+    NumberInput,
+    Indicator,
+} from '@mantine/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserNinja } from '@fortawesome/free-solid-svg-icons';
+import { useForm } from '@mantine/form';
 
 import Label from '../../components/Label.jsx';
 import Text from '../../components/Text.jsx';
@@ -12,81 +22,179 @@ const StyledRow = styled(Row)`
 `;
 
 const Controls = () => {
+    const form = useForm({
+        initialValues: {
+            listPrice: '',
+            monstersRegularUnit: '',
+            monstersRegularOperator: '',
+            monstersRegularAmount: '',
+            monstersGoldUnit: '',
+            monstersGoldOperator: '',
+            monstersGoldAmount: '',
+            summonersRegularUnit: '',
+            summonersRegularOperator: '',
+            summonersRegularAmount: '',
+            summonersGoldUnit: '',
+            summonersGoldOperator: '',
+            summonersGoldAmount: '',
+        },
+    });
+
+    const [botState, setBotState] = useState('stopped');
+    const [botStatusColor, setBotStatusColor] = useState('red');
+    const [botStatusText, setBotStatusText] = useState('Start');
+
+    const handleSubmit = (values) => {
+        console.log(values);
+    };
+
+    const handleBotStateChange = () => {
+        if (botState == 'stopped') {
+            setBotState('running');
+            setBotStatusColor('green');
+            setBotStatusText('Stop');
+        } else {
+            setBotState('stopped');
+            setBotStatusColor('red');
+            setBotStatusText('Start');
+        }
+    };
     return (
         <DashboardPage>
             <h1>Settings</h1>
-            <Label>
-                <Text>List Price</Text>
-                <RadioGroup>
-                    <Radio value="low" label="Undercut lowest price" />
-                    <Radio value="average" label="Undercut average price" />
-                </RadioGroup>
-            </Label>
+            <form onSubmit={form.onSubmit(handleSubmit)}>
+                <Label>
+                    <Text>List Price</Text>
+                    <RadioGroup
+                        {...form.getInputProps('listPrice', { type: 'radio' })}
+                    >
+                        <Radio value="low" label="Undercut lowest price" />
+                        <Radio value="average" label="Undercut average price" />
+                    </RadioGroup>
+                </Label>
 
-            <Label>
-                <Text>Monsters - Regular</Text>
-                <Row>
-                    <Select
-                        style={{ paddingRight: '16px' }}
-                        data={['CP', 'BCX']}
-                    />
-                    <Select
-                        style={{ paddingRight: '16px' }}
-                        data={['Greater than', 'Equal to', 'Less than']}
-                    />
-                    <NumberInput style={{ width: '72px' }} />
-                </Row>
-            </Label>
+                <Label>
+                    <Text>Monsters - Regular</Text>
+                    <Row>
+                        <Select
+                            style={{ paddingRight: '16px' }}
+                            data={['CP', 'BCX']}
+                            {...form.getInputProps('monstersRegularUnit', {
+                                type: 'select',
+                            })}
+                        />
+                        <Select
+                            style={{ paddingRight: '16px' }}
+                            data={['Greater than', 'Equal to', 'Less than']}
+                            {...form.getInputProps('monstersRegularOperator', {
+                                type: 'select',
+                            })}
+                        />
+                        <NumberInput
+                            style={{ width: '72px' }}
+                            {...form.getInputProps('monstersRegularAmount', {
+                                type: 'number',
+                            })}
+                        />
+                    </Row>
+                </Label>
 
-            <Label>
-                <Text>Monsters - Gold</Text>
-                <Row>
-                    <Select
-                        style={{ paddingRight: '16px' }}
-                        data={['CP', 'BCX']}
-                    />
-                    <Select
-                        style={{ paddingRight: '16px' }}
-                        data={['Greater than', 'Equal to', 'Less than']}
-                    />
-                    <NumberInput style={{ width: '72px' }} />
-                </Row>
-            </Label>
+                <Label>
+                    <Text>Monsters - Gold</Text>
+                    <Row>
+                        <Select
+                            style={{ paddingRight: '16px' }}
+                            data={['CP', 'BCX']}
+                            {...form.getInputProps('monstersGoldUnit', {
+                                type: 'select',
+                            })}
+                        />
+                        <Select
+                            style={{ paddingRight: '16px' }}
+                            data={['Greater than', 'Equal to', 'Less than']}
+                            {...form.getInputProps('monstersGoldOperator', {
+                                type: 'select',
+                            })}
+                        />
+                        <NumberInput
+                            style={{ width: '72px' }}
+                            {...form.getInputProps('monstersGoldAmount', {
+                                type: 'number',
+                            })}
+                        />
+                    </Row>
+                </Label>
 
-            <Label>
-                <Text>Summoners - Regular</Text>
-                <Row>
-                    <Select
-                        style={{ paddingRight: '16px' }}
-                        data={['CP', 'BCX']}
-                    />
-                    <Select
-                        style={{ paddingRight: '16px' }}
-                        data={['Greater than', 'Equal to', 'Less than']}
-                    />
-                    <NumberInput style={{ width: '72px' }} />
-                </Row>
-            </Label>
+                <Label>
+                    <Text>Summoners - Regular</Text>
+                    <Row>
+                        <Select
+                            style={{ paddingRight: '16px' }}
+                            data={['CP', 'BCX']}
+                            {...form.getInputProps('summonersRegularUnit', {
+                                type: 'select',
+                            })}
+                        />
+                        <Select
+                            style={{ paddingRight: '16px' }}
+                            data={['Greater than', 'Equal to', 'Less than']}
+                            {...form.getInputProps('summonersRegularOperator', {
+                                type: 'select',
+                            })}
+                        />
+                        <NumberInput
+                            style={{ width: '72px' }}
+                            {...form.getInputProps('summonersRegularAmount', {
+                                type: 'number',
+                            })}
+                        />
+                    </Row>
+                </Label>
 
+                <Label>
+                    <Text>Summoners - Gold</Text>
+                    <Row>
+                        <Select
+                            style={{ paddingRight: '16px' }}
+                            data={['CP', 'BCX']}
+                            {...form.getInputProps('summonersGoldUnit', {
+                                type: 'select',
+                            })}
+                        />
+                        <Select
+                            style={{ paddingRight: '16px' }}
+                            data={['Greater than', 'Equal to', 'Less than']}
+                            {...form.getInputProps('summonersGoldOperator', {
+                                type: 'select',
+                            })}
+                        />
+                        <NumberInput
+                            style={{ width: '72px' }}
+                            {...form.getInputProps('summonersRegularAmount', {
+                                type: 'number',
+                            })}
+                        />
+                    </Row>
+                </Label>
+                <Button style={{ marginTop: '2em' }} type="submit">
+                    Save Settings
+                </Button>
+            </form>
             <Label>
-                <Text>Summoners - Gold</Text>
-                <Row>
-                    <Select
-                        style={{ paddingRight: '16px' }}
-                        data={['CP', 'BCX']}
-                    />
-                    <Select
-                        style={{ paddingRight: '16px' }}
-                        data={['Greater than', 'Equal to', 'Less than']}
-                    />
-                    <NumberInput style={{ width: '72px' }} />
-                </Row>
-            </Label>
-            <Label>
-                <Text>Bot Status</Text>
                 <StyledRow>
-                    <Button>Start</Button>
-                    <Button>Stop</Button>
+                    <Text>Bot Status</Text>
+                </StyledRow>
+                <Indicator
+                    color={botStatusColor}
+                    size={14}
+                    style={{ margin: '1em 0' }}
+                >
+                    <FontAwesomeIcon size={'2x'} icon={faUserNinja} />
+                </Indicator>
+                <StyledRow>
+                    <Button onClick={handleBotStateChange}>
+                        {botStatusText}
+                    </Button>
                 </StyledRow>
             </Label>
         </DashboardPage>
