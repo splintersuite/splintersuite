@@ -3,6 +3,7 @@ import { ThemeProvider } from '@emotion/react';
 import { MantineProvider } from '@mantine/core';
 
 import { UserProvider } from '../contexts/UserContext.jsx';
+import { BotProvider } from '../contexts/BotContext.jsx';
 import theme from '../theme';
 import Routes from './Routes.jsx';
 
@@ -13,7 +14,9 @@ const App = () => {
         >
             <ThemeProvider theme={theme}>
                 <UserProvider>
-                    <Routes />
+                    <BotProvider>
+                        <Routes />
+                    </BotProvider>
                 </UserProvider>
             </ThemeProvider>
         </MantineProvider>

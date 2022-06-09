@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import {
     Button,
@@ -17,56 +17,47 @@ import Text from '../../components/Text.jsx';
 import Row from '../../components/Row.jsx';
 import DashboardPage from '../../components/DashboardPage.jsx';
 
+import { useBot } from '../../contexts/BotContext.jsx';
+
 const StyledRow = styled(Row)`
     width: 200px;
 `;
 
-const Controls = () => {
+const Settings = () => {
+    const {
+        botActive,
+        botSettings,
+        toggleBotStatus,
+        updateBotSettings,
+        getBotSettings,
+    } = useBot();
     const form = useForm({
         initialValues: {
-            listPrice: '',
-            monstersRegularUnit: '',
-            monstersRegularOperator: '',
-            monstersRegularAmount: '',
-            monstersGoldUnit: '',
-            monstersGoldOperator: '',
-            monstersGoldAmount: '',
-            summonersRegularUnit: '',
-            summonersRegularOperator: '',
-            summonersRegularAmount: '',
-            summonersGoldUnit: '',
-            summonersGoldOperator: '',
-            summonersGoldAmount: '',
+            botSettings,
         },
     });
 
-    const [botActive, setBotState] = useState(false);
+    useEffect(() => {
+        form.setValues(botSettings);
+        // getBotSettings();
+    }, []);
+
     const [botStatusColor, setBotStatusColor] = useState('red');
     const [botStatusText, setBotStatusText] = useState('Start');
 
     const handleSubmit = (values) => {
-        console.log(values);
+        updateBotSettings(values);
     };
 
-    const handleBotStateChange = () => {
+    useEffect(() => {
         if (botActive) {
-            setBotState(false);
             setBotStatusColor('green');
             setBotStatusText('Stop');
         } else {
-            setBotState(true);
             setBotStatusColor('red');
             setBotStatusText('Start');
         }
-    };
-
-    const handleStartClick = async () => {
-        const res = window.api.bot.start();
-    };
-
-    const handleStopClick = async () => {
-        const res = window.api.bot.stop();
-    };
+    }, [botActive]);
 
     return (
         <DashboardPage>
@@ -76,6 +67,7 @@ const Controls = () => {
                     <Text>List Price</Text>
                     <RadioGroup
                         {...form.getInputProps('listPrice', { type: 'radio' })}
+                        initialValue={botSettings.listPrice}
                     >
                         <Radio value="low" label="Undercut lowest price" />
                         <Radio value="average" label="Undercut average price" />
@@ -202,9 +194,8 @@ const Controls = () => {
                 </Indicator>
                 <StyledRow>
                     <Button
-                        color={botActive ? 'primary' : 'red'}
-                        active={botActive}
-                        onClick={handleBotStateChange}
+                        color={botActive ? 'red' : 'green'}
+                        onClick={toggleBotStatus}
                     >
                         {botStatusText}
                     </Button>
@@ -214,4 +205,4 @@ const Controls = () => {
     );
 };
 
-export default Controls;
+export default Settings;
