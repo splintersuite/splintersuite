@@ -21,6 +21,7 @@ import { useBot } from '../../contexts/BotContext.jsx';
 
 const StyledRow = styled(Row)`
     width: 200px;
+    justify-content: flex-start;
 `;
 
 const StyledSelect = styled(Select)`
@@ -29,6 +30,11 @@ const StyledSelect = styled(Select)`
 
 const StyledNumber = styled(NumberInput)`
     width: 72px;
+`;
+
+const StartButton = styled(Button)`
+    min-width: 100px;
+    margin-right: ${({ theme }) => theme.space(4)};
 `;
 
 const UNIT = [
@@ -202,24 +208,25 @@ const Settings = () => {
                     Save Settings
                 </Button>
             </form>
-            <Label>
+            <Label onClick={(e) => e.preventDefault()}>
                 <StyledRow>
                     <Text>Bot Status</Text>
                 </StyledRow>
-                <Indicator
-                    color={botStatusColor}
-                    size={14}
-                    style={{ margin: '1em 0' }}
-                >
-                    <FontAwesomeIcon size={'2x'} icon={faRobot} />
-                </Indicator>
                 <StyledRow>
-                    <Button
+                    <StartButton
                         color={botActive ? 'red' : 'green'}
+                        size="lg"
                         onClick={toggleBotStatus}
                     >
                         {botStatusText}
-                    </Button>
+                    </StartButton>
+                    <Indicator
+                        color={botStatusColor}
+                        size={14}
+                        style={{ margin: '1em 0' }}
+                    >
+                        <FontAwesomeIcon size={'2x'} icon={faRobot} />
+                    </Indicator>
                 </StyledRow>
             </Label>
         </DashboardPage>
