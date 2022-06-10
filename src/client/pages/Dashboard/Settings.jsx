@@ -23,14 +23,47 @@ const StyledRow = styled(Row)`
     width: 200px;
 `;
 
+const StyledSelect = styled(Select)`
+    padding-right: ${({ theme }) => theme.space(2)};
+`;
+
+const StyledNumber = styled(NumberInput)`
+    width: 72px;
+`;
+
+const UNIT = [
+    {
+        label: 'CP',
+        value: 'cp',
+    },
+    {
+        label: 'Level',
+        value: 'level',
+    },
+];
+
+const OPERATOR = [
+    {
+        label: 'Greater than',
+        value: 'gt',
+    },
+    {
+        label: 'Equal to',
+        value: 'et',
+    },
+    {
+        label: 'Less than',
+        value: 'lt',
+    },
+];
+
 const Settings = () => {
-    const {
-        botActive,
-        botSettings,
-        toggleBotStatus,
-        updateBotSettings,
-        getBotSettings,
-    } = useBot();
+    const [botStatusColor, setBotStatusColor] = useState('red');
+    const [botStatusText, setBotStatusText] = useState('Start');
+
+    const { botActive, botSettings, toggleBotStatus, updateBotSettings } =
+        useBot();
+
     const form = useForm({
         initialValues: {
             botSettings,
@@ -41,9 +74,6 @@ const Settings = () => {
         form.setValues(botSettings);
         // getBotSettings();
     }, []);
-
-    const [botStatusColor, setBotStatusColor] = useState('red');
-    const [botStatusText, setBotStatusText] = useState('Start');
 
     const handleSubmit = (values) => {
         updateBotSettings(values);
@@ -59,10 +89,6 @@ const Settings = () => {
         }
     }, [botActive]);
 
-    const handleClick = () => {
-        window.api.bot.start();
-    };
-
     return (
         <DashboardPage>
             <h1>Settings</h1>
@@ -71,9 +97,8 @@ const Settings = () => {
                     <Text>List Price</Text>
                     <RadioGroup
                         {...form.getInputProps('listPrice', { type: 'radio' })}
-                        initialValue={botSettings.listPrice}
                     >
-                        <Radio value="low" label="Undercut lowest price" />
+                        <Radio value="lowest" label="Undercut lowest price" />
                         <Radio value="average" label="Undercut average price" />
                     </RadioGroup>
                 </Label>
@@ -81,22 +106,20 @@ const Settings = () => {
                 <Label>
                     <Text>Monsters - Regular</Text>
                     <Row>
-                        <Select
-                            style={{ paddingRight: '16px' }}
-                            data={['CP', 'BCX']}
+                        <StyledSelect
+                            data={UNIT}
                             {...form.getInputProps('monstersRegularUnit', {
                                 type: 'select',
                             })}
                         />
-                        <Select
-                            style={{ paddingRight: '16px' }}
-                            data={['Greater than', 'Equal to', 'Less than']}
+                        <StyledSelect
+                            data={OPERATOR}
                             {...form.getInputProps('monstersRegularOperator', {
                                 type: 'select',
                             })}
                         />
-                        <NumberInput
-                            style={{ width: '72px' }}
+                        <StyledNumber
+                            min={0}
                             {...form.getInputProps('monstersRegularAmount', {
                                 type: 'number',
                             })}
@@ -107,22 +130,20 @@ const Settings = () => {
                 <Label>
                     <Text>Monsters - Gold</Text>
                     <Row>
-                        <Select
-                            style={{ paddingRight: '16px' }}
-                            data={['CP', 'BCX']}
+                        <StyledSelect
+                            data={UNIT}
                             {...form.getInputProps('monstersGoldUnit', {
                                 type: 'select',
                             })}
                         />
-                        <Select
-                            style={{ paddingRight: '16px' }}
-                            data={['Greater than', 'Equal to', 'Less than']}
+                        <StyledSelect
+                            data={OPERATOR}
                             {...form.getInputProps('monstersGoldOperator', {
                                 type: 'select',
                             })}
                         />
-                        <NumberInput
-                            style={{ width: '72px' }}
+                        <StyledNumber
+                            min={0}
                             {...form.getInputProps('monstersGoldAmount', {
                                 type: 'number',
                             })}
@@ -133,22 +154,20 @@ const Settings = () => {
                 <Label>
                     <Text>Summoners - Regular</Text>
                     <Row>
-                        <Select
-                            style={{ paddingRight: '16px' }}
-                            data={['CP', 'BCX']}
+                        <StyledSelect
+                            data={UNIT}
                             {...form.getInputProps('summonersRegularUnit', {
                                 type: 'select',
                             })}
                         />
-                        <Select
-                            style={{ paddingRight: '16px' }}
-                            data={['Greater than', 'Equal to', 'Less than']}
+                        <StyledSelect
+                            data={OPERATOR}
                             {...form.getInputProps('summonersRegularOperator', {
                                 type: 'select',
                             })}
                         />
-                        <NumberInput
-                            style={{ width: '72px' }}
+                        <StyledNumber
+                            min={0}
                             {...form.getInputProps('summonersRegularAmount', {
                                 type: 'number',
                             })}
@@ -159,22 +178,20 @@ const Settings = () => {
                 <Label>
                     <Text>Summoners - Gold</Text>
                     <Row>
-                        <Select
-                            style={{ paddingRight: '16px' }}
-                            data={['CP', 'BCX']}
+                        <StyledSelect
+                            data={UNIT}
                             {...form.getInputProps('summonersGoldUnit', {
                                 type: 'select',
                             })}
                         />
-                        <Select
-                            style={{ paddingRight: '16px' }}
-                            data={['Greater than', 'Equal to', 'Less than']}
+                        <StyledSelect
+                            data={OPERATOR}
                             {...form.getInputProps('summonersGoldOperator', {
                                 type: 'select',
                             })}
                         />
-                        <NumberInput
-                            style={{ width: '72px' }}
+                        <StyledNumber
+                            min={0}
                             {...form.getInputProps('summonersGoldAmount', {
                                 type: 'number',
                             })}
@@ -199,8 +216,7 @@ const Settings = () => {
                 <StyledRow>
                     <Button
                         color={botActive ? 'red' : 'green'}
-                        onClick={handleClick}
-                        // onClick={toggleBotStatus}
+                        onClick={toggleBotStatus}
                     >
                         {botStatusText}
                     </Button>

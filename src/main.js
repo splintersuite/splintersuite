@@ -42,6 +42,7 @@ app.on('ready', () => {
 
     ipcMain.handle('bot:start', bot.start);
     ipcMain.handle('bot:stop', bot.stop);
+    ipcMain.handle('bot:getActive', bot.getActive);
     ipcMain.handle('bot:getSettings', bot.getSettings);
     ipcMain.handle('bot:updateSettings', bot.updateSettings);
 });

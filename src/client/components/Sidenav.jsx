@@ -13,6 +13,7 @@ import logo from '../assets/images/logo.png';
 import { useUser } from '../contexts/UserContext.jsx';
 
 const Nav = styled.nav`
+    position: fixed;
     display: flex;
     flex-direction: column;
     height: 100vh;

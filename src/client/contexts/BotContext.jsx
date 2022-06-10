@@ -3,18 +3,18 @@ import React, { useContext, useEffect, useState } from 'react';
 const initialState = {
     botActive: false,
     botSettings: {
-        listPrice: '',
-        monstersRegularUnit: '',
-        monstersRegularOperator: '',
+        listPrice: 'average',
+        monstersRegularUnit: 'level',
+        monstersRegularOperator: 'gt',
         monstersRegularAmount: 0,
-        monstersGoldUnit: '',
-        monstersGoldOperator: '',
+        monstersGoldUnit: 'level',
+        monstersGoldOperator: 'gt',
         monstersGoldAmount: 0,
-        summonersRegularUnit: '',
-        summonersRegularOperator: '',
+        summonersRegularUnit: 'level',
+        summonersRegularOperator: 'gt',
         summonersRegularAmount: 0,
-        summonersGoldUnit: '',
-        summonersGoldOperator: '',
+        summonersGoldUnit: 'level',
+        summonersGoldOperator: 'gt',
         summonersGoldAmount: 0,
     },
 };
@@ -27,22 +27,37 @@ export const BotProvider = (props) => {
     const [botActive, setBotActive] = useState(false);
     const [botSettings, setBotSettings] = useState(initialState.botSettings);
 
-    const toggleBotStatus = () => {
+    useEffect(() => {
+        const getActive = async () => {
+            const res = await window.api.bot.getActive();
+            if (res.code === 1) {
+                setBotActive(res.data.active);
+            }
+        };
+        const getSettings = async () => {
+            const res = await window.api.bot.getSettings();
+            if (res.code === 1) {
+                setBotSettings(res.data.settings);
+            }
+        };
+        getActive();
+        getSettings();
+    }, []);
+
+    const toggleBotStatus = async () => {
         if (botActive) {
             setBotActive(false);
-            // ipc method here
+            await window.api.bot.stop();
         } else {
             setBotActive(true);
-            // ipc method here
+            await window.api.bot.start();
         }
     };
 
-    const updateBotSettings = (settings) => {
+    const updateBotSettings = async (settings) => {
         setBotSettings(settings);
-        // ipc method here
+        await window.api.bot.updateSettings({ settings });
     };
-
-    const getBotSettings = () => {};
 
     return (
         <BotContext.Provider
@@ -52,7 +67,6 @@ export const BotProvider = (props) => {
                 botSettings,
                 toggleBotStatus,
                 updateBotSettings,
-                getBotSettings,
             }}
         >
             {props.children}
