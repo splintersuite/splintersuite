@@ -1,47 +1,85 @@
 import axios from 'axios';
 import { Client, PrivateKey } from '@hiveio/dhive';
 
-const hiveTest = async () => {
-    const client = new Client([
-        'https://api.hive.blog',
-        'https://api.hivekings.com',
-        'https://anyx.io',
-        'https://api.openhive.network',
-    ]);
+import userService from '../services/user';
 
-    const key = PrivateKey.from();
-    // const key = PrivateKey.fromLogin("username", "password", "posting");
+const client = new Client([
+    'https://api.hive.blog',
+    'https://api.hivekings.com',
+    'https://anyx.io',
+    'https://api.openhive.network',
+]);
 
-    // hive.broadcast.claimRewardBalance(
-    //     wif,
-    //     account,
-    //     reward_hive,
-    //     reward_hbd,
-    //     reward_vests,
-    //     callback
-    // );
+const postRentals = async (cards) => {
+    const username = userService.getUsername();
+    const rawKey = await userService.getKey(username);
+    const key = PrivateKey.from(rawKey);
 
     const res = await client.broadcast.json(
         {
             required_posting_auths: [],
-            required_auths: ['chigginn'],
+            required_auths: [username],
             id: 'sm_market_list',
             json: JSON.stringify({
-                cards: [['C3-331-20B93BXDG0', 200]],
+                cards,
                 type: 'rent',
                 fee: 500,
                 required_posting_auths: [],
-                required_auths: ['chigginn'],
+                required_auths: [username],
             }),
         },
         key
     );
-    console.log('RESULT');
-    console.log('-------------------------------');
     console.log(res);
-    console.log('-------------------------------');
+};
+
+// ids = market rental ids
+const updateRentals = async (ids, price) => {
+    const username = userService.getUsername();
+    const rawKey = await userService.getKey(username);
+    const key = PrivateKey.from(rawKey);
+
+    const res = await client.broadcast.json(
+        {
+            required_posting_auths: [],
+            required_auths: [username],
+            id: 'sm_update_price',
+            json: JSON.stringify({
+                ids,
+                new_price: price,
+                required_posting_auths: [],
+                required_auths: [username],
+            }),
+        },
+        key
+    );
+    console.log(res);
+};
+
+// ids = market rental ids
+const deleteRentals = async (ids) => {
+    const username = userService.getUsername();
+    const rawKey = await userService.getKey(username);
+    const key = PrivateKey.from(rawKey);
+
+    const res = await client.broadcast.json(
+        {
+            required_posting_auths: [],
+            required_auths: [username],
+            id: 'sm_market_cancel_rental',
+            json: JSON.stringify({
+                ids,
+                required_posting_auths: [],
+                required_auths: [username],
+            }),
+        },
+        key
+    );
+    console.log(res);
 };
 
 export default {
-    hiveTest,
+    postRentals,
+    updateRentals,
+    deleteRentals,
 };

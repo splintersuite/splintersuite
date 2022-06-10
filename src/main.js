@@ -15,6 +15,7 @@ const createWindow = () => {
     const mainWindow = new BrowserWindow({
         width: 1200,
         height: 800,
+        icon: __dirname + './client/assets/icons/png/1024x1024.png',
         webPreferences: {
             sandbox: true,
             contextIsolation: true,

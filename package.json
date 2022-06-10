@@ -75,6 +75,7 @@
     "babel-loader": "^8.2.5",
     "css-loader": "^6.0.0",
     "electron": "19.0.3",
+    "electron-icon-builder": "^2.0.1",
     "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
