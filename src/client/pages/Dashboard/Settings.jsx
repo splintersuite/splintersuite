@@ -67,7 +67,6 @@ const Settings = () => {
                     <Text>List Price</Text>
                     <RadioGroup
                         {...form.getInputProps('listPrice', { type: 'radio' })}
-                        initialValue={botSettings.listPrice}
                     >
                         <Radio value="low" label="Undercut lowest price" />
                         <Radio value="average" label="Undercut average price" />
