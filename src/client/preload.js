@@ -9,6 +9,9 @@ contextBridge.exposeInMainWorld('api', {
     bot: {
         start: () => ipcRenderer.invoke('bot:start'),
         stop: () => ipcRenderer.invoke('bot:stop'),
-        get: () => ipcRenderer.invoke('bot:get'),
+        getActive: () => ipcRenderer.invoke('bot:getActive'),
+        getSettings: () => ipcRenderer.invoke('bot:getSettings'),
+        updateSettings: (payload) =>
+            ipcRenderer.invoke('bot:updateSettings', payload),
     },
 });

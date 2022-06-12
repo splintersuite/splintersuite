@@ -12,6 +12,14 @@ const Username = styled(Text)`
     font-size: 40px;
 `;
 
+const Amount = styled(Text)`
+    font-size: 48px;
+`;
+
+const Space = styled.span`
+    padding-left: ${({ theme }) => theme.space(4)};
+`;
+
 const Settings = () => {
     const { username, handleLogin } = useUser();
     const form = useForm({
@@ -29,10 +37,18 @@ const Settings = () => {
         <DashboardPage>
             <h1>Account</h1>
             {username && (
-                <Label htmlFor={'username'}>
-                    <Text>Currently logged in as:</Text>
-                    <Username>{username}</Username>
-                </Label>
+                <>
+                    <Label>
+                        <Text>Welcome back,</Text>
+                        <Username>{username}</Username>
+                    </Label>
+                    <Label>
+                        <Text>Overview</Text>
+                        <Amount>
+                            123 DEC <Space>78% RC</Space>
+                        </Amount>
+                    </Label>
+                </>
             )}
 
             {!username && (

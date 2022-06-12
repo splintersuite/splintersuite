@@ -3,6 +3,7 @@ const path = require('path');
 
 const user = require('./api/controllers/user').default;
 const bot = require('./api/controllers/bot').default;
+const hive = require('./api/controllers/hive').default;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -10,39 +11,56 @@ if (require('electron-squirrel-startup')) {
     app.quit();
 }
 
-const createWindow = () => {
-    // Create the browser window.
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.on('ready', () => {
     const mainWindow = new BrowserWindow({
+        width: 1200,
+        height: 800,
+        icon: __dirname + '/client/assets/icons/icon.png',
+        webPreferences: {
+            sandbox: true,
+            contextIsolation: true,
+            preload: path.join(__dirname, './client/preload.js'),
+        },
+    });
+    mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+    mainWindow.webContents.openDevTools();
+
+    const botWindow = new BrowserWindow({
+        // show: false,
         width: 1200,
         height: 800,
         webPreferences: {
             sandbox: true,
             contextIsolation: true,
-            preload: path.join(__dirname, 'preload.js'),
+            // nodeIntegration: true,
+            preload: path.join(__dirname, './bot/preload.js'),
         },
     });
-
-    // and load the index.html of the app.
-    mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-
-    // Open the DevTools.
-    mainWindow.webContents.openDevTools();
-};
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', () => {
-    createWindow();
+    botWindow.loadURL(BOT_WINDOW_WEBPACK_ENTRY);
+    botWindow.webContents.openDevTools();
 
     ipcMain.handle('user:login', user.login);
     ipcMain.handle('user:logout', user.logout);
     ipcMain.handle('user:get', user.get);
 
-    ipcMain.handle('bot:start', bot.start);
-    ipcMain.handle('bot:stop', bot.stop);
+    ipcMain.handle('bot:start', (event) => {
+        bot.start();
+        botWindow.webContents.send('bot:start');
+    });
+    ipcMain.handle('bot:stop', (event) => {
+        bot.stop();
+        botWindow.webContents.send('bot:stop');
+    });
+    ipcMain.handle('bot:getActive', bot.getActive);
     ipcMain.handle('bot:getSettings', bot.getSettings);
     ipcMain.handle('bot:updateSettings', bot.updateSettings);
+
+    ipcMain.handle('hive:createRentals', hive.createRentals);
+    ipcMain.handle('hive:updateRentals', hive.updateRentals);
+    ipcMain.handle('hive:deleteRentals', hive.deleteRentals);
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

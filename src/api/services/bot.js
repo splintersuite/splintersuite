@@ -1,12 +1,17 @@
 import store from '../../store';
 import userService from '../services/user';
+import hiveService from '../services/hive';
 
 const start = async () => {
-    const username = userService.getUsername();
-    const key = await userService.getKey(username);
+    // const username = userService.getUsername();
+    // const key = await userService.getKey(username);
 
     console.log('BOT: start rentals');
-    console.log(username, key);
+    // await hiveService.postRentals([['C3-331-L9ICDKTJQO', 500]]);
+    // await hiveService.updateRentals(
+    //     ['310bac61ac6a4d35daaef557ceba4cf6bd8bd165'],
+    //     300
+    // );
 };
 
 const stop = async () => {
@@ -14,7 +19,6 @@ const stop = async () => {
     const key = await userService.getKey(username);
 
     console.log('BOT: stop rentals');
-    console.log(username, key);
 };
 
 const getActive = () => {

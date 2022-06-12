@@ -13,19 +13,28 @@ const stop = async (event) => {
     return util.success();
 };
 
+const getActive = async (event) => {
+    const active = await botService.getActive();
+    return util.success({ active });
+};
+
 const getSettings = async (event) => {
-    const settings = botService.getSettings();
+    const settings = await botService.getSettings();
     return util.success({ settings });
 };
 
 const updateSettings = async (event, payload) => {
-    const settings = botService.setSettings(payload);
-    return util.success({ settings });
+    const { settings } = payload;
+
+    botService.setSettings(settings);
+
+    return util.success();
 };
 
 export default {
     start,
     stop,
+    getActive,
     getSettings,
     updateSettings,
 };
