@@ -78,7 +78,6 @@ const Settings = () => {
 
     useEffect(() => {
         form.setValues(botSettings);
-        // getBotSettings();
     }, []);
 
     const handleSubmit = (values) => {
