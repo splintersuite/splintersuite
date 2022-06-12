@@ -10,7 +10,7 @@ const client = new Client([
     'https://api.openhive.network',
 ]);
 
-const postRentals = async (cards) => {
+const createRentals = async (cards) => {
     const username = userService.getUsername();
     const rawKey = await userService.getKey(username);
     const key = PrivateKey.from(rawKey);
@@ -30,7 +30,7 @@ const postRentals = async (cards) => {
         },
         key
     );
-    console.log(res);
+    return res;
 };
 
 // ids = market rental ids
@@ -53,7 +53,7 @@ const updateRentals = async (ids, price) => {
         },
         key
     );
-    console.log(res);
+    return res;
 };
 
 // ids = market rental ids
@@ -75,11 +75,11 @@ const deleteRentals = async (ids) => {
         },
         key
     );
-    console.log(res);
+    return res;
 };
 
 export default {
-    postRentals,
+    createRentals,
     updateRentals,
     deleteRentals,
 };
