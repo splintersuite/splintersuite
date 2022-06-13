@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
-
+const dotenv = require('dotenv');
+dotenv.config();
 const user = require('./api/controllers/user').default;
 const bot = require('./api/controllers/bot').default;
 const hive = require('./api/controllers/hive').default;

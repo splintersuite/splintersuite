@@ -1,8 +1,12 @@
 import keytar from 'keytar';
 
 import store from '../../store';
+import axios from '../util/axios';
+import splinterlandsService from './splinterlands';
 
-const getUser = () => {
+const getUser = async () => {
+    await splinterlandsService.getBalance();
+
     return store.get('user');
 };
 
@@ -38,11 +42,22 @@ const getBalances = () => {
     return store.get('user.balances');
 };
 
+const fetchUser = async ({ username }) => {
+    const userData = await axios.get(`${process.env.SERVER_URL}/getUserData`, {
+        params: { username },
+    });
+    return userData;
+};
+
 export default {
+    getUser,
     setUsername,
     getUsername,
     removeUsername,
     setKey,
     getKey,
     removeKey,
+    setBalances,
+    getBalances,
+    fetchUser,
 };

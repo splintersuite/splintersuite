@@ -1,5 +1,4 @@
-import axios from 'axios';
-
+import axios from '../util/axios';
 import userService from '../services/user';
 
 const getBalance = async () => {
@@ -14,15 +13,13 @@ const getBalance = async () => {
     let dec, sps;
     res.data.map((item) => {
         if (item.token === 'DEC') {
-            dec = item.balance;
+            dec = Math.round(item.balance);
         } else if (item.token === 'SPS') {
-            sps = item.balance;
+            sps = Math.round(item.balance);
         }
     });
 
     userService.setBalances(dec, sps);
-
-    console.log(dec, sps);
 };
 
 export default { getBalance };

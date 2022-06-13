@@ -16,12 +16,13 @@ const Amount = styled(Text)`
     font-size: 48px;
 `;
 
-const Space = styled.span`
-    padding-left: ${({ theme }) => theme.space(4)};
+const Currency = styled.span`
+    font-size: 24px;
+    opacity: 0.8;
 `;
 
 const Settings = () => {
-    const { username, handleLogin } = useUser();
+    const { user, username, handleLogin } = useUser();
     const form = useForm({
         initialValues: {
             username: '',
@@ -45,7 +46,12 @@ const Settings = () => {
                     <Label>
                         <Text>Overview</Text>
                         <Amount>
-                            123 DEC <Space>78% RC</Space>
+                            {user?.balances?.dec}
+                            <Currency> DEC</Currency>
+                        </Amount>
+                        <Amount>
+                            {user?.balances?.sps}
+                            <Currency> SPS</Currency>
                         </Amount>
                     </Label>
                 </>

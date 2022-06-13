@@ -10,8 +10,8 @@ const schema = {
             balances: {
                 type: 'object',
                 properties: {
-                    dec: 'number',
-                    sps: 'number',
+                    dec: { type: 'number' },
+                    sps: { type: 'number' },
                 },
             },
         },
@@ -70,6 +70,13 @@ const schema = {
 };
 
 const defaults = {
+    user: {
+        balances: {
+            dec: 0,
+            sps: 0,
+        },
+    },
+
     bot: {
         active: false,
         settings: {
