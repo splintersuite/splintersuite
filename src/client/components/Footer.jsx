@@ -18,6 +18,8 @@ const Container = styled.div`
     width: calc(100% - 256px);
     margin-left: 256px;
     padding: ${({ theme }) => theme.space(4)};
+    padding-left: ${({ theme }) => theme.space(8)};
+    padding-right: ${({ theme }) => theme.space(8)};
     background: ${({ theme }) => theme.colors.grey[900]};
     border-left: ${({ theme }) => `1px solid ${theme.colors.grey[800]}`};
 `;

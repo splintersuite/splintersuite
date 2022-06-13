@@ -23,12 +23,12 @@ const RoutesContainer = () => {
                         path="/app"
                         element={<Navigate to={`/app/account`} />}
                     />
+                    <Route path="/app/account" element={<DashboardAccount />} />
                     <Route
                         path="/app/settings"
                         element={<DashboardSettings />}
                     />
-                    <Route path="/app/stats" element={<DashboardStats />} />
-                    <Route path="/app/account" element={<DashboardAccount />} />
+                    {/* <Route path="/app/stats" element={<DashboardStats />} /> */}
                 </Route>
             </Routes>
         </Router>
