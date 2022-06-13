@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Client, PrivateKey } from '@hiveio/dhive';
 
 import userService from '../services/user';
@@ -33,7 +32,6 @@ const createRentals = async (cards) => {
     return res;
 };
 
-// ids = market rental ids
 const updateRentals = async (ids, price) => {
     const username = userService.getUsername();
     const rawKey = await userService.getKey(username);
@@ -56,7 +54,6 @@ const updateRentals = async (ids, price) => {
     return res;
 };
 
-// ids = market rental ids
 const deleteRentals = async (ids) => {
     const username = userService.getUsername();
     const rawKey = await userService.getKey(username);
@@ -78,8 +75,14 @@ const deleteRentals = async (ids) => {
     return res;
 };
 
+const getRc = async (username) => {
+    const res = await client.rc.getRCMana(username);
+    return Math.round(res.percentage * 0.01);
+};
+
 export default {
     createRentals,
     updateRentals,
     deleteRentals,
+    getRc,
 };

@@ -1,5 +1,6 @@
 import util from '../util';
 import botService from '../services/bot';
+import hiveService from '../services/hive';
 
 const start = async (event) => {
     botService.setActive(true);
@@ -10,6 +11,7 @@ const start = async (event) => {
 const stop = async (event) => {
     botService.setActive(false);
     botService.stop();
+
     return util.success();
 };
 

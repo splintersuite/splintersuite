@@ -2,11 +2,7 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faRobot,
-    faUserNinja,
-    faChartLine,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCogs, faChartLine } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@mantine/core';
 
 import logo from '../assets/images/logo.png';
@@ -21,6 +17,7 @@ const Nav = styled.nav`
     width: 256px;
     padding-top: ${({ theme }) => theme.space(4)};
     padding-bottom: ${({ theme }) => theme.space(4)};
+    box-shadow: ${({ theme }) => theme.shadow};
 `;
 
 const Logo = styled.img`
@@ -70,9 +67,9 @@ const Sidenav = (props) => {
 
     const handleNavigateClick = (route) => {
         if (!username && route !== 'account') {
+            // prevent navigation when not logged in
         } else {
             navigate(route);
-            // prevent navigation when not logged in
         }
     };
 
@@ -80,26 +77,27 @@ const Sidenav = (props) => {
         <Nav>
             <Logo src={logo} />
             <Item
+                active={pathname === '/app/account'}
+                onClick={() => handleNavigateClick('account')}
+            >
+                <Icon icon={faChartLine} />
+                Dashboard
+            </Item>
+            <Item
                 active={pathname === '/app/settings'}
                 onClick={() => handleNavigateClick('settings')}
             >
-                <Icon icon={faRobot} />
+                <Icon icon={faCogs} />
                 Settings
             </Item>
-            <Item
+
+            {/* <Item
                 active={pathname === '/app/stats'}
                 onClick={() => handleNavigateClick('stats')}
             >
                 <Icon icon={faChartLine} />
                 Stats
-            </Item>
-            <Item
-                active={pathname === '/app/account'}
-                onClick={() => handleNavigateClick('account')}
-            >
-                <Icon icon={faUserNinja} />
-                Account
-            </Item>
+            </Item> */}
 
             {username && (
                 <LogoutButton onClick={handleLogoutClick}>Logout</LogoutButton>

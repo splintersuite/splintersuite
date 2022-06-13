@@ -9,16 +9,18 @@ export const UserContext = React.createContext({ ...initialState });
 export const useUser = () => useContext(UserContext);
 
 export const UserProvider = (props) => {
+    const [user, setUser] = useState({});
     const [username, setUsername] = useState('');
 
     useEffect(() => {
-        const getUsername = async () => {
+        const getUser = async () => {
             const res = await window.api.user.get();
             if (res.code === 1) {
-                setUsername(res.data.username);
+                setUsername(res.data.user.username);
+                setUser(res.data.user);
             }
         };
-        getUsername();
+        getUser();
     }, []);
 
     const handleLogout = async () => {
@@ -39,6 +41,7 @@ export const UserProvider = (props) => {
         <UserContext.Provider
             value={{
                 ...initialState,
+                user,
                 username,
                 handleLogout,
                 handleLogin,

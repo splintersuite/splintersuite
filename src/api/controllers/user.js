@@ -8,7 +8,7 @@ const login = async (event, payload) => {
     userService.setUsername(username);
 
     if (username) {
-        userService.fetchUserData({ username });
+        userService.fetchUser({ username });
     }
 
     return util.success();
@@ -23,9 +23,9 @@ const logout = async (event) => {
     return util.success();
 };
 
-const get = (event) => {
-    const username = userService.getUsername();
-    return util.success({ username });
+const get = async (event) => {
+    const user = await userService.getUser();
+    return util.success({ user });
 };
 
 export default { login, logout, get };

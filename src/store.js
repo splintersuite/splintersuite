@@ -1,9 +1,23 @@
 import Store from 'electron-store';
 
 const schema = {
-    username: {
-        type: 'string',
+    user: {
+        type: 'object',
+        properties: {
+            username: {
+                type: 'string',
+            },
+            balances: {
+                type: 'object',
+                properties: {
+                    dec: { type: 'number' },
+                    sps: { type: 'number' },
+                    rc: { type: 'number' },
+                },
+            },
+        },
     },
+
     bot: {
         type: 'object',
         properties: {
@@ -57,6 +71,14 @@ const schema = {
 };
 
 const defaults = {
+    user: {
+        balances: {
+            dec: 0,
+            sps: 0,
+            rc: 100,
+        },
+    },
+
     bot: {
         active: false,
         settings: {
