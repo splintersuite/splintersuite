@@ -53,6 +53,9 @@ const Settings = () => {
                             {user?.balances?.sps}
                             <Currency> SPS</Currency>
                         </Amount>
+                        <Amount>
+                            {user?.balances?.rc}%<Currency> RC</Currency>
+                        </Amount>
                     </Label>
                 </>
             )}

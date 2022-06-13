@@ -42,19 +42,13 @@ const FirstLabel = styled(StyledLabel)`
 const Settings = () => {
     const [botStatusColor, setBotStatusColor] = useState('red');
     const [botStatusText, setBotStatusText] = useState('Start');
-
     const { botActive, botSettings, toggleBotStatus, updateBotSettings } =
         useBot();
-
     const form = useForm({
         initialValues: {
             ...botSettings,
         },
     });
-
-    const handleSubmit = (values) => {
-        updateBotSettings(values);
-    };
 
     useEffect(() => {
         if (botActive) {
@@ -65,6 +59,10 @@ const Settings = () => {
             setBotStatusText('Start');
         }
     }, [botActive]);
+
+    const handleSubmit = (values) => {
+        updateBotSettings(values);
+    };
 
     return (
         <DashboardPage>

@@ -3,9 +3,14 @@ import keytar from 'keytar';
 import store from '../../store';
 import axios from '../util/axios';
 import splinterlandsService from './splinterlands';
+import hiveService from './hive';
 
 const getUser = async () => {
-    await splinterlandsService.getBalance();
+    const username = getUsername();
+
+    const { dec, sps } = await splinterlandsService.getBalance(username);
+    const rc = await hiveService.getRc(username);
+    await setBalances({ dec, sps, rc });
 
     return store.get('user');
 };
@@ -34,8 +39,8 @@ const removeKey = (username) => {
     return keytar.deletePassword('splintersuite', username);
 };
 
-const setBalances = (dec, sps) => {
-    return store.set('user.balances', { dec, sps });
+const setBalances = ({ dec, sps, rc }) => {
+    return store.set('user.balances', { dec, sps, rc });
 };
 
 const getBalances = () => {

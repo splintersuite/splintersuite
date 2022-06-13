@@ -1,10 +1,7 @@
 import axios from '../util/axios';
-import userService from '../services/user';
 
-const getBalance = async () => {
-    const username = userService.getUsername();
-
-    const res = await axios('https://api2.splinterlands.com/players/balances', {
+const getBalance = async (username) => {
+    let res = await axios('https://api2.splinterlands.com/players/balances', {
         params: {
             username,
         },
@@ -19,7 +16,7 @@ const getBalance = async () => {
         }
     });
 
-    userService.setBalances(dec, sps);
+    return { dec, sps };
 };
 
 export default { getBalance };

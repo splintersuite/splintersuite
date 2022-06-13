@@ -12,6 +12,7 @@ const schema = {
                 properties: {
                     dec: { type: 'number' },
                     sps: { type: 'number' },
+                    rc: { type: 'number' },
                 },
             },
         },
@@ -74,6 +75,7 @@ const defaults = {
         balances: {
             dec: 0,
             sps: 0,
+            rc: 100,
         },
     },
 

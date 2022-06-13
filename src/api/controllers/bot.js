@@ -1,6 +1,6 @@
 import util from '../util';
 import botService from '../services/bot';
-import splinterlandsService from '../services/splinterlands';
+import hiveService from '../services/hive';
 
 const start = async (event) => {
     botService.setActive(true);
@@ -11,7 +11,7 @@ const start = async (event) => {
 const stop = async (event) => {
     botService.setActive(false);
     botService.stop();
-    await splinterlandsService.getBalance();
+
     return util.success();
 };
 
