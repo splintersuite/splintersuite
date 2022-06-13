@@ -40,7 +40,7 @@ export const BotProvider = (props) => {
         getSettings();
     }, []);
 
-    const toggleBotStatus = async () => {
+    const toggleBotActive = async () => {
         if (botActive) {
             setBotActive(false);
             await window.api.bot.stop();
@@ -61,7 +61,7 @@ export const BotProvider = (props) => {
                 ...initialState,
                 botActive,
                 botSettings,
-                toggleBotStatus,
+                toggleBotActive,
                 updateBotSettings,
             }}
         >

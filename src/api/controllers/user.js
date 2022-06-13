@@ -25,7 +25,6 @@ const logout = async (event) => {
 
 const get = async (event) => {
     const user = await userService.getUser();
-    // const username = userService.getUsername();
     return util.success({ user });
 };
 

@@ -9,7 +9,6 @@ import Label from '../../components/Label.jsx';
 import Text from '../../components/Text.jsx';
 import Row from '../../components/Row.jsx';
 import DashboardPage from '../../components/DashboardPage.jsx';
-
 import { useBot } from '../../contexts/BotContext.jsx';
 
 const StyledRow = styled(Row)`
@@ -42,7 +41,7 @@ const FirstLabel = styled(StyledLabel)`
 const Settings = () => {
     const [botStatusColor, setBotStatusColor] = useState('red');
     const [botStatusText, setBotStatusText] = useState('Start');
-    const { botActive, botSettings, toggleBotStatus, updateBotSettings } =
+    const { botActive, botSettings, toggleBotActive, updateBotSettings } =
         useBot();
     const form = useForm({
         initialValues: {
@@ -187,7 +186,7 @@ const Settings = () => {
                     <StartButton
                         color={botActive ? 'red' : 'green'}
                         size="lg"
-                        onClick={toggleBotStatus}
+                        onClick={toggleBotActive}
                     >
                         {botStatusText}
                     </StartButton>
