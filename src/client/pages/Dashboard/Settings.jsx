@@ -162,7 +162,7 @@ const Settings = () => {
                     <Text>Daily Relistings</Text>
                     <StyledNumber
                         min={0}
-                        {...form.getInputProps('legendaryGold', {
+                        {...form.getInputProps('dailyRelistings', {
                             type: 'number',
                         })}
                     />
