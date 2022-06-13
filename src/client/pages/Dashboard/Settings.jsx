@@ -66,6 +66,10 @@ const Settings = () => {
         }
     }, [botActive]);
 
+    const handleClick = () => {
+        window.api.bot.stop();
+    };
+
     return (
         <DashboardPage>
             <h1>Settings</h1>
@@ -192,6 +196,13 @@ const Settings = () => {
                         onClick={toggleBotStatus}
                     >
                         {botStatusText}
+                    </StartButton>
+                    <StartButton
+                        color={botActive ? 'red' : 'green'}
+                        size="lg"
+                        onClick={handleClick}
+                    >
+                        TEST
                     </StartButton>
                     <Indicator
                         color={botStatusColor}

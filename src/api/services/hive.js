@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Client, PrivateKey } from '@hiveio/dhive';
 
 import userService from '../services/user';
