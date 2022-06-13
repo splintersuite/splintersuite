@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
-import {
-    Button,
-    Radio,
-    RadioGroup,
-    Select,
-    NumberInput,
-    Indicator,
-} from '@mantine/core';
+import { Button, NumberInput, Indicator } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRobot } from '@fortawesome/free-solid-svg-icons';
 import { useForm } from '@mantine/form';
@@ -24,10 +17,6 @@ const StyledRow = styled(Row)`
     justify-content: flex-start;
 `;
 
-const StyledSelect = styled(Select)`
-    padding-right: ${({ theme }) => theme.space(2)};
-`;
-
 const StyledNumber = styled(NumberInput)`
     width: 72px;
 `;
@@ -37,31 +26,17 @@ const StartButton = styled(Button)`
     margin-right: ${({ theme }) => theme.space(4)};
 `;
 
-const UNIT = [
-    {
-        label: 'CP',
-        value: 'cp',
-    },
-    {
-        label: 'Level',
-        value: 'level',
-    },
-];
+const SectionHeader = styled.h2`
+    margin-top: ${({ theme }) => theme.space(6)};
+`;
 
-const OPERATOR = [
-    {
-        label: 'Greater than',
-        value: 'gt',
-    },
-    {
-        label: 'Equal to',
-        value: 'et',
-    },
-    {
-        label: 'Less than',
-        value: 'lt',
-    },
-];
+const StyledLabel = styled(Label)`
+    width: 256px;
+`;
+
+const FirstLabel = styled(StyledLabel)`
+    margin-top: ${({ theme }) => theme.space(2)};
+`;
 
 const Settings = () => {
     const [botStatusColor, setBotStatusColor] = useState('red');
@@ -72,13 +47,9 @@ const Settings = () => {
 
     const form = useForm({
         initialValues: {
-            botSettings,
+            ...botSettings,
         },
     });
-
-    useEffect(() => {
-        form.setValues(botSettings);
-    }, []);
 
     const handleSubmit = (values) => {
         updateBotSettings(values);
@@ -98,115 +69,109 @@ const Settings = () => {
         <DashboardPage>
             <h1>Settings</h1>
             <form onSubmit={form.onSubmit(handleSubmit)}>
-                <Label>
-                    <Text>List Price</Text>
-                    <RadioGroup
-                        {...form.getInputProps('listPrice', { type: 'radio' })}
-                    >
-                        <Radio value="lowest" label="Undercut lowest price" />
-                        <Radio value="average" label="Undercut average price" />
-                    </RadioGroup>
-                </Label>
-
-                <Label>
-                    <Text>Monsters - Regular</Text>
-                    <Row>
-                        <StyledSelect
-                            data={UNIT}
-                            {...form.getInputProps('monstersRegularUnit', {
-                                type: 'select',
-                            })}
-                        />
-                        <StyledSelect
-                            data={OPERATOR}
-                            {...form.getInputProps('monstersRegularOperator', {
-                                type: 'select',
-                            })}
-                        />
+                <SectionHeader>Choose Minimum Level</SectionHeader>
+                <Row>
+                    <FirstLabel>
+                        <Text>Common Monsters</Text>
                         <StyledNumber
                             min={0}
-                            {...form.getInputProps('monstersRegularAmount', {
+                            {...form.getInputProps('commonNorm', {
                                 type: 'number',
                             })}
                         />
-                    </Row>
-                </Label>
-
-                <Label>
-                    <Text>Monsters - Gold</Text>
-                    <Row>
-                        <StyledSelect
-                            data={UNIT}
-                            {...form.getInputProps('monstersGoldUnit', {
-                                type: 'select',
-                            })}
-                        />
-                        <StyledSelect
-                            data={OPERATOR}
-                            {...form.getInputProps('monstersGoldOperator', {
-                                type: 'select',
-                            })}
-                        />
+                    </FirstLabel>
+                    <FirstLabel>
+                        <Text>Common Monsters - Gold</Text>
                         <StyledNumber
                             min={0}
-                            {...form.getInputProps('monstersGoldAmount', {
+                            {...form.getInputProps('commonGold', {
                                 type: 'number',
                             })}
                         />
-                    </Row>
-                </Label>
+                    </FirstLabel>
+                </Row>
 
-                <Label>
-                    <Text>Summoners - Regular</Text>
-                    <Row>
-                        <StyledSelect
-                            data={UNIT}
-                            {...form.getInputProps('summonersRegularUnit', {
-                                type: 'select',
-                            })}
-                        />
-                        <StyledSelect
-                            data={OPERATOR}
-                            {...form.getInputProps('summonersRegularOperator', {
-                                type: 'select',
-                            })}
-                        />
+                <Row>
+                    <StyledLabel>
+                        <Text>Rare Monsters</Text>
                         <StyledNumber
                             min={0}
-                            {...form.getInputProps('summonersRegularAmount', {
+                            {...form.getInputProps('rareNorm', {
                                 type: 'number',
                             })}
                         />
-                    </Row>
-                </Label>
+                    </StyledLabel>
 
-                <Label>
-                    <Text>Summoners - Gold</Text>
-                    <Row>
-                        <StyledSelect
-                            data={UNIT}
-                            {...form.getInputProps('summonersGoldUnit', {
-                                type: 'select',
-                            })}
-                        />
-                        <StyledSelect
-                            data={OPERATOR}
-                            {...form.getInputProps('summonersGoldOperator', {
-                                type: 'select',
-                            })}
-                        />
+                    <StyledLabel>
+                        <Text>Rare Monsters - Gold</Text>
                         <StyledNumber
                             min={0}
-                            {...form.getInputProps('summonersGoldAmount', {
+                            {...form.getInputProps('rareGold', {
                                 type: 'number',
                             })}
                         />
-                    </Row>
+                    </StyledLabel>
+                </Row>
+
+                <Row>
+                    <StyledLabel>
+                        <Text>Epic Monsters</Text>
+                        <StyledNumber
+                            min={0}
+                            {...form.getInputProps('epicNorm', {
+                                type: 'number',
+                            })}
+                        />
+                    </StyledLabel>
+
+                    <StyledLabel>
+                        <Text>Epic Monsters - Gold</Text>
+                        <StyledNumber
+                            min={0}
+                            {...form.getInputProps('epicGold', {
+                                type: 'number',
+                            })}
+                        />
+                    </StyledLabel>
+                </Row>
+
+                <Row>
+                    <StyledLabel>
+                        <Text>Legendary Monsters</Text>
+                        <StyledNumber
+                            min={0}
+                            {...form.getInputProps('legendaryNorm', {
+                                type: 'number',
+                            })}
+                        />
+                    </StyledLabel>
+
+                    <StyledLabel>
+                        <Text>Legendary Monsters - Gold</Text>
+                        <StyledNumber
+                            min={0}
+                            {...form.getInputProps('legendaryGold', {
+                                type: 'number',
+                            })}
+                        />
+                    </StyledLabel>
+                </Row>
+
+                <Label>
+                    <Text>Daily Relistings</Text>
+                    <StyledNumber
+                        min={0}
+                        {...form.getInputProps('legendaryGold', {
+                            type: 'number',
+                        })}
+                    />
                 </Label>
+
                 <Button style={{ marginTop: '2em' }} type="submit">
                     Save Settings
                 </Button>
             </form>
+
             <Label onClick={(e) => e.preventDefault()}>
                 <StyledRow>
                     <Text>Bot Status</Text>

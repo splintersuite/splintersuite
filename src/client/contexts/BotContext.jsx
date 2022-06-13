@@ -3,19 +3,15 @@ import React, { useContext, useEffect, useState } from 'react';
 const initialState = {
     botActive: false,
     botSettings: {
-        listPrice: 'average',
-        monstersRegularUnit: 'level',
-        monstersRegularOperator: 'gt',
-        monstersRegularAmount: 0,
-        monstersGoldUnit: 'level',
-        monstersGoldOperator: 'gt',
-        monstersGoldAmount: 0,
-        summonersRegularUnit: 'level',
-        summonersRegularOperator: 'gt',
-        summonersRegularAmount: 0,
-        summonersGoldUnit: 'level',
-        summonersGoldOperator: 'gt',
-        summonersGoldAmount: 0,
+        dailyRelistings: 0,
+        commonNorm: 0,
+        commonGold: 0,
+        rareNorm: 0,
+        rareGold: 0,
+        epicNorm: 0,
+        epicGold: 0,
+        legendaryNorm: 0,
+        legendaryGold: 0,
     },
 };
 
