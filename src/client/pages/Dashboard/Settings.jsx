@@ -76,6 +76,7 @@ const Settings = () => {
                         <Text>Common Monsters</Text>
                         <StyledNumber
                             min={0}
+                            max={10}
                             {...form.getInputProps('commonNorm', {
                                 type: 'number',
                             })}
@@ -85,6 +86,7 @@ const Settings = () => {
                         <Text>Common Monsters - Gold</Text>
                         <StyledNumber
                             min={0}
+                            max={10}
                             {...form.getInputProps('commonGold', {
                                 type: 'number',
                             })}
@@ -97,6 +99,7 @@ const Settings = () => {
                         <Text>Rare Monsters</Text>
                         <StyledNumber
                             min={0}
+                            max={8}
                             {...form.getInputProps('rareNorm', {
                                 type: 'number',
                             })}
@@ -107,6 +110,7 @@ const Settings = () => {
                         <Text>Rare Monsters - Gold</Text>
                         <StyledNumber
                             min={0}
+                            max={8}
                             {...form.getInputProps('rareGold', {
                                 type: 'number',
                             })}
@@ -119,6 +123,7 @@ const Settings = () => {
                         <Text>Epic Monsters</Text>
                         <StyledNumber
                             min={0}
+                            max={6}
                             {...form.getInputProps('epicNorm', {
                                 type: 'number',
                             })}
@@ -129,6 +134,7 @@ const Settings = () => {
                         <Text>Epic Monsters - Gold</Text>
                         <StyledNumber
                             min={0}
+                            max={6}
                             {...form.getInputProps('epicGold', {
                                 type: 'number',
                             })}
@@ -141,6 +147,7 @@ const Settings = () => {
                         <Text>Legendary Monsters</Text>
                         <StyledNumber
                             min={0}
+                            max={4}
                             {...form.getInputProps('legendaryNorm', {
                                 type: 'number',
                             })}
@@ -151,6 +158,7 @@ const Settings = () => {
                         <Text>Legendary Monsters - Gold</Text>
                         <StyledNumber
                             min={0}
+                            max={4}
                             {...form.getInputProps('legendaryGold', {
                                 type: 'number',
                             })}
