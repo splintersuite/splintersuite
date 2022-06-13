@@ -1,6 +1,5 @@
 import util from '../util';
 import userService from '../services/user';
-import userActions from '../actions/user';
 
 const login = async (event, payload) => {
     const { username, key } = payload;
@@ -9,7 +8,7 @@ const login = async (event, payload) => {
     userService.setUsername(username);
 
     if (username) {
-        userActions.fetchUserData({ username });
+        userService.fetchUserData({ username });
     }
 
     return util.success();
