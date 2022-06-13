@@ -31,6 +31,7 @@ const SectionHeader = styled.h2`
 `;
 
 const StyledLabel = styled(Label)`
+    font-size: 16px;
     width: 256px;
 `;
 
@@ -161,7 +162,7 @@ const Settings = () => {
                     <Text>Daily Relistings</Text>
                     <StyledNumber
                         min={0}
-                        {...form.getInputProps('legendaryGold', {
+                        {...form.getInputProps('dailyRelistings', {
                             type: 'number',
                         })}
                     />
