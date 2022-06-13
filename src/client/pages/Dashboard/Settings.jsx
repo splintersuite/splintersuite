@@ -28,7 +28,6 @@ const Settings = () => {
     });
 
     const handleSubmit = (values) => {
-        console.log('submit');
         const formattedValues = {};
         for (const [key, value] of Object.entries(values)) {
             formattedValues[key] = parseInt(value);
