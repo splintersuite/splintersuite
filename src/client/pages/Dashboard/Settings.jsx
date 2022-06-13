@@ -31,6 +31,7 @@ const SectionHeader = styled.h2`
 `;
 
 const StyledLabel = styled(Label)`
+    font-size: 16px;
     width: 256px;
 `;
 
