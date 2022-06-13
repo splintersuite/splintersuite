@@ -7,6 +7,10 @@ const login = async (event, payload) => {
     userService.setKey(username, key);
     userService.setUsername(username);
 
+    if (username) {
+        userService.fetchUserData({ username });
+    }
+
     return util.success();
 };
 
