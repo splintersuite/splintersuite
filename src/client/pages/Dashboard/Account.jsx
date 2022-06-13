@@ -60,15 +60,21 @@ const Settings = () => {
                             </UserCol>
                             <StatCol>
                                 <Label>DEC</Label>
-                                <Text size="32px">{user?.balances?.dec}</Text>
+                                <Text size="32px">
+                                    {user?.balances?.dec || 0}
+                                </Text>
                             </StatCol>
                             <StatCol>
                                 <Label>SPS</Label>
-                                <Text size="32px">{user?.balances?.sps}</Text>
+                                <Text size="32px">
+                                    {user?.balances?.sps || 0}
+                                </Text>
                             </StatCol>
                             <StatCol>
                                 <Label>RC</Label>
-                                <Text size="32px">{user?.balances?.rc}%</Text>
+                                <Text size="32px">
+                                    {user?.balances?.rc || 0}%
+                                </Text>
                             </StatCol>
                         </Row>
                     </Card>
@@ -91,24 +97,22 @@ const Settings = () => {
 
             {!username && (
                 <form onSubmit={form.onSubmit(handleSubmit)}>
-                    <Label htmlFor={'username'}>
-                        <Text>Username</Text>
-                        <Input
-                            label="Username"
-                            style={{ width: '256px' }}
-                            placeholder="Tameshon"
-                            {...form.getInputProps('username')}
-                        />
+                    <Label htmlFor={'username'}>Username</Label>
+                    <Input
+                        label="Username"
+                        style={{ width: '256px' }}
+                        placeholder="Tameshon"
+                        {...form.getInputProps('username')}
+                    />
+                    <Label style={{ marginTop: '16px' }} htmlFor={'key'}>
+                        Active Key
                     </Label>
-                    <Label htmlFor={'key'}>
-                        <Text>Active Key</Text>
-                        <Input
-                            label="Active Key"
-                            style={{ width: '256px' }}
-                            placeholder="12312324123"
-                            {...form.getInputProps('key')}
-                        />
-                    </Label>
+                    <Input
+                        label="Active Key"
+                        style={{ width: '256px' }}
+                        placeholder="12312324123"
+                        {...form.getInputProps('key')}
+                    />
                     <Button type="submit" style={{ marginTop: '2em' }}>
                         Login
                     </Button>

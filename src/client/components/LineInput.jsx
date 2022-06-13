@@ -6,7 +6,8 @@ import Label from '../components/Label.jsx';
 const Container = styled.div`
     display: flex;
     width: 300px;
-    padding: ${({ theme }) => theme.space(1)};
+    padding: ${({ theme }) => theme.space(2)};
+    padding-right: ${({ theme }) => theme.space(1)};
     margin-right: ${({ theme }) => theme.space(4)};
     background: ${({ theme }) => theme.colors.grey[900]};
     border-radius: 8px;
@@ -18,8 +19,8 @@ const InputLabel = styled(Label)`
 `;
 
 const Input = styled.input`
-    width: 51px;
-    padding-left: ${({ theme }) => theme.space(2)};
+    width: 64px;
+    padding-left: ${({ theme }) => theme.space(3)};
     margin-left: ${({ theme }) => theme.space(1)};
     color: white;
     font-size: 16px;
