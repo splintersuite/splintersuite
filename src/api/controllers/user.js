@@ -1,11 +1,16 @@
 import util from '../util';
 import userService from '../services/user';
+import userActions from '../actions/user';
 
 const login = async (event, payload) => {
     const { username, key } = payload;
 
     userService.setKey(username, key);
     userService.setUsername(username);
+
+    if (username) {
+        userActions.fetchUserData({ username });
+    }
 
     return util.success();
 };

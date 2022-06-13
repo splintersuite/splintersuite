@@ -1,5 +1,4 @@
 import keytar from 'keytar';
-
 import store from '../../store';
 
 const setUsername = (username) => {
