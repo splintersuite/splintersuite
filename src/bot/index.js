@@ -9,8 +9,7 @@ window.api.bot.start(async (event) => {
     const { settings } = res.data;
 
     const cards = await rentals.startRentalBot({ username, settings });
-    console.log(cards);
-    res = await window.api.hive.createRentals(cards);
+    res = await window.api.hive.createRentals({ cards });
     console.log(res);
 });
 

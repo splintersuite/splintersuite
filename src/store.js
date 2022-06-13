@@ -6,7 +6,6 @@ const schema = {
     },
     bot: {
         type: 'object',
-        default: {},
         properties: {
             active: {
                 type: 'boolean',
@@ -15,76 +14,65 @@ const schema = {
             settings: {
                 type: 'object',
                 properties: {
-                    listPrice: {
-                        type: 'string',
-                        enum: ['lowest', 'average'],
-                        default: 'average',
-                    },
-                    monstersRegularUnit: {
-                        type: 'string',
-                        enum: ['cp', 'level'],
-                        default: 'level',
-                    },
-                    monstersRegularOperator: {
-                        type: 'string',
-                        enum: ['gt', 'et', 'lt'],
-                        default: 'gt',
-                    },
-                    monstersRegularAmount: {
+                    dailyRelistings: {
                         type: 'number',
                         minimum: 0,
-                        default: 0,
                     },
-                    monstersGoldUnit: {
-                        type: 'string',
-                        enum: ['cp', 'level'],
-                        default: 'level',
-                    },
-                    monstersGoldOperator: {
-                        type: 'string',
-                        enum: ['gt', 'et', 'lt'],
-                        default: 'gt',
-                    },
-                    monstersGoldAmount: {
+                    commonNorm: {
                         type: 'number',
                         minimum: 0,
-                        default: 0,
                     },
-                    summonersRegularUnit: {
-                        type: 'string',
-                        enum: ['cp', 'level'],
-                        default: 'level',
-                    },
-                    summonersRegularOperator: {
-                        type: 'string',
-                        enum: ['gt', 'et', 'lt'],
-                        default: 'gt',
-                    },
-                    summonersRegularAmount: {
+                    commonGold: {
                         type: 'number',
                         minimum: 0,
-                        default: 0,
                     },
-                    summonersGoldUnit: {
-                        type: 'string',
-                        enum: ['cp', 'level'],
-                        default: 'level',
-                    },
-                    summonersGoldOperator: {
-                        type: 'string',
-                        enum: ['gt', 'et', 'lt'],
-                        default: 'gt',
-                    },
-                    summonersGoldAmount: {
+                    rareNorm: {
                         type: 'number',
                         minimum: 0,
-                        default: 0,
+                    },
+                    rareGold: {
+                        type: 'number',
+                        minimum: 0,
+                    },
+                    epicNorm: {
+                        type: 'number',
+                        minimum: 0,
+                    },
+                    epicGold: {
+                        type: 'number',
+                        minimum: 0,
+                    },
+                    legendaryNorm: {
+                        type: 'number',
+                        minimum: 0,
+                    },
+                    legendaryGold: {
+                        type: 'number',
+                        minimum: 0,
                     },
                 },
             },
         },
     },
 };
-const store = new Store({ schema });
+
+const defaults = {
+    bot: {
+        active: false,
+        settings: {
+            dailyRelistings: 0,
+            commonNorm: 0,
+            commonGold: 0,
+            rareNorm: 0,
+            rareGold: 0,
+            epicNorm: 0,
+            epicGold: 0,
+            legendaryNorm: 0,
+            legendaryGold: 0,
+        },
+    },
+};
+
+const store = new Store({ defaults, schema });
 
 export default store;
