@@ -157,6 +157,16 @@ const Settings = () => {
                     </StyledLabel>
                 </Row>
 
+                <Label>
+                    <Text>Daily Relistings</Text>
+                    <StyledNumber
+                        min={0}
+                        {...form.getInputProps('legendaryGold', {
+                            type: 'number',
+                        })}
+                    />
+                </Label>
+
                 <Button style={{ marginTop: '2em' }} type="submit">
                     Save Settings
                 </Button>
