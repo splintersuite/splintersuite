@@ -32,7 +32,7 @@ const createRentals = async (cards) => {
     return res;
 };
 
-const updateRentals = async (ids, price) => {
+const updateRentals = async (ids) => {
     const username = userService.getUsername();
     const rawKey = await userService.getKey(username);
     const key = PrivateKey.from(rawKey);
@@ -41,10 +41,9 @@ const updateRentals = async (ids, price) => {
         {
             required_posting_auths: [],
             required_auths: [username],
-            id: 'update_rental_price',
+            id: 'sm_update_rental_price',
             json: JSON.stringify({
-                ids,
-                new_price: price,
+                items: ids,
                 required_posting_auths: [],
                 required_auths: [username],
             }),
@@ -65,7 +64,7 @@ const deleteRentals = async (ids) => {
             required_auths: [username],
             id: 'sm_market_cancel_rental',
             json: JSON.stringify({
-                ids,
+                items: ids,
                 required_posting_auths: [],
                 required_auths: [username],
             }),

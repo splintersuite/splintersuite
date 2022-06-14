@@ -20,6 +20,9 @@ const {
     calculateRelistingPrice,
 } = require('./actions/calculateRelistingPrice');
 
+const {
+    calculateCancelActiveRentalPrices,
+} = require('./actions/calculateFilledRentalsToBeCancelled');
 const startRentalBot = async ({ username, settings }) => {
     try {
         console.log(`startRentalsForAccount username: ${username}`);
@@ -50,26 +53,35 @@ const startRentalBot = async ({ username, settings }) => {
                 collection: cardsListedButNotRentedOut,
             });
 
+        const collectionByLevelObjBeingRentedOut =
+            transformCollectionIntoCollectionByLevelObj({
+                settings,
+                collection: cardsBeingRentedOut,
+            });
+
         // this gives us the output of [uid, rentalPriceInDec] which is needed for initial market listings.
         const rentalArrayWithPriceAndUid = await calculateRentalPriceToList({
             collectionObj: collectionByLevelObjAvailableForRent,
         });
 
-        // TNT TODO: debug why this aspect isnt working
         const { relistingPriceForEachMarketId, cardsNotWorthRelisting } =
             await calculateRelistingPrice({
-                collection: collectionByLevelObjLstedButNotRentedOut,
+                collectionObj: collectionByLevelObjLstedButNotRentedOut,
             });
 
-        console.log('relistingPriceForEachMarketId: ');
-        console.log(relistingPriceForEachMarketId);
-
-        console.log('cardsNotWorthRelisting: ');
-        console.log(cardsNotWorthRelisting);
-
-        console.log(rentalArrayWithPriceAndUid);
+        const { marketIdsForCancellation, cardsNotWorthCancelling } =
+            await calculateCancelActiveRentalPrices({
+                collectionObj: collectionByLevelObjBeingRentedOut,
+            });
+        // console.log(rentalArrayWithPriceAndUid);
+        // console.log(relistingPriceForEachMarketId);
+        // console.log(marketIdsForCancellation);
         // we would also want to make sure that cards already listed are seperated
-        return rentalArrayWithPriceAndUid;
+        return {
+            listings: rentalArrayWithPriceAndUid,
+            relistings: relistingPriceForEachMarketId,
+            cancellations: marketIdsForCancellation,
+        };
     } catch (err) {
         console.error(`startRentalsForAccount error: ${err.message}`);
         throw err;
