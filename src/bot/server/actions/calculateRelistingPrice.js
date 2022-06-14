@@ -7,7 +7,7 @@ const {
 
 const calculateRelistingPrice = async ({ collectionObj }) => {
     try {
-        console.log('calculateRelistingPrice start');
+        // console.log('calculateRelistingPrice start');
 
         const relistingPriceForEachMarketId = [];
         const cardsUnableToFindPriceFor = [];
@@ -54,7 +54,7 @@ const addPriceRelistInformationForEachCardByMarketId = ({
     searchableRentList,
 }) => {
     try {
-        console.log(`addPriceRelistInformationForEachCardByUid start`);
+        //   console.log(`addPriceRelistInformationForEachCardByUid start`);
         const { card_detail_id, gold, edition, market_id, buy_price, uid } =
             card;
         let _gold = 'F';
@@ -82,8 +82,8 @@ const addPriceRelistInformationForEachCardByMarketId = ({
         } else {
             const price = priceData.low_price;
 
-            const rentalRelistingPriceForMarketId = [market_id, price];
-
+            //      const rentalRelistingPriceForMarketId = [market_id, price];
+            const rentalRelistingPriceForMarketId = [uid, price];
             return rentalRelistingPriceForMarketId;
         }
     } catch (err) {

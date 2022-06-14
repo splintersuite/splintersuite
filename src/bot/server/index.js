@@ -73,9 +73,9 @@ const startRentalBot = async ({ username, settings }) => {
             await calculateCancelActiveRentalPrices({
                 collectionObj: collectionByLevelObjBeingRentedOut,
             });
-        console.log(rentalArrayWithPriceAndUid);
-        console.log(relistingPriceForEachMarketId);
-        console.log(marketIdsForCancellation);
+        // console.log(rentalArrayWithPriceAndUid);
+        // console.log(relistingPriceForEachMarketId);
+        // console.log(marketIdsForCancellation);
         // we would also want to make sure that cards already listed are seperated
         return {
             listings: rentalArrayWithPriceAndUid,

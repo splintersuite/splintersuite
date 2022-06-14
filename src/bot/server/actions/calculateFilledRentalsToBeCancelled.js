@@ -7,7 +7,7 @@ const {
 
 const calculateCancelActiveRentalPrices = async ({ collectionObj }) => {
     try {
-        console.log('calculateCancelActiveRentalPrices start');
+        //   console.log('calculateCancelActiveRentalPrices start');
 
         const marketIdsForCancellation = [];
         const unableToFindPriceFor = []; // TNT NOTE: I think this means we should cancel tbh cuz we want to relist a lot higher imo, although need to delve into this more
@@ -53,7 +53,7 @@ const calculateCancelActiveRentalPrices = async ({ collectionObj }) => {
 
 const addMarketIdsForCancelling = ({ card, searchableRentList }) => {
     try {
-        console.log('addMarketIdsForCancelling start');
+        // console.log('addMarketIdsForCancelling start');
         const { card_detail_id, gold, edition, market_id, buy_price, uid } =
             card;
         let _gold = 'F';

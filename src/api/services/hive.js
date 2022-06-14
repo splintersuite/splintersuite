@@ -43,7 +43,7 @@ const updateRentals = async (ids, price) => {
             required_auths: [username],
             id: 'sm_update_rental_price',
             json: JSON.stringify({
-                ids,
+                items: ids,
                 //new_price: price,
                 required_posting_auths: [],
                 required_auths: [username],

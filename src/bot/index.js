@@ -17,11 +17,10 @@ window.api.bot.start(async (event) => {
         const { listings, relistings, cancellations } =
             await rentals.startRentalBot({ username: user.username, settings });
         await window.api.hive.createRentals({ cards: listings });
-        await window.api.hive.updateRentals({ ids: relistings });
+        await window.api.hive.updateRentals({
+            ids: relistings,
+        });
         await window.api.hive.deleteRentals({ ids: cancellations });
-        console.log(listings);
-        console.log(relistings);
-        console.log(cancellations);
         await util.pause(duration);
         res = await window.api.bot.getActive();
         active = res.data.active;
