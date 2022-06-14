@@ -2,6 +2,7 @@
 
 const { axiosInstance } = require('../requests/axiosGetInstance');
 const { findCardDetails, isOnCooldown } = require('./_helpers.js');
+const { getActiveRentalsByRentalId } = require('./currentRentals');
 
 const getCollection = async (username) => {
     try {
@@ -84,6 +85,7 @@ const filterCollectionArrayByLevel = ({ collection }) => {
 const filterCollectionArraysForPotentialRentalCards = ({
     username,
     collection,
+    activeRentalsByRentalId,
 }) => {
     try {
         //  console.log('filterCollectionArraysForPotentialRentalCards start');
@@ -96,6 +98,9 @@ const filterCollectionArraysForPotentialRentalCards = ({
 
         const cardsListedButNotRentedOut = [];
 
+        const cardsAlreadyCancelled = [];
+
+        // need to convert from array of cards into object where key = rental_tx (aka delegation_tx)
         collection.forEach((card) => {
             const cardToBeAdded = card;
             const { rarity } = findCardDetails(card.card_detail_id);
@@ -127,7 +132,15 @@ const filterCollectionArraysForPotentialRentalCards = ({
                 card.market_listing_type === 'RENT' &&
                 card.delegated_to != null
             ) {
-                cardsBeingRentedOut.push(cardToBeAdded);
+                // delegation_tx from here === rental_tx from active_rentals
+                const currentRental =
+                    activeRentalsByRentalId[card.delegation_tx];
+                if (currentRental.cancel_tx == null) {
+                    cardsBeingRentedOut.push(cardToBeAdded);
+                } else {
+                    // this would mean the cancel_tx has a value, and therefore the rental was cancelled.  We don't want to do anything with this right now, could change
+                    cardsAlreadyCancelled.push(cardToBeAdded);
+                }
             } // other conditions dont matter because these are the only ones available for rentals
         });
         // console.log('filterCollectionArraysForPotentialRentalCards done');
