@@ -9,6 +9,7 @@ import Card from '../../components/Card.jsx';
 import Col from '../../components/Col.jsx';
 import Row from '../../components/Row.jsx';
 import DashboardPage from '../../components/DashboardPage.jsx';
+import LineChart from '../../components/LineChart.jsx';
 import { useUser } from '../../contexts/UserContext.jsx';
 
 const UserCol = styled(Col)`
@@ -28,9 +29,12 @@ const DataCard = styled(Card)`
     width: calc(33% - 21px);
 `;
 
-const GraphCard = styled(Card)`
+const ChartCard = styled(Card)`
     width: 100%;
-    height: 512px;
+`;
+
+const ChartHeader = styled.h2`
+    margin-bottom: ${({ theme }) => theme.space(4)};
 `;
 
 const Settings = () => {
@@ -89,9 +93,10 @@ const Settings = () => {
                             <Text size="64px">Data</Text>
                         </DataCard>
                     </DataRow>
-                    <GraphCard>
-                        <Text size="64px">Line Graph</Text>
-                    </GraphCard>
+                    <ChartCard>
+                        <ChartHeader>Daily Earnings in DEC</ChartHeader>
+                        <LineChart />
+                    </ChartCard>
                 </>
             )}
 

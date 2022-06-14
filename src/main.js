@@ -27,12 +27,12 @@ app.on('ready', () => {
         },
     });
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 
     const botWindow = new BrowserWindow({
-        //     show: false,
-        width: 1200,
-        height: 800,
+        show: false,
+        // width: 1200,
+        // height: 800,
         webPreferences: {
             sandbox: true,
             contextIsolation: true,
@@ -40,7 +40,7 @@ app.on('ready', () => {
         },
     });
     botWindow.loadURL(BOT_WINDOW_WEBPACK_ENTRY);
-    botWindow.webContents.openDevTools();
+    // botWindow.webContents.openDevTools();
 
     ipcMain.handle('user:login', user.login);
     ipcMain.handle('user:logout', user.logout);

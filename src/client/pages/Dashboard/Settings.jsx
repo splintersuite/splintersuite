@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled from '@emotion/styled';
-import { Button, NumberInput, Indicator } from '@mantine/core';
+import { Button } from '@mantine/core';
 import { useForm } from '@mantine/form';
 
-import Label from '../../components/Label.jsx';
 import Text from '../../components/Text.jsx';
 import Row from '../../components/Row.jsx';
 import Card from '../../components/Card.jsx';
