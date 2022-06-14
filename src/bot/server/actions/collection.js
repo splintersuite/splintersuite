@@ -86,7 +86,7 @@ const filterCollectionArraysForPotentialRentalCards = ({
     collection,
 }) => {
     try {
-        console.log('filterCollectionArraysForPotentialRentalCards start');
+        //  console.log('filterCollectionArraysForPotentialRentalCards start');
 
         const cardsAvailableForRent = [];
 
@@ -130,7 +130,7 @@ const filterCollectionArraysForPotentialRentalCards = ({
                 cardsBeingRentedOut.push(cardToBeAdded);
             } // other conditions dont matter because these are the only ones available for rentals
         });
-        console.log('filterCollectionArraysForPotentialRentalCards done');
+        // console.log('filterCollectionArraysForPotentialRentalCards done');
         return {
             cardsAvailableForRent,
             cardsOnRentalCooldown,
@@ -162,10 +162,10 @@ const filterCollectionArraysByLevelLimitThresholds = ({
     settings,
 }) => {
     try {
-        console.log(
-            `filterCollectionArraysByLevelLimitThresholds with settings: ${settings}`
-        );
-        console.log(`settings`);
+        // console.log(
+        //     `filterCollectionArraysByLevelLimitThresholds with settings: ${settings}`
+        // );
+        // console.log(`settings`);
         const newArray = [];
         collection.forEach((card) => {
             const { level, rarity, gold } = card;
@@ -205,21 +205,12 @@ const filterCollectionArraysByLevelLimitThresholds = ({
                         `card does not have a rarity that either exists or is outside of the integer range 1-4.  Card_detail_id is ${card.card_detail_id}, cardUid is: ${card.uid}, Value of rarity is ${rarity}`
                     );
             }
-            console.log(`level: ${level}, limitLevel: ${limitLevel}`);
             if (parseInt(level) >= parseInt(limitLevel)) {
-                console.log(`level: ${level}, limitLevel: ${limitLevel}`);
-                console.log(typeof level);
-                console.log(typeof limitLevel);
-                // throw new Error("trying to see this output");
                 newArray.push(card);
             } else {
                 //  console.log(`this card is being excluded`);
             }
         });
-        console.log(
-            `newArray output from filterCollectionArraysByLevelLimitThresholds`
-        );
-        console.log(newArray);
         return newArray;
     } catch (err) {
         console.error(
@@ -232,7 +223,7 @@ const filterCollectionArraysByLevelLimitThresholds = ({
 // TNT NOTE; actually using this in the more precise data function (which is very much under development rn)
 const filterCollectionArraysByGoldYN = ({ collection }) => {
     try {
-        console.log(`filterCollectionArraysByGoldYN start`);
+        //   console.log(`filterCollectionArraysByGoldYN start`);
 
         const normCollection = [];
         const goldCollection = [];
@@ -267,7 +258,7 @@ module.exports = {
 // TNT NOTE: unused in current algo
 const sortCollectionArrayByDetailId = ({ collection }) => {
     try {
-        console.log(`sortCollectionArrayByDetailId start`);
+        //console.log(`sortCollectionArrayByDetailId start`);
         const sortedArray = collection.sort(
             (a, b) => a.card_detail_id - b.card_detail_id
         );
@@ -282,7 +273,7 @@ const sortCollectionArrayByDetailId = ({ collection }) => {
 // TNT NOTE: Unused but may be useful later
 const filterCollectionArraysByRarity = ({ collection }) => {
     try {
-        console.log(`filterCollectionArraysByRarity start`);
+        // console.log(`filterCollectionArraysByRarity start`);
         const commons = [];
         const rares = [];
         const epics = [];
@@ -324,7 +315,7 @@ const filterCollectionArraysByRarity = ({ collection }) => {
 
 const filterCollectionArrayByUid = ({ collection }) => {
     try {
-        console.log('filterCollectionArrayToObject start');
+        //   console.log('filterCollectionArrayToObject start');
         const newCollection = {};
         collection.forEach((card) => {
             const { uid } = card;
@@ -341,7 +332,7 @@ const filterCollectionArrayByUid = ({ collection }) => {
 // TNT NOTE: I think this could get used in the more precise data part
 const filterCollectionRarityArraysByGold = ({ collection }) => {
     try {
-        console.log(`filterCollectionRarityArraysByGold start`);
+        //   console.log(`filterCollectionRarityArraysByGold start`);
 
         const normalCards = [];
         const goldCards = [];
