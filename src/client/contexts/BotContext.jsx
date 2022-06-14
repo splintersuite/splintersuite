@@ -28,6 +28,10 @@ export const BotProvider = (props) => {
             const res = await window.api.bot.getActive();
             if (res.code === 1) {
                 setBotActive(res.data.active);
+
+                if (res.data.active) {
+                    await window.api.bot.start();
+                }
             }
         };
         const getSettings = async () => {
