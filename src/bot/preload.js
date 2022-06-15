@@ -9,6 +9,9 @@ contextBridge.exposeInMainWorld('api', {
         stop: (callback) => ipcRenderer.on('bot:stop', callback),
         getActive: () => ipcRenderer.invoke('bot:getActive'),
         getSettings: () => ipcRenderer.invoke('bot:getSettings'),
+        getStats: () => ipcRenderer.invoke('bot:getStats'),
+        updateStats: (payload) =>
+            ipcRenderer.invoke('bot:updateStats', payload),
     },
     hive: {
         createRentals: (payload) =>

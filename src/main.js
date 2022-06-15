@@ -27,12 +27,12 @@ app.on('ready', () => {
         },
     });
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     const botWindow = new BrowserWindow({
-        show: false,
-        // width: 1200,
-        // height: 800,
+        // show: false,
+        width: 1200,
+        height: 800,
         webPreferences: {
             sandbox: true,
             contextIsolation: true,
@@ -40,7 +40,7 @@ app.on('ready', () => {
         },
     });
     botWindow.loadURL(BOT_WINDOW_WEBPACK_ENTRY);
-    // botWindow.webContents.openDevTools();
+    botWindow.webContents.openDevTools();
 
     ipcMain.handle('user:login', user.login);
     ipcMain.handle('user:logout', user.logout);
@@ -57,6 +57,8 @@ app.on('ready', () => {
     ipcMain.handle('bot:getActive', bot.getActive);
     ipcMain.handle('bot:getSettings', bot.getSettings);
     ipcMain.handle('bot:updateSettings', bot.updateSettings);
+    ipcMain.handle('bot:getStats', bot.getStats);
+    ipcMain.handle('bot:updateStats', bot.updateStats);
 
     ipcMain.handle('hive:createRentals', hive.createRentals);
     ipcMain.handle('hive:updateRentals', hive.updateRentals);

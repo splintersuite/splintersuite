@@ -17,6 +17,7 @@ const Nav = styled.nav`
     width: 256px;
     padding-top: ${({ theme }) => theme.space(4)};
     padding-bottom: ${({ theme }) => theme.space(4)};
+    background: ${({ theme }) => theme.colors.grey[900]};
     box-shadow: ${({ theme }) => theme.shadow};
 `;
 

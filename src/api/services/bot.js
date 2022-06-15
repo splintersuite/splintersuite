@@ -1,23 +1,12 @@
+import moment from 'moment';
+
 import store from '../../store';
-import userService from '../services/user';
-import hiveService from '../services/hive';
 
 const start = async () => {
-    // const username = userService.getUsername();
-    // const key = await userService.getKey(username);
-
     console.log('BOT: start rentals');
-    // await hiveService.postRentals([['C3-331-L9ICDKTJQO', 500]]);
-    // await hiveService.updateRentals(
-    //     ['310bac61ac6a4d35daaef557ceba4cf6bd8bd165'],
-    //     300
-    // );
 };
 
 const stop = async () => {
-    const username = userService.getUsername();
-    const key = await userService.getKey(username);
-
     console.log('BOT: stop rentals');
 };
 
@@ -37,6 +26,18 @@ const setSettings = (settings) => {
     return store.set('bot.settings', settings);
 };
 
+const getStats = async () => {
+    const stats = await store.get('bot.stats');
+    // stats.startedAt = moment(stats.startedAt);
+    // stats.startedAt = moment(stats.startedAt);
+    return stats;
+};
+
+const setStats = (stats) => {
+    stats.startedAt = moment(stats.startedAt).format();
+    return store.set('bot.stats', stats);
+};
+
 export default {
     start,
     stop,
@@ -44,4 +45,6 @@ export default {
     setActive,
     getSettings,
     setSettings,
+    getStats,
+    setStats,
 };

@@ -66,6 +66,18 @@ const schema = {
                     },
                 },
             },
+            stats: {
+                type: 'object',
+                properties: {
+                    startedAt: {
+                        type: 'string',
+                    },
+                    numListed: {
+                        type: 'number',
+                        minimum: 0,
+                    },
+                },
+            },
         },
     },
 };
@@ -91,6 +103,10 @@ const defaults = {
             epicGold: 0,
             legendaryNorm: 0,
             legendaryGold: 0,
+        },
+        stats: {
+            startedAt: '',
+            numListed: 0,
         },
     },
 };

@@ -5,8 +5,7 @@ const Container = styled.div`
     width: 100%;
     margin-left: 256px; // sidenav width
     padding: ${({ theme }) => theme.space(8)};
-    /* padding-left: ${({ theme }) => theme.space(12)};
-    padding-bottom: ${({ theme }) => theme.space(12)}; */
+    padding-bottom: 256px;
     background-color: ${({ theme }) => theme.colors.grey[800]};
 `;
 

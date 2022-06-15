@@ -13,5 +13,6 @@ contextBridge.exposeInMainWorld('api', {
         getSettings: () => ipcRenderer.invoke('bot:getSettings'),
         updateSettings: (payload) =>
             ipcRenderer.invoke('bot:updateSettings', payload),
+        getStats: () => ipcRenderer.invoke('bot:getStats'),
     },
 });
