@@ -11,6 +11,7 @@ import Dashboard from '../pages/Dashboard/Dashboard.jsx';
 import DashboardSettings from '../pages/Dashboard/Settings.jsx';
 import DashboardStats from '../pages/Dashboard/Stats.jsx';
 import DashboardAccount from '../pages/Dashboard/Account.jsx';
+import DashboardBilling from '../pages/Dashboard/Billing.jsx';
 
 const RoutesContainer = () => {
     return (
@@ -28,6 +29,7 @@ const RoutesContainer = () => {
                         path="/app/settings"
                         element={<DashboardSettings />}
                     />
+                    <Route path="/app/billing" element={<DashboardBilling />} />
                     {/* <Route path="/app/stats" element={<DashboardStats />} /> */}
                 </Route>
             </Routes>

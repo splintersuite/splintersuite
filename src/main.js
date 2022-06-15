@@ -5,6 +5,7 @@ dotenv.config();
 const user = require('./api/controllers/user').default;
 const bot = require('./api/controllers/bot').default;
 const hive = require('./api/controllers/hive').default;
+const invoice = require('./api/controllers/invoice').default;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -68,6 +69,9 @@ app.on('ready', () => {
     ipcMain.handle('hive:createRentals', hive.createRentals);
     ipcMain.handle('hive:updateRentals', hive.updateRentals);
     ipcMain.handle('hive:deleteRentals', hive.deleteRentals);
+
+    ipcMain.handle('invoice:get', invoice.get);
+    ipcMain.handle('invoice:update', invoice.update);
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
