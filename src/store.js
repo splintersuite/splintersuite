@@ -25,6 +25,10 @@ const schema = {
                 type: 'boolean',
                 default: false,
             },
+            isLoading: {
+                type: 'boolean',
+                default: false,
+            },
             settings: {
                 type: 'object',
                 properties: {
@@ -93,6 +97,7 @@ const defaults = {
 
     bot: {
         active: false,
+        isLoading: false,
         settings: {
             dailyRelistings: 0,
             commonNorm: 0,

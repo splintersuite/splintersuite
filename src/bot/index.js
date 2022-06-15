@@ -19,8 +19,11 @@ window.api.bot.start(async (event) => {
     const duration = util.periodToMs(settings.dailyRelistings);
 
     while (active && user.username) {
+        await window.api.bot.updateLoading({ isLoading: true });
+
         const { listings, relistings, cancellations } =
             await rentals.startRentalBot({ username: user.username, settings });
+        numListed += listings.length + relistings.length;
 
         await window.api.hive.createRentals({ cards: listings });
         await window.api.hive.updateRentals({
@@ -28,14 +31,13 @@ window.api.bot.start(async (event) => {
         });
         await window.api.hive.deleteRentals({ ids: cancellations });
 
-        numListed += listings.length + relistings.length;
-
         await window.api.bot.updateStats({
             stats: {
                 startedAt,
                 numListed,
             },
         });
+        await window.api.bot.updateLoading({ isLoading: false });
 
         await util.pause(duration);
 

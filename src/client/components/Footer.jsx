@@ -53,7 +53,8 @@ const StatCol = styled(Col)`
 `;
 
 const Footer = (props) => {
-    const { botActive, botStats, toggleBotActive } = useBot();
+    const { botActive, botStats, botLoading, getBotLoading, toggleBotActive } =
+        useBot();
 
     const startedAt = botStats.startedAt
         ? moment(botStats.startedAt).fromNow(true)
@@ -70,8 +71,9 @@ const Footer = (props) => {
                         </Status>
                     </BotLabel>
                     <Button
-                        color={botActive ? 'red' : 'primary'}
                         size="lg"
+                        color={botActive ? 'red' : 'primary'}
+                        loading={botLoading}
                         onClick={toggleBotActive}
                     >
                         <Icon icon={faRobot} />

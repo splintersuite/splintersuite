@@ -5,10 +5,6 @@ import botService from '../services/bot';
 
 const start = async (event) => {
     await botService.setActive(true);
-    // await botService.setStats({
-    //     startedAt: moment(),
-    //     numListed: 0,
-    // });
 
     botService.start();
     return util.success();
@@ -52,6 +48,19 @@ const updateStats = async (event, payload) => {
     return util.success();
 };
 
+const getLoading = async (event) => {
+    const isLoading = await botService.getLoading();
+    return util.success({ isLoading });
+};
+
+const updateLoading = async (event, payload) => {
+    const { isLoading } = payload;
+
+    botService.setLoading(isLoading);
+
+    return util.success();
+};
+
 export default {
     start,
     stop,
@@ -60,4 +69,6 @@ export default {
     updateSettings,
     getStats,
     updateStats,
+    getLoading,
+    updateLoading,
 };

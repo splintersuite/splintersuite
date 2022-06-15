@@ -4,6 +4,7 @@ import hooks from '../hooks';
 
 const initialState = {
     botActive: false,
+    botLoading: false,
     botSettings: {
         dailyRelistings: 0,
         commonNorm: 1,
@@ -31,6 +32,7 @@ export const BotProvider = (props) => {
     const [botActive, setBotActive] = useState(false);
     const [botSettings, setBotSettings] = useState(initialState.botSettings);
     const [botStats, setBotStats] = useState(initialState.botStats);
+    const [botLoading, setBotLoading] = useState(initialState.botLoading);
 
     const getStats = async () => {
         const res = await window.api.bot.getStats();
@@ -39,27 +41,35 @@ export const BotProvider = (props) => {
         }
     };
 
-    useEffect(() => {
-        const getActive = async () => {
-            const res = await window.api.bot.getActive();
-            if (res.code === 1) {
-                setBotActive(res.data.active);
+    const getActive = async () => {
+        const res = await window.api.bot.getActive();
+        if (res.code === 1) {
+            setBotActive(res.data.active);
 
-                if (res.data.active) {
-                    await window.api.bot.start();
-                }
+            if (res.data.active) {
+                await window.api.bot.start();
             }
-        };
-        const getSettings = async () => {
-            const res = await window.api.bot.getSettings();
-            if (res.code === 1) {
-                setBotSettings(res.data.settings);
-            }
-        };
-        getActive();
-        getSettings();
-        getStats();
-    }, []);
+        }
+    };
+
+    const getSettings = async () => {
+        const res = await window.api.bot.getSettings();
+        if (res.code === 1) {
+            setBotSettings(res.data.settings);
+        }
+    };
+
+    const getLoading = async () => {
+        const res = await window.api.bot.getLoading();
+        if (res.code === 1) {
+            setBotLoading(res.data.isLoading);
+        }
+    };
+
+    const updateBotSettings = async (settings) => {
+        setBotSettings(settings);
+        await window.api.bot.updateSettings({ settings });
+    };
 
     const toggleBotActive = async () => {
         if (botActive) {
@@ -72,14 +82,20 @@ export const BotProvider = (props) => {
         }
     };
 
-    const updateBotSettings = async (settings) => {
-        setBotSettings(settings);
-        await window.api.bot.updateSettings({ settings });
-    };
+    useEffect(() => {
+        getActive();
+        getSettings();
+        getStats();
+    }, []);
 
     hooks.useInterval(async () => {
         await getStats();
     }, FIVE_MINUTES);
+
+    window.api.bot.updateLoading((event, payload) => {
+        const { isLoading } = payload;
+        setBotLoading(isLoading);
+    });
 
     return (
         <BotContext.Provider
@@ -88,8 +104,10 @@ export const BotProvider = (props) => {
                 botActive,
                 botSettings,
                 botStats,
+                botLoading,
                 toggleBotActive,
                 updateBotSettings,
+                getLoading,
             }}
         >
             {props.children}

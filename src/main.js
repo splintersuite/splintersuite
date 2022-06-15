@@ -59,6 +59,11 @@ app.on('ready', () => {
     ipcMain.handle('bot:updateSettings', bot.updateSettings);
     ipcMain.handle('bot:getStats', bot.getStats);
     ipcMain.handle('bot:updateStats', bot.updateStats);
+    ipcMain.handle('bot:getLoading', bot.getLoading);
+    ipcMain.handle('bot:updateLoading', (event, payload) => {
+        bot.updateLoading(event, payload);
+        mainWindow.webContents.send('bot:updateLoading', payload);
+    });
 
     ipcMain.handle('hive:createRentals', hive.createRentals);
     ipcMain.handle('hive:updateRentals', hive.updateRentals);
