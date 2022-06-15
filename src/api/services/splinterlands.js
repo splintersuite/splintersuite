@@ -19,4 +19,17 @@ const getBalance = async (username) => {
     return { dec, sps };
 };
 
-export default { getBalance };
+const getPaymentHistory = async (username) => {
+    let res = await axios(
+        'https://api2.splinterlands.com/players/balance_history',
+        {
+            params: {
+                username,
+                token_type: 'DEC',
+            },
+        }
+    );
+    return res.data;
+};
+
+export default { getBalance, getPaymentHistory };

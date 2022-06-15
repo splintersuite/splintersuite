@@ -8,7 +8,16 @@ const update = async () => {
     return util.success();
 };
 
+const confirm = async (event, payload) => {
+    const { invoice } = payload;
+
+    const isPaid = await invoiceService.confirm(invoice);
+
+    return util.success({ isPaid });
+};
+
 export default {
     get,
     update,
+    confirm,
 };

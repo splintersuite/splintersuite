@@ -20,5 +20,6 @@ contextBridge.exposeInMainWorld('api', {
     invoice: {
         get: () => ipcRenderer.invoke('invoice:get'),
         update: (payload) => ipcRenderer.invoke('invoice:update', payload),
+        confirm: (payload) => ipcRenderer.invoke('invoice:confirm', payload),
     },
 });

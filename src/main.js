@@ -72,6 +72,7 @@ app.on('ready', () => {
 
     ipcMain.handle('invoice:get', invoice.get);
     ipcMain.handle('invoice:update', invoice.update);
+    ipcMain.handle('invoice:confirm', invoice.confirm);
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

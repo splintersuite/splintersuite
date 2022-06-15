@@ -8,7 +8,7 @@ const initialState = {
             name: 'Splinterlands Season 12',
             due: moment(),
             amount: 1234,
-            paid: false,
+            paid: true,
         },
         {
             name: 'Splinterlands Season 13',
@@ -18,9 +18,9 @@ const initialState = {
         },
         {
             name: 'Splinterlands Season 14',
-            due: moment(),
-            amount: 1234,
-            paid: true,
+            due: moment().add(2, 'days'),
+            amount: 1,
+            paid: false,
         },
     ],
 };
@@ -59,9 +59,10 @@ export const UserProvider = (props) => {
         return res;
     };
 
-    const handleUpdateInvoice = async (invoice) => {
+    const handleConfirmInvoice = async (invoice) => {
         invoice.due = moment(invoice.due).format();
-        const res = await window.api.invoice.update({ invoice });
+        console.log(invoice);
+        const res = await window.api.invoice.confirm({ invoice });
     };
 
     return (
@@ -73,7 +74,7 @@ export const UserProvider = (props) => {
                 invoices,
                 handleLogout,
                 handleLogin,
-                handleUpdateInvoice,
+                handleConfirmInvoice,
             }}
         >
             {props.children}

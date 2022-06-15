@@ -66,7 +66,7 @@ const StepRow = styled(Row)`
 `;
 
 const Billing = () => {
-    const { invoices, handleUpdateInvoice } = useUser();
+    const { invoices, handleConfirmInvoice } = useUser();
 
     return (
         <DashboardPage>
@@ -103,7 +103,7 @@ const Billing = () => {
                                             compact
                                             size="sm"
                                             onClick={() =>
-                                                handleUpdateInvoice(invoice)
+                                                handleConfirmInvoice(invoice)
                                             }
                                         >
                                             Mark Paid
