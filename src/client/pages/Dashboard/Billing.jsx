@@ -52,17 +52,18 @@ const StepLabel = styled(Label)`
 
 const StepImage = styled.img`
     width: 512px;
-    margin-left: ${({ theme }) => theme.space(8)};
+    /* margin-left: ${({ theme }) => theme.space(8)}; */
     border-radius: 8px;
 `;
 
 const StepCol = styled(Col)`
-    max-width: 256px;
+    /* max-width: 256px; */
+    margin-top: ${({ theme }) => theme.space(4)};
+    margin-bottom: ${({ theme }) => theme.space(2)};
 `;
 
 const StepRow = styled(Row)`
     align-items: flex-start;
-    margin-top: ${({ theme }) => theme.space(3)};
 `;
 
 const Billing = () => {
@@ -117,9 +118,9 @@ const Billing = () => {
             </Card>
 
             <Card>
-                <h2>How it works</h2>
+                <h2>How do I pay?</h2>
 
-                <StepRow>
+                <Col>
                     <StepCol>
                         <StepLabel>Step 1</StepLabel>
                         <Text>
@@ -128,17 +129,17 @@ const Billing = () => {
                         </Text>
                     </StepCol>
                     <StepImage src={billing1} />
-                </StepRow>
+                </Col>
 
-                <StepRow>
+                <Col>
                     <StepCol>
                         <StepLabel>Step 2</StepLabel>
                         <Text>Click "Select Wallet" and choose "Player".</Text>
                     </StepCol>
                     <StepImage src={billing2} />
-                </StepRow>
+                </Col>
 
-                <StepRow>
+                <Col>
                     <StepCol>
                         <StepLabel>Step 3</StepLabel>
                         <Text>
@@ -147,7 +148,7 @@ const Billing = () => {
                         </Text>
                     </StepCol>
                     <StepImage src={billing3} />
-                </StepRow>
+                </Col>
 
                 <StepCol>
                     <StepLabel>Step 4</StepLabel>
