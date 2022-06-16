@@ -38,6 +38,7 @@ const TableRow = styled.tr`
 `;
 
 const TableItem = styled.td`
+    font-size: 16px !important;
     color: ${({ theme }) => theme.colors.white} !important;
     border: none !important;
 `;
@@ -52,18 +53,12 @@ const StepLabel = styled(Label)`
 
 const StepImage = styled.img`
     width: 512px;
-    /* margin-left: ${({ theme }) => theme.space(8)}; */
     border-radius: 8px;
 `;
 
 const StepCol = styled(Col)`
-    /* max-width: 256px; */
     margin-top: ${({ theme }) => theme.space(4)};
     margin-bottom: ${({ theme }) => theme.space(2)};
-`;
-
-const StepRow = styled(Row)`
-    align-items: flex-start;
 `;
 
 const Billing = () => {
@@ -93,11 +88,13 @@ const Billing = () => {
                             <TableRow key={idx}>
                                 <TableItem>{invoice.name}</TableItem>
                                 <TableItem>
-                                    {moment(invoice.due).format('MMMM Do YYYY')}
+                                    {moment(invoice.due_at).format(
+                                        'MMMM Do YYYY'
+                                    )}
                                 </TableItem>
-                                <TableItem>{invoice.amount} DEC</TableItem>
+                                <TableItem>{invoice.amount_due} DEC</TableItem>
                                 <TableItem>
-                                    {invoice.paid ? (
+                                    {invoice.paid_at ? (
                                         <Paid>Paid</Paid>
                                     ) : (
                                         <Button
