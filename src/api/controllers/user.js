@@ -44,4 +44,13 @@ const get = async (event) => {
     return util.success({ user });
 };
 
-export default { login, logout, get };
+const updateRentals = async (event, payload) => {
+    const { rentals } = payload;
+
+    const username = userService.getUsername();
+    await userService.updateRentals(username, rentals);
+
+    return util.success();
+};
+
+export default { login, logout, get, updateRentals };

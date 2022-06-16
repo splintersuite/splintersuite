@@ -46,6 +46,7 @@ app.on('ready', () => {
     ipcMain.handle('user:login', user.login);
     ipcMain.handle('user:logout', user.logout);
     ipcMain.handle('user:get', user.get);
+    ipcMain.handle('user:updateRentals', user.updateRentals);
 
     ipcMain.handle('bot:start', (event) => {
         bot.start();

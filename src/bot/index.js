@@ -31,6 +31,11 @@ window.api.bot.start(async (event) => {
         });
         await window.api.hive.deleteRentals({ ids: cancellations });
 
+        // VALID RENTALS REQUEST
+        // await window.api.user.updateRentals({
+        //     rentals: [{ id: 1 }],
+        // });
+
         await window.api.bot.updateStats({
             stats: {
                 startedAt,

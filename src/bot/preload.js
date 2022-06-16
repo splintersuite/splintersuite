@@ -3,6 +3,8 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('api', {
     user: {
         get: () => ipcRenderer.invoke('user:get'),
+        updateRentals: (payload) =>
+            ipcRenderer.invoke('user:updateRentals', payload),
     },
     bot: {
         start: (callback) => ipcRenderer.on('bot:start', callback),
