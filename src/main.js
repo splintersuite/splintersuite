@@ -5,6 +5,7 @@ dotenv.config();
 const user = require('./api/controllers/user').default;
 const bot = require('./api/controllers/bot').default;
 const hive = require('./api/controllers/hive').default;
+const invoice = require('./api/controllers/invoice').default;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -27,7 +28,7 @@ app.on('ready', () => {
         },
     });
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     const botWindow = new BrowserWindow({
         //    show: false,
@@ -45,6 +46,7 @@ app.on('ready', () => {
     ipcMain.handle('user:login', user.login);
     ipcMain.handle('user:logout', user.logout);
     ipcMain.handle('user:get', user.get);
+    ipcMain.handle('user:updateRentals', user.updateRentals);
 
     ipcMain.handle('bot:start', (event) => {
         bot.start();
@@ -57,10 +59,21 @@ app.on('ready', () => {
     ipcMain.handle('bot:getActive', bot.getActive);
     ipcMain.handle('bot:getSettings', bot.getSettings);
     ipcMain.handle('bot:updateSettings', bot.updateSettings);
+    ipcMain.handle('bot:getStats', bot.getStats);
+    ipcMain.handle('bot:updateStats', bot.updateStats);
+    ipcMain.handle('bot:getLoading', bot.getLoading);
+    ipcMain.handle('bot:updateLoading', (event, payload) => {
+        bot.updateLoading(event, payload);
+        mainWindow.webContents.send('bot:updateLoading', payload);
+    });
 
     ipcMain.handle('hive:createRentals', hive.createRentals);
     ipcMain.handle('hive:updateRentals', hive.updateRentals);
     ipcMain.handle('hive:deleteRentals', hive.deleteRentals);
+
+    ipcMain.handle('invoice:get', invoice.get);
+    ipcMain.handle('invoice:update', invoice.update);
+    ipcMain.handle('invoice:confirm', invoice.confirm);
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

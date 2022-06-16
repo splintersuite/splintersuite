@@ -1,23 +1,12 @@
+import moment from 'moment';
+
 import store from '../../store';
-import userService from '../services/user';
-import hiveService from '../services/hive';
 
 const start = async () => {
-    // const username = userService.getUsername();
-    // const key = await userService.getKey(username);
-
     console.log('BOT: start rentals');
-    // await hiveService.postRentals([['C3-331-L9ICDKTJQO', 500]]);
-    // await hiveService.updateRentals(
-    //     ['310bac61ac6a4d35daaef557ceba4cf6bd8bd165'],
-    //     300
-    // );
 };
 
 const stop = async () => {
-    const username = userService.getUsername();
-    const key = await userService.getKey(username);
-
     console.log('BOT: stop rentals');
 };
 
@@ -29,12 +18,29 @@ const setActive = (active) => {
     return store.set('bot.active', active);
 };
 
-const getSettings = async () => {
+const getSettings = () => {
     return store.get('bot.settings');
 };
 
 const setSettings = (settings) => {
     return store.set('bot.settings', settings);
+};
+
+const getStats = () => {
+    return store.get('bot.stats');
+};
+
+const setStats = (stats) => {
+    stats.startedAt = moment(stats.startedAt).format();
+    return store.set('bot.stats', stats);
+};
+
+const getLoading = () => {
+    return store.get('bot.isLoading');
+};
+
+const setLoading = (isLoading) => {
+    return store.set('bot.isLoading', isLoading);
 };
 
 export default {
@@ -44,4 +50,8 @@ export default {
     setActive,
     getSettings,
     setSettings,
+    getStats,
+    setStats,
+    getLoading,
+    setLoading,
 };

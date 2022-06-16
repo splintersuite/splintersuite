@@ -1,9 +1,11 @@
+import moment from 'moment';
+
 import util from '../util';
 import botService from '../services/bot';
-import hiveService from '../services/hive';
 
 const start = async (event) => {
-    botService.setActive(true);
+    await botService.setActive(true);
+
     botService.start();
     return util.success();
 };
@@ -33,10 +35,40 @@ const updateSettings = async (event, payload) => {
     return util.success();
 };
 
+const getStats = async (event) => {
+    const stats = await botService.getStats();
+    return util.success({ stats });
+};
+
+const updateStats = async (event, payload) => {
+    const { stats } = payload;
+
+    botService.setStats(stats);
+
+    return util.success();
+};
+
+const getLoading = async (event) => {
+    const isLoading = await botService.getLoading();
+    return util.success({ isLoading });
+};
+
+const updateLoading = async (event, payload) => {
+    const { isLoading } = payload;
+
+    botService.setLoading(isLoading);
+
+    return util.success();
+};
+
 export default {
     start,
     stop,
     getActive,
     getSettings,
     updateSettings,
+    getStats,
+    updateStats,
+    getLoading,
+    updateLoading,
 };

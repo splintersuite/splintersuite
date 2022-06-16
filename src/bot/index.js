@@ -1,29 +1,58 @@
+import moment from 'moment';
+
 import rentals from './server';
 import util from './util';
 
 window.api.bot.start(async (event) => {
     console.log('bot:start');
 
-    let res = await window.api.user.get();
-    const { user } = res.data;
-    res = await window.api.bot.getSettings();
-    const { settings } = res.data;
-    res = await window.api.bot.getActive();
-    let { active } = res.data;
+    let userRes = await window.api.user.get();
+    let activeRes = await window.api.bot.getActive();
+    let settingsRes = await window.api.bot.getSettings();
 
+    let user = userRes.data.user;
+    let active = activeRes.data.active;
+    let settings = settingsRes.data.settings;
+
+    let numListed = 0;
+    const startedAt = moment().format();
     const duration = util.periodToMs(settings.dailyRelistings);
 
-    while (active) {
+    while (active && user.username) {
+        await window.api.bot.updateLoading({ isLoading: true });
+
         const { listings, relistings, cancellations } =
             await rentals.startRentalBot({ username: user.username, settings });
+        numListed += listings.length + relistings.length;
+
         await window.api.hive.createRentals({ cards: listings });
         await window.api.hive.updateRentals({
             ids: relistings,
         });
         await window.api.hive.deleteRentals({ ids: cancellations });
+
+        // VALID RENTALS REQUEST
+        // await window.api.user.updateRentals({
+        //     rentals: [{ id: 1 }],
+        // });
+
+        await window.api.bot.updateStats({
+            stats: {
+                startedAt,
+                numListed,
+            },
+        });
+        await window.api.bot.updateLoading({ isLoading: false });
+
         await util.pause(duration);
-        res = await window.api.bot.getActive();
-        active = res.data.active;
+
+        userRes = await window.api.user.get();
+        activeRes = await window.api.bot.getActive();
+        settingsRes = await window.api.bot.getSettings();
+
+        user = userRes.data.user;
+        active = activeRes.data.active;
+        settings = settingsRes.data.settings;
     }
 });
 

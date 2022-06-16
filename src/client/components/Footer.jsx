@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRobot } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@mantine/core';
+import moment from 'moment';
 
 import Col from './Col.jsx';
 import Row from './Row.jsx';
@@ -52,7 +53,13 @@ const StatCol = styled(Col)`
 `;
 
 const Footer = (props) => {
-    const { botActive, toggleBotActive } = useBot();
+    const { botActive, botStats, botLoading, getBotLoading, toggleBotActive } =
+        useBot();
+
+    const startedAt = botStats.startedAt
+        ? moment(botStats.startedAt).fromNow(true)
+        : 'n/a';
+
     return (
         <Container>
             <FooterRow>
@@ -64,8 +71,9 @@ const Footer = (props) => {
                         </Status>
                     </BotLabel>
                     <Button
-                        color={botActive ? 'red' : 'primary'}
                         size="lg"
+                        color={botActive ? 'red' : 'primary'}
+                        loading={botLoading}
                         onClick={toggleBotActive}
                     >
                         <Icon icon={faRobot} />
@@ -75,11 +83,11 @@ const Footer = (props) => {
                 <Row>
                     <StatCol>
                         <Label>Time Active</Label>
-                        <Text size="24px">5hr 32min</Text>
+                        <Text size="24px">{startedAt}</Text>
                     </StatCol>
                     <StatCol>
                         <Label>Cards Listed</Label>
-                        <Text size="24px">1,340</Text>
+                        <Text size="24px">{botStats.numListed}</Text>
                     </StatCol>
                 </Row>
             </FooterRow>

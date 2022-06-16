@@ -11,6 +11,7 @@ import Row from '../../components/Row.jsx';
 import DashboardPage from '../../components/DashboardPage.jsx';
 import LineChart from '../../components/LineChart.jsx';
 import { useUser } from '../../contexts/UserContext.jsx';
+import util from '../../util';
 
 const UserCol = styled(Col)`
     margin-right: auto;
@@ -26,7 +27,31 @@ const DataRow = styled(Row)`
 `;
 
 const DataCard = styled(Card)`
+    position: relative;
     width: calc(33% - 21px);
+    overflow: hidden;
+`;
+
+const Percentage = styled.span`
+    color: ${({ theme, positive }) =>
+        positive ? theme.colors.success : theme.colors.error};
+`;
+
+const Indicator = styled.span`
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 24px;
+    background: ${({ theme, positive }) =>
+        positive ? theme.colors.success : theme.colors.error};
+`;
+
+const DEC = styled.span`
+    margin-left: ${({ theme }) => theme.space(1)};
+    font-size: 24px;
+    color: ${({ theme }) => theme.colors.white};
+    opacity: 0.8;
 `;
 
 const ChartCard = styled(Card)`
@@ -39,6 +64,7 @@ const ChartHeader = styled.h2`
 
 const Settings = () => {
     const { user, username, handleLogin } = useUser();
+    const { stats } = user;
     const form = useForm({
         initialValues: {
             username: '',
@@ -65,13 +91,15 @@ const Settings = () => {
                             <StatCol>
                                 <Label>DEC</Label>
                                 <Text size="32px">
-                                    {user?.balances?.dec || 0}
+                                    {util.separateNumber(user?.balances?.dec) ||
+                                        0}
                                 </Text>
                             </StatCol>
                             <StatCol>
                                 <Label>SPS</Label>
                                 <Text size="32px">
-                                    {user?.balances?.sps || 0}
+                                    {util.separateNumber(user?.balances?.sps) ||
+                                        0}
                                 </Text>
                             </StatCol>
                             <StatCol>
@@ -84,13 +112,40 @@ const Settings = () => {
                     </Card>
                     <DataRow>
                         <DataCard>
-                            <Text size="64px">Data</Text>
+                            <Label>Daily</Label>
+                            <Text size="48px">
+                                {util.separateNumber(stats?.daily?.amount)}
+                                <DEC>DEC</DEC>
+                            </Text>
+                            <Percentage positive={stats?.daily?.change > 0}>
+                                {stats?.daily?.change > 0 ? '+' : ''}
+                                {util.toPercentage(stats?.daily?.change)}%
+                            </Percentage>
+                            <Indicator positive={stats?.daily?.change > 0} />
                         </DataCard>
                         <DataCard>
-                            <Text size="64px">Data</Text>
+                            <Label>Weekly</Label>
+                            <Text size="48px">
+                                {util.separateNumber(stats?.weekly?.amount)}
+                                <DEC>DEC</DEC>
+                            </Text>
+                            <Percentage positive={stats?.weekly?.change > 0}>
+                                {stats?.weekly?.change > 0 ? '+' : ''}
+                                {util.toPercentage(stats?.weekly?.change)}%
+                            </Percentage>
+                            <Indicator positive={stats?.weekly?.change > 0} />
                         </DataCard>
                         <DataCard>
-                            <Text size="64px">Data</Text>
+                            <Label>Monthly</Label>
+                            <Text size="48px">
+                                {util.separateNumber(stats?.monthly?.amount)}
+                                <DEC>DEC</DEC>
+                            </Text>
+                            <Percentage positive={stats?.monthly?.change > 0}>
+                                {stats?.monthly?.change > 0 ? '+' : ''}
+                                {util.toPercentage(stats?.monthly?.change)}%
+                            </Percentage>
+                            <Indicator positive={stats?.monthly?.change > 0} />
                         </DataCard>
                     </DataRow>
                     <ChartCard>

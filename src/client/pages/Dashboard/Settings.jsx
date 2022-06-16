@@ -52,22 +52,22 @@ const Settings = () => {
                 <Card>
                     <h2>Choose Minimum Levels</h2>
                     <SectionSubheader>
-                        All monsters greater than or equal to the selected level
-                        will be listed for rental.
+                        All monsters and summoners greater than or equal to the
+                        selected level will be listed for rental.
                     </SectionSubheader>
 
                     <InputRow>
                         <LineInput
-                            label="Common Monsters"
-                            min={0}
+                            label="Common Cards"
+                            min={1}
                             max={10}
                             {...form.getInputProps('commonNorm', {
                                 type: 'number',
                             })}
                         />
                         <LineInput
-                            label="Common Monsters - Gold"
-                            min={0}
+                            label="Common Cards - Gold"
+                            min={1}
                             max={10}
                             {...form.getInputProps('commonGold', {
                                 type: 'number',
@@ -77,16 +77,16 @@ const Settings = () => {
 
                     <InputRow>
                         <LineInput
-                            label="Rare Monsters"
-                            min={0}
+                            label="Rare Cards"
+                            min={1}
                             max={8}
                             {...form.getInputProps('rareNorm', {
                                 type: 'number',
                             })}
                         />
                         <LineInput
-                            label="Rare Monsters - Gold"
-                            min={0}
+                            label="Rare Cards - Gold"
+                            min={1}
                             max={8}
                             {...form.getInputProps('rareGold', {
                                 type: 'number',
@@ -96,16 +96,16 @@ const Settings = () => {
 
                     <InputRow>
                         <LineInput
-                            label="Epic Monsters"
-                            min={0}
+                            label="Epic Cards"
+                            min={1}
                             max={6}
                             {...form.getInputProps('epicNorm', {
                                 type: 'number',
                             })}
                         />
                         <LineInput
-                            label="Epic Monsters - Gold"
-                            min={0}
+                            label="Epic Cards - Gold"
+                            min={1}
                             max={6}
                             {...form.getInputProps('epicGold', {
                                 type: 'number',
@@ -115,16 +115,16 @@ const Settings = () => {
 
                     <Row>
                         <LineInput
-                            label="Legendary Monsters"
-                            min={0}
+                            label="Legendary Cards"
+                            min={1}
                             max={4}
                             {...form.getInputProps('legendaryNorm', {
                                 type: 'number',
                             })}
                         />
                         <LineInput
-                            label="Legendary Monsters - Gold"
-                            min={0}
+                            label="Legendary Cards - Gold"
+                            min={1}
                             max={4}
                             {...form.getInputProps('legendaryGold', {
                                 type: 'number',

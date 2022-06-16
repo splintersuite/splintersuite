@@ -13,5 +13,13 @@ contextBridge.exposeInMainWorld('api', {
         getSettings: () => ipcRenderer.invoke('bot:getSettings'),
         updateSettings: (payload) =>
             ipcRenderer.invoke('bot:updateSettings', payload),
+        getStats: () => ipcRenderer.invoke('bot:getStats'),
+        updateLoading: (callback) =>
+            ipcRenderer.on('bot:updateLoading', callback),
+    },
+    invoice: {
+        get: () => ipcRenderer.invoke('invoice:get'),
+        update: (payload) => ipcRenderer.invoke('invoice:update', payload),
+        confirm: (payload) => ipcRenderer.invoke('invoice:confirm', payload),
     },
 });

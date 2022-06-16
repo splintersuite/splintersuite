@@ -2,7 +2,11 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCogs, faChartLine } from '@fortawesome/free-solid-svg-icons';
+import {
+    faCogs,
+    faChartLine,
+    faFileInvoice,
+} from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@mantine/core';
 
 import logo from '../assets/images/logo.png';
@@ -17,6 +21,7 @@ const Nav = styled.nav`
     width: 256px;
     padding-top: ${({ theme }) => theme.space(4)};
     padding-bottom: ${({ theme }) => theme.space(4)};
+    background: ${({ theme }) => theme.colors.grey[900]};
     box-shadow: ${({ theme }) => theme.shadow};
 `;
 
@@ -45,6 +50,7 @@ const Item = styled.div`
 `;
 
 const Icon = styled(FontAwesomeIcon)`
+    width: 24px;
     font-size: 20px;
     margin-right: ${({ theme }) => theme.space(2)};
 `;
@@ -89,6 +95,13 @@ const Sidenav = (props) => {
             >
                 <Icon icon={faCogs} />
                 Settings
+            </Item>
+            <Item
+                active={pathname === '/app/billing'}
+                onClick={() => handleNavigateClick('billing')}
+            >
+                <Icon icon={faFileInvoice} />
+                Billing
             </Item>
 
             {/* <Item

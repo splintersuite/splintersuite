@@ -1,5 +1,7 @@
 import axios from '../util/axios';
 
+const SPLINTERSUITE = 'splintersuite';
+
 const getBalance = async (username) => {
     let res = await axios('https://api2.splinterlands.com/players/balances', {
         params: {
@@ -19,4 +21,19 @@ const getBalance = async (username) => {
     return { dec, sps };
 };
 
-export default { getBalance };
+const getPaymentHistory = async (offset, limit) => {
+    let res = await axios(
+        'https://api2.splinterlands.com/players/balance_history',
+        {
+            params: {
+                offset,
+                limit,
+                username: SPLINTERSUITE,
+                token_type: 'DEC',
+            },
+        }
+    );
+    return res.data;
+};
+
+export default { getBalance, getPaymentHistory };
