@@ -5,17 +5,16 @@ import axios from '../util/axios';
 import splinterlandsService from '../services/splinterlands';
 import userService from '../services/user';
 
-const get = async (username) => {
-    const invoices = await axios.get(
-        `${process.env.SERVER_URL}/invoices/${username}`
+const update = async (invoice) => {
+    const res = await axios.post(
+        `${process.env.API_URL}/api/invoices/${invoice.id}`,
+        { paid_at: moment() }
     );
-    return invoices;
+    return res;
 };
 
-const update = () => {};
-
 const confirm = async (invoice) => {
-    const { amount, due } = invoice;
+    const { amount_due } = invoice;
     const username = await userService.getUsername();
 
     const confirmIsPaid = (payment) => {
@@ -23,7 +22,7 @@ const confirm = async (invoice) => {
             payment.token === 'DEC' &&
             payment.counterparty === username &&
             payment.type === 'withdraw' &&
-            parseFloat(payment.amount) === amount
+            parseFloat(payment.amount) === parseFloat(amount_due)
         );
     };
 
@@ -36,7 +35,6 @@ const confirm = async (invoice) => {
             limit
         );
         isPaid = payments.some(confirmIsPaid);
-
         offset = limit;
         limit += 1000;
     }
@@ -45,7 +43,6 @@ const confirm = async (invoice) => {
 };
 
 export default {
-    get,
     update,
     confirm,
 };

@@ -42,7 +42,7 @@ const Indicator = styled.span`
     top: 0;
     right: 0;
     height: 100%;
-    width: 24px;
+    width: 16px;
     background: ${({ theme, positive }) =>
         positive ? theme.colors.success : theme.colors.error};
 `;
@@ -165,10 +165,10 @@ const Settings = () => {
                         {...form.getInputProps('username')}
                     />
                     <Label style={{ marginTop: '16px' }} htmlFor={'key'}>
-                        Active Key
+                        Posting Key
                     </Label>
                     <Input
-                        label="Active Key"
+                        label="Posting Key"
                         style={{ width: '256px' }}
                         placeholder="12312324123"
                         {...form.getInputProps('key')}

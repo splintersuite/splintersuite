@@ -1,4 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { showNotification } from '@mantine/notifications';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 
 import hooks from '../hooks';
 
@@ -69,6 +72,11 @@ export const BotProvider = (props) => {
     const updateBotSettings = async (settings) => {
         setBotSettings(settings);
         await window.api.bot.updateSettings({ settings });
+        showNotification({
+            icon: <FontAwesomeIcon icon={faCircleCheck} />,
+            message: 'Settings Saved.',
+            color: 'teal',
+        });
     };
 
     const toggleBotActive = async () => {

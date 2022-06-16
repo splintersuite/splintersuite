@@ -11,7 +11,9 @@ const getUser = async () => {
     const { dec, sps } = await splinterlandsService.getBalance(username);
     const rc = await hiveService.getRc(username);
     await setBalances({ dec, sps, rc });
-    await fetchUser(username);
+
+    const user = await fetchUser(username);
+    await setInvoices(user.invoices);
 
     return store.get('user');
 };
@@ -48,9 +50,19 @@ const getBalances = () => {
     return store.get('user.balances');
 };
 
+const setInvoices = (invoices) => {
+    return store.set('user.invoices', invoices);
+};
+
+const getInvoices = () => {
+    return store.get('user.invoices');
+};
+
 const fetchUser = async (username) => {
-    const res = await axios.get(`${process.env.API_URL}/api/users/${username}`);
-    return res;
+    const { data } = await axios.get(
+        `${process.env.API_URL}/api/users/${username}`
+    );
+    return data;
 };
 
 const updateRentals = async (username, rentals) => {
@@ -71,6 +83,8 @@ export default {
     removeKey,
     setBalances,
     getBalances,
+    setInvoices,
+    getInvoices,
     fetchUser,
     updateRentals,
 };

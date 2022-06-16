@@ -3,26 +3,7 @@ import moment from 'moment';
 
 const initialState = {
     username: '',
-    invoices: [
-        {
-            name: 'Splinterlands Season 12',
-            due: moment(),
-            amount: 1234,
-            paid: true,
-        },
-        {
-            name: 'Splinterlands Season 13',
-            due: moment(),
-            amount: 1234,
-            paid: true,
-        },
-        {
-            name: 'Splinterlands Season 14',
-            due: moment().add(2, 'days'),
-            amount: 1,
-            paid: false,
-        },
-    ],
+    invoices: [],
 };
 
 export const UserContext = React.createContext({ ...initialState });
@@ -38,8 +19,10 @@ export const UserProvider = (props) => {
         const getUser = async () => {
             const res = await window.api.user.get();
             if (res.code === 1) {
+                console.log(res.data.user);
                 setUsername(res.data.user.username);
                 setUser(res.data.user);
+                setInvoices(res.data.user.invoices);
             }
         };
         getUser();
@@ -61,7 +44,6 @@ export const UserProvider = (props) => {
 
     const handleConfirmInvoice = async (invoice) => {
         invoice.due = moment(invoice.due).format();
-        console.log(invoice);
         const res = await window.api.invoice.confirm({ invoice });
     };
 
