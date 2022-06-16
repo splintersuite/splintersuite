@@ -113,7 +113,7 @@ const Settings = () => {
                     <DataRow>
                         <DataCard>
                             <Label>Daily</Label>
-                            <Text size="64px">
+                            <Text size="48px">
                                 {util.separateNumber(stats?.daily?.amount)}
                                 <DEC>DEC</DEC>
                             </Text>
@@ -125,7 +125,7 @@ const Settings = () => {
                         </DataCard>
                         <DataCard>
                             <Label>Weekly</Label>
-                            <Text size="64px">
+                            <Text size="48px">
                                 {util.separateNumber(stats?.weekly?.amount)}
                                 <DEC>DEC</DEC>
                             </Text>
@@ -137,7 +137,7 @@ const Settings = () => {
                         </DataCard>
                         <DataCard>
                             <Label>Monthly</Label>
-                            <Text size="64px">
+                            <Text size="48px">
                                 {util.separateNumber(stats?.monthly?.amount)}
                                 <DEC>DEC</DEC>
                             </Text>
