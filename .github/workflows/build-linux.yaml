@@ -1,0 +1,39 @@
+name: Build Linux
+
+on:
+    release:
+        types: [published]
+
+jobs:
+    build-linux:
+        runs-on: ubuntu-latest
+        steps:
+            - run: npm run make
+
+            - name: Step 3 - Use the Upload Artifact GitHub Action
+              uses: actions/upload-artifact@v2
+              with:
+                  name: ouput-test
+                  path: out/make
+
+    build-mac:
+        runs-on: macos-latest
+        steps:
+            - run: npm run make
+
+            - name: Step 3 - Use the Upload Artifact GitHub Action
+              uses: actions/upload-artifact@v2
+              with:
+                  name: ouput-test
+                  path: out/make
+
+    build-windows:
+        runs-on: windows-latest
+        steps:
+            - run: npm run make
+
+            - name: Step 3 - Use the Upload Artifact GitHub Action
+              uses: actions/upload-artifact@v2
+              with:
+                  name: ouput-test
+                  path: out/make
