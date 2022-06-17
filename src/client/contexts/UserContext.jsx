@@ -41,6 +41,16 @@ export const UserProvider = (props) => {
     const handleConfirmInvoice = async (invoice) => {
         invoice.due = moment(invoice.due).format();
         const res = await window.api.invoice.confirm({ invoice });
+
+        if (res.data.isPaid) {
+            const updatedInvoices = invoices.map((item) => {
+                if (invoice.id === item.id) {
+                    item.paid_at = true;
+                }
+                return item;
+            });
+            setInvoices(updatedInvoices);
+        }
     };
 
     useEffect(() => {
