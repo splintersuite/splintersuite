@@ -1,5 +1,5 @@
 import moment from 'moment';
-
+import { sleep } from './actions/_helpers.js';
 import rentals from './server';
 import util from './util';
 
@@ -31,6 +31,9 @@ window.api.bot.start(async (event) => {
         });
         await window.api.hive.deleteRentals({ ids: cancellations });
 
+        // sleep for 10 seconds to let collection endpoint update with listings + relistings
+        await sleep(10000);
+        // we should wait like 20 seconds for everything to update before sending the data to back-end.
         // VALID RENTALS REQUEST
         // await window.api.user.updateRentals({
         //     rentals: [{ id: 1 }],

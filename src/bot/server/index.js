@@ -25,6 +25,11 @@ const {
 } = require('./actions/calculateFilledRentalsToBeCancelled');
 
 const { getActiveRentalsByRentalId } = require('./actions/currentRentals');
+
+const {
+    filterCollectionByRentalListings,
+} = require('./actions/updateRentalListings');
+
 const startRentalBot = async ({ username, settings }) => {
     try {
         console.log(`startRentalsForAccount username: ${username}`);
@@ -89,6 +94,21 @@ const startRentalBot = async ({ username, settings }) => {
         };
     } catch (err) {
         console.error(`startRentalsForAccount error: ${err.message}`);
+        throw err;
+    }
+};
+
+const updateRentalListings = async ({ username, listings, relistings }) => {
+    try {
+        console.log('updateRentalListings start');
+
+        const {
+            cardsListedButNotRentedOut,
+            searchableRentListByUid,
+            searchableRentListByMarketId,
+        } = await filterCollectionByRentalListings({ username });
+    } catch (err) {
+        console.error(`updateRentalListings error: ${err.message}`);
         throw err;
     }
 };
