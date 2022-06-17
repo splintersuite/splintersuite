@@ -100,6 +100,7 @@ const startRentalBot = async ({ username, settings }) => {
 
 const updatedRentalListingsToSend = async ({
     username,
+    users_id,
     listings,
     relistings,
 }) => {
@@ -107,20 +108,17 @@ const updatedRentalListingsToSend = async ({
         console.log('updatedRentalListingsToSend start');
         // listings and relistings both arrays of arrays that have [uid, priceInDec]
 
-        const listingsNotPosted = [];
-        const relistingsNotRelisted = [];
-
         const { cardsListedButNotRentedOut, searchableRentListByUid } =
             await filterCollectionByRentalListings({ username });
 
-        const { newRentalListings, rentalRelistings } =
-            filterRentalListingsByNewPostedTransactions({
-                listings,
-                relistings,
-                searchableRentalListings: searchableRentListByUid,
-            });
+        const rentalListings = filterRentalListingsByNewPostedTransactions({
+            users_id,
+            listings,
+            relistings,
+            searchableRentalListings: searchableRentListByUid,
+        });
 
-        return { newRentalListings, rentalRelistings };
+        return { rentalListings };
     } catch (err) {
         console.error(`updatedRentalListingsToSend error: ${err.message}`);
         throw err;

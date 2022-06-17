@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { sleep } from './actions/_helpers.js';
+import { sleep } from './server/_helpers.js';
 import rentals from './server';
 import util from './util';
 
@@ -33,6 +33,13 @@ window.api.bot.start(async (event) => {
 
         // sleep for 10 seconds to let collection endpoint update with listings + relistings
         await sleep(10000);
+
+        const { rentalListings } = await updatedRentalListingsToSend({
+            username: user.username,
+            users_id: user.id,
+            listings,
+            relistings,
+        });
         // we should wait like 20 seconds for everything to update before sending the data to back-end.
         // VALID RENTALS REQUEST
         // await window.api.user.updateRentals({

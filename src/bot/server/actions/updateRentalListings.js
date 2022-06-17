@@ -37,6 +37,7 @@ const filterCollectionByRentalListings = async ({ username }) => {
 };
 
 const filterRentalListingsByNewPostedTransactions = ({
+    users_id,
     listings,
     relistings,
     searchableRentalListings,
@@ -46,11 +47,15 @@ const filterRentalListingsByNewPostedTransactions = ({
         console.log(`filterRentalListingsByNewPostedTransactions start`);
         const newRentalListings = [];
         const rentalRelistings = [];
+        const rentalListings = [];
         listings.forEach((listing) => {
             const uid = listing[0];
             const cardInfo = searchableRentalListings[uid];
             if (cardInfo != null) {
-                newRentalListings.push(cardInfo);
+                const cardToInsert = adjustCollectionRentalListingDataForDB({
+                    cardInfo,
+                });
+                rentalListings.push(cardToInsert);
             }
         });
 
@@ -58,13 +63,49 @@ const filterRentalListingsByNewPostedTransactions = ({
             const uid = relisting[0];
             const cardInfo = searchableRentalListings[uid];
             if (cardInfo != null) {
-                rentalRelistings.push(cardInfo);
+                const cardToInsert = adjustCollectionRentalListingDataForDB({
+                    cardInfo,
+                    users_id,
+                });
+                rentalListings.push(cardToInsert);
             }
         });
-        return { newRentalListings, rentalRelistings };
+        return rentalListings;
     } catch (err) {
         console.error(
             `filterRentalListingsByNewPostedTransactions error: ${err.message}`
+        );
+        throw err;
+    }
+};
+
+const adjustCollectionRentalListingDataForDB = ({ cardInfo, users_id }) => {
+    try {
+        const {
+            market_created_date,
+            card_detail_id,
+            level,
+            uid,
+            market_id,
+            buy_price,
+            gold,
+        } = cardInfo;
+        console.log('adjustCollectionRentalListingDataForDB start');
+        const cardToInsert = {};
+        // TNT NOTE: we need to actually get this ideally from the userData stored in the store
+        cardToInsert.users_id = users_id;
+        cardToInsert.sl_created_at = new Date(market_created_date);
+        cardToInsert.card_detail_id = parseInt(card_detail_id);
+        cardToInsert.level = parseInt(level);
+        cardToInsert.card_uid = uid;
+        cardToInsert.sell_trx_id = market_id;
+        cardToInsert.price = parseFloat(buy_price);
+        cardToInsert.is_gold = gold;
+
+        return cardToInsert;
+    } catch (err) {
+        console.error(
+            `adjustCollectionRentalListingDataForDB error: ${err.message}`
         );
         throw err;
     }
