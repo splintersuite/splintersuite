@@ -51,8 +51,8 @@ const Landing = () => {
         },
     });
 
-    const handleSubmit = (values) => {
-        handleLogin(values);
+    const handleSubmit = async (values) => {
+        await handleLogin(values);
         navigate('/app');
     };
 

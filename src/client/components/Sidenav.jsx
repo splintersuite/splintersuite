@@ -67,8 +67,8 @@ const Sidenav = (props) => {
     const { pathname } = useLocation();
     const { username, handleLogout } = useUser();
 
-    const handleLogoutClick = () => {
-        handleLogout();
+    const handleLogoutClick = async () => {
+        await handleLogout();
         navigate('/home');
     };
 

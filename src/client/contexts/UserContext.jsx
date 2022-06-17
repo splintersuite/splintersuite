@@ -15,17 +15,14 @@ export const UserProvider = (props) => {
     const [username, setUsername] = useState('');
     const [invoices, setInvoices] = useState(initialState.invoices);
 
-    useEffect(() => {
-        const getUser = async () => {
-            const res = await window.api.user.get();
-            if (res.code === 1) {
-                setUsername(res.data.user.username);
-                setUser(res.data.user);
-                setInvoices(res.data.user.invoices);
-            }
-        };
-        getUser();
-    }, []);
+    const getUser = async () => {
+        const res = await window.api.user.get();
+        if (res.code === 1) {
+            setUsername(res.data.user.username);
+            setUser(res.data.user);
+            setInvoices(res.data.user.invoices);
+        }
+    };
 
     const handleLogout = async () => {
         const res = await window.api.user.logout();
@@ -46,6 +43,10 @@ export const UserProvider = (props) => {
         const res = await window.api.invoice.confirm({ invoice });
     };
 
+    useEffect(() => {
+        getUser();
+    }, []);
+
     return (
         <UserContext.Provider
             value={{
@@ -53,6 +54,7 @@ export const UserProvider = (props) => {
                 user,
                 username,
                 invoices,
+                getUser,
                 handleLogout,
                 handleLogin,
                 handleConfirmInvoice,
