@@ -7,13 +7,16 @@ on:
 jobs:
     build-linux:
         runs-on: ubuntu-latest
-        steps:
-            - run: |
-                  ls
-                  cd splintersuite
-                  npm run make
 
-            - name: Step 3 - Use the Upload Artifact GitHub Action
+            defaults:
+      run:
+        working-directory: ./splintersuite
+
+        steps:
+            - name: Build for Linux
+            - run: npm run make
+
+            - name: Use the Upload Artifact GitHub Action
               uses: actions/upload-artifact@v2
               with:
                   name: ouput-test
