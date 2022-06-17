@@ -1,11 +1,11 @@
 name: Build Linux
 
 on:
-    push:
-        branches:
-            - 'master'
-        # release:
-        #     types: [published]
+    # push:
+    #     branches:
+    #         - 'master'
+    release:
+        types: [published]
 
 jobs:
     build-linux:
