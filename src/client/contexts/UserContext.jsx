@@ -19,7 +19,6 @@ export const UserProvider = (props) => {
         const getUser = async () => {
             const res = await window.api.user.get();
             if (res.code === 1) {
-                console.log(res.data.user);
                 setUsername(res.data.user.username);
                 setUser(res.data.user);
                 setInvoices(res.data.user.invoices);

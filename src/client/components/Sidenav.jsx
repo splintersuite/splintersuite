@@ -69,6 +69,7 @@ const Sidenav = (props) => {
 
     const handleLogoutClick = () => {
         handleLogout();
+        navigate('/home');
     };
 
     const handleNavigateClick = (route) => {
