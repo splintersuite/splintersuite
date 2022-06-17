@@ -15,18 +15,14 @@ export const UserProvider = (props) => {
     const [username, setUsername] = useState('');
     const [invoices, setInvoices] = useState(initialState.invoices);
 
-    useEffect(() => {
-        const getUser = async () => {
-            const res = await window.api.user.get();
-            if (res.code === 1) {
-                console.log(res.data.user);
-                setUsername(res.data.user.username);
-                setUser(res.data.user);
-                setInvoices(res.data.user.invoices);
-            }
-        };
-        getUser();
-    }, []);
+    const getUser = async () => {
+        const res = await window.api.user.get();
+        if (res.code === 1) {
+            setUsername(res.data.user.username);
+            setUser(res.data.user);
+            setInvoices(res.data.user.invoices);
+        }
+    };
 
     const handleLogout = async () => {
         const res = await window.api.user.logout();
@@ -45,7 +41,21 @@ export const UserProvider = (props) => {
     const handleConfirmInvoice = async (invoice) => {
         invoice.due = moment(invoice.due).format();
         const res = await window.api.invoice.confirm({ invoice });
+
+        if (res.data.isPaid) {
+            const updatedInvoices = invoices.map((item) => {
+                if (invoice.id === item.id) {
+                    item.paid_at = true;
+                }
+                return item;
+            });
+            setInvoices(updatedInvoices);
+        }
     };
+
+    useEffect(() => {
+        getUser();
+    }, []);
 
     return (
         <UserContext.Provider
@@ -54,6 +64,7 @@ export const UserProvider = (props) => {
                 user,
                 username,
                 invoices,
+                getUser,
                 handleLogout,
                 handleLogin,
                 handleConfirmInvoice,

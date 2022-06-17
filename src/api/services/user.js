@@ -4,6 +4,7 @@ import store from '../../store';
 import axios from '../util/axios';
 import splinterlandsService from './splinterlands';
 import hiveService from './hive';
+import invoiceService from './invoice';
 
 const getUser = async () => {
     console.log('getUser start');

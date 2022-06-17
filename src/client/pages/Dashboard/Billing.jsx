@@ -86,7 +86,7 @@ const Billing = () => {
                     <tbody>
                         {invoices.map((invoice, idx) => (
                             <TableRow key={idx}>
-                                <TableItem>{invoice.name}</TableItem>
+                                <TableItem>{invoice.season_name}</TableItem>
                                 <TableItem>
                                     {moment(invoice.due_at).format(
                                         'MMMM Do YYYY'

@@ -4,8 +4,9 @@ import rentals from './server';
 import util from './util';
 
 window.api.bot.start(async (event) => {
-    console.log('bot:start');
-
+    // ---
+    // Get settings
+    // ------------------------------------
     let userRes = await window.api.user.get();
     let activeRes = await window.api.bot.getActive();
     let settingsRes = await window.api.bot.getSettings();
@@ -14,6 +15,9 @@ window.api.bot.start(async (event) => {
     let active = activeRes.data.active;
     let settings = settingsRes.data.settings;
 
+    // ---
+    // Get stats
+    // ------------------------------------
     let numListed = 0;
     const startedAt = moment().format();
     const duration = util.periodToMs(settings.dailyRelistings);
@@ -21,15 +25,43 @@ window.api.bot.start(async (event) => {
     while (active && user.username) {
         await window.api.bot.updateLoading({ isLoading: true });
 
+        // ---
+        // Get cards
+        // ------------------------------------
         const { listings, relistings, cancellations } =
             await rentals.startRentalBot({ username: user.username, settings });
         numListed += listings.length + relistings.length;
+        window.api.bot.log({
+            message: `Number of listings: ${listings.length}`,
+        });
+        window.api.bot.log({
+            message: `Number of relistings: ${relistings.length}`,
+        });
+        window.api.bot.log({
+            message: `Number of cancellations: ${cancellations.length}`,
+        });
 
-        await window.api.hive.createRentals({ cards: listings });
-        await window.api.hive.updateRentals({
+        // ---
+        // List, relist, cancel
+        // ------------------------------------
+        const createTx = await window.api.hive.createRentals({
+            cards: listings,
+        });
+        const relistTx = await window.api.hive.updateRentals({
             ids: relistings,
         });
-        await window.api.hive.deleteRentals({ ids: cancellations });
+        const cancelTX = await window.api.hive.deleteRentals({
+            ids: cancellations,
+        });
+        window.api.bot.log({
+            message: `List transaction: ${createTx}`,
+        });
+        window.api.bot.log({
+            message: `Relist transaction: ${relistTx}`,
+        });
+        window.api.bot.log({
+            message: `Cancel transaction: ${cancelTX}`,
+        });
 
         // sleep for 10 seconds to let collection endpoint update with listings + relistings
         await sleep(10000);
@@ -46,6 +78,9 @@ window.api.bot.start(async (event) => {
         //     rentals: [{ id: 1 }],
         // });
 
+        // ---
+        // Update stats
+        // ------------------------------------
         await window.api.bot.updateStats({
             stats: {
                 startedAt,
@@ -54,8 +89,17 @@ window.api.bot.start(async (event) => {
         });
         await window.api.bot.updateLoading({ isLoading: false });
 
+        // ---
+        // Pause
+        // ------------------------------------
+        window.api.bot.log({
+            message: `Pause for: ${util.getHours(duration)} hours`,
+        });
         await util.pause(duration);
 
+        // ---
+        // Update settings
+        // ------------------------------------
         userRes = await window.api.user.get();
         activeRes = await window.api.bot.getActive();
         settingsRes = await window.api.bot.getSettings();
@@ -68,5 +112,4 @@ window.api.bot.start(async (event) => {
 
 window.api.bot.stop((event) => {
     // stop bot rental process
-    console.log('bot:stop');
 });

@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 const pause = (ms) => {
     return new Promise((resolve) => {
         setTimeout(resolve, ms);
@@ -10,7 +12,10 @@ const periodToMs = (period) => {
     return hours * msPerHour;
 };
 
+const getHours = (duration) => moment.duration(duration).asHours();
+
 export default {
     pause,
     periodToMs,
+    getHours,
 };
