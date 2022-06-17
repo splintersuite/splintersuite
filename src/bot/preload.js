@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('api', {
             ipcRenderer.invoke('bot:updateStats', payload),
         updateLoading: (payload) =>
             ipcRenderer.invoke('bot:updateLoading', payload),
+        log: (payload) => ipcRenderer.invoke('bot:log', payload),
     },
     hive: {
         createRentals: (payload) =>

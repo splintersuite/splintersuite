@@ -2,13 +2,9 @@ import moment from 'moment';
 
 import store from '../../store';
 
-const start = async () => {
-    console.log('BOT: start rentals');
-};
+const start = async () => {};
 
-const stop = async () => {
-    console.log('BOT: stop rentals');
-};
+const stop = async () => {};
 
 const getActive = () => {
     return store.get('bot.active');

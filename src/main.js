@@ -1,11 +1,14 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const logger = require('electron-timber');
 const dotenv = require('dotenv');
 dotenv.config();
+
 const user = require('./api/controllers/user').default;
 const bot = require('./api/controllers/bot').default;
 const hive = require('./api/controllers/hive').default;
 const invoice = require('./api/controllers/invoice').default;
+const middlewareWrapper = require('./api/middleware').default;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -13,10 +16,11 @@ if (require('electron-squirrel-startup')) {
     app.quit();
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.on('ready', () => {
+    // ---
+    // Windows
+    // ------------------------------------
+
     const mainWindow = new BrowserWindow({
         width: 1200,
         height: 800,
@@ -43,37 +47,84 @@ app.on('ready', () => {
     botWindow.loadURL(BOT_WINDOW_WEBPACK_ENTRY);
     botWindow.webContents.openDevTools();
 
-    ipcMain.handle('user:login', user.login);
-    ipcMain.handle('user:logout', user.logout);
-    ipcMain.handle('user:get', user.get);
-    ipcMain.handle('user:updateRentals', user.updateRentals);
+    // ---
+    // Routes
+    // ------------------------------------
+
+    ipcMain.handle('user:login', middlewareWrapper(user.login, 'user:login'));
+    ipcMain.handle(
+        'user:logout',
+        middlewareWrapper(user.logout, 'user:logout')
+    );
+    ipcMain.handle('user:get', middlewareWrapper(user.get, 'user:get'));
+    ipcMain.handle(
+        'user:updateRentals',
+        middlewareWrapper(user.updateRentals, 'user:updateRentals')
+    );
 
     ipcMain.handle('bot:start', (event) => {
-        bot.start();
+        middlewareWrapper(bot.start, 'bot:start')(event);
         botWindow.webContents.send('bot:start');
     });
     ipcMain.handle('bot:stop', (event) => {
-        bot.stop();
+        middlewareWrapper(bot.stop, 'bot:stop')(event);
         botWindow.webContents.send('bot:stop');
     });
-    ipcMain.handle('bot:getActive', bot.getActive);
-    ipcMain.handle('bot:getSettings', bot.getSettings);
-    ipcMain.handle('bot:updateSettings', bot.updateSettings);
-    ipcMain.handle('bot:getStats', bot.getStats);
-    ipcMain.handle('bot:updateStats', bot.updateStats);
-    ipcMain.handle('bot:getLoading', bot.getLoading);
+    ipcMain.handle(
+        'bot:getActive',
+        middlewareWrapper(bot.getActive, 'bot:getActive')
+    );
+    ipcMain.handle(
+        'bot:getSettings',
+        middlewareWrapper(bot.getSettings, 'bot:getSettings')
+    );
+    ipcMain.handle(
+        'bot:updateSettings',
+        middlewareWrapper(bot.updateSettings, 'bot:updateSettings')
+    );
+    ipcMain.handle(
+        'bot:getStats',
+        middlewareWrapper(bot.getStats, 'bot:getStats')
+    );
+    ipcMain.handle(
+        'bot:updateStats',
+        middlewareWrapper(bot.updateStats, 'bot:updateStats')
+    );
+    ipcMain.handle(
+        'bot:getLoading',
+        middlewareWrapper(bot.getLoading, 'bot:getLoading')
+    );
     ipcMain.handle('bot:updateLoading', (event, payload) => {
         bot.updateLoading(event, payload);
         mainWindow.webContents.send('bot:updateLoading', payload);
     });
+    ipcMain.handle('bot:log', bot.log);
 
-    ipcMain.handle('hive:createRentals', hive.createRentals);
-    ipcMain.handle('hive:updateRentals', hive.updateRentals);
-    ipcMain.handle('hive:deleteRentals', hive.deleteRentals);
+    ipcMain.handle(
+        'hive:createRentals',
+        middlewareWrapper(hive.createRentals, 'hive:createRentals')
+    );
+    ipcMain.handle(
+        'hive:updateRentals',
+        middlewareWrapper(hive.updateRentals, 'hive:updateRentals')
+    );
+    ipcMain.handle(
+        'hive:deleteRentals',
+        middlewareWrapper(hive.deleteRentals, 'hive:deleteRentals')
+    );
 
-    ipcMain.handle('invoice:get', invoice.get);
-    ipcMain.handle('invoice:update', invoice.update);
-    ipcMain.handle('invoice:confirm', invoice.confirm);
+    ipcMain.handle(
+        'invoice:get',
+        middlewareWrapper(invoice.get, 'invoice:get')
+    );
+    ipcMain.handle(
+        'invoice:update',
+        middlewareWrapper(invoice.update, 'invoice:update')
+    );
+    ipcMain.handle(
+        'invoice:confirm',
+        middlewareWrapper(invoice.confirm, 'invoice:confirm')
+    );
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
