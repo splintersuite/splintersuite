@@ -12,13 +12,22 @@ import DashboardSettings from '../pages/Dashboard/Settings.jsx';
 import DashboardStats from '../pages/Dashboard/Stats.jsx';
 import DashboardAccount from '../pages/Dashboard/Account.jsx';
 import DashboardBilling from '../pages/Dashboard/Billing.jsx';
+import { useUser } from '../contexts/UserContext.jsx';
 
 const RoutesContainer = () => {
+    const { username } = useUser();
+
+    const defaultRoute = !username ? (
+        <Navigate to="/home" />
+    ) : (
+        <Navigate to="/app" />
+    );
+
     return (
         <Router>
             <Routes>
                 <Route path="/home" element={<Landing />} />
-                <Route path="/" element={<Navigate to="/app" />} />
+                <Route path="/" element={defaultRoute} />
                 <Route path="/app" element={<Dashboard />}>
                     <Route
                         path="/app"

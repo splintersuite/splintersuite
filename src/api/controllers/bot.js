@@ -1,4 +1,5 @@
 import moment from 'moment';
+import logger from 'electron-timber';
 
 import util from '../util';
 import botService from '../services/bot';
@@ -61,6 +62,13 @@ const updateLoading = async (event, payload) => {
     return util.success();
 };
 
+const botLogger = logger.create({ name: 'bot' });
+const log = (event, payload) => {
+    const { message } = payload;
+    const now = moment().format('DD/MM/YYYY HH:mm:ss Z');
+    botLogger.log(`[${now}] ${message}`);
+};
+
 export default {
     start,
     stop,
@@ -71,4 +79,5 @@ export default {
     updateStats,
     getLoading,
     updateLoading,
+    log,
 };

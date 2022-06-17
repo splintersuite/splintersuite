@@ -1,7 +1,5 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { Button, Input } from '@mantine/core';
-import { useForm } from '@mantine/form';
 
 import Label from '../../components/Label.jsx';
 import Text from '../../components/Text.jsx';
@@ -63,121 +61,80 @@ const ChartHeader = styled.h2`
 `;
 
 const Settings = () => {
-    const { user, username, handleLogin } = useUser();
+    const { user, username } = useUser();
     const { stats } = user;
-    const form = useForm({
-        initialValues: {
-            username: '',
-            key: '',
-        },
-    });
-
-    const handleSubmit = (values) => {
-        handleLogin(values);
-    };
-
     return (
         <DashboardPage>
-            {username && (
-                <>
-                    <Card>
-                        <Row>
-                            <UserCol>
-                                <Label>Welcome back,</Label>
-                                <Text size="32px" weight="bold">
-                                    {username}
-                                </Text>
-                            </UserCol>
-                            <StatCol>
-                                <Label>DEC</Label>
-                                <Text size="32px">
-                                    {util.separateNumber(user?.balances?.dec) ||
-                                        0}
-                                </Text>
-                            </StatCol>
-                            <StatCol>
-                                <Label>SPS</Label>
-                                <Text size="32px">
-                                    {util.separateNumber(user?.balances?.sps) ||
-                                        0}
-                                </Text>
-                            </StatCol>
-                            <StatCol>
-                                <Label>RC</Label>
-                                <Text size="32px">
-                                    {user?.balances?.rc || 0}%
-                                </Text>
-                            </StatCol>
-                        </Row>
-                    </Card>
-                    <DataRow>
-                        <DataCard>
-                            <Label>Daily</Label>
-                            <Text size="48px">
-                                {util.separateNumber(stats?.daily?.amount)}
-                                <DEC>DEC</DEC>
+            <>
+                <Card>
+                    <Row>
+                        <UserCol>
+                            <Label>Welcome back,</Label>
+                            <Text size="32px" weight="bold">
+                                {username}
                             </Text>
-                            <Percentage positive={stats?.daily?.change > 0}>
-                                {stats?.daily?.change > 0 ? '+' : ''}
-                                {util.toPercentage(stats?.daily?.change)}%
-                            </Percentage>
-                            <Indicator positive={stats?.daily?.change > 0} />
-                        </DataCard>
-                        <DataCard>
-                            <Label>Weekly</Label>
-                            <Text size="48px">
-                                {util.separateNumber(stats?.weekly?.amount)}
-                                <DEC>DEC</DEC>
+                        </UserCol>
+                        <StatCol>
+                            <Label>DEC</Label>
+                            <Text size="32px">
+                                {util.separateNumber(user?.balances?.dec)}
                             </Text>
-                            <Percentage positive={stats?.weekly?.change > 0}>
-                                {stats?.weekly?.change > 0 ? '+' : ''}
-                                {util.toPercentage(stats?.weekly?.change)}%
-                            </Percentage>
-                            <Indicator positive={stats?.weekly?.change > 0} />
-                        </DataCard>
-                        <DataCard>
-                            <Label>Monthly</Label>
-                            <Text size="48px">
-                                {util.separateNumber(stats?.monthly?.amount)}
-                                <DEC>DEC</DEC>
+                        </StatCol>
+                        <StatCol>
+                            <Label>SPS</Label>
+                            <Text size="32px">
+                                {util.separateNumber(user?.balances?.sps)}
                             </Text>
-                            <Percentage positive={stats?.monthly?.change > 0}>
-                                {stats?.monthly?.change > 0 ? '+' : ''}
-                                {util.toPercentage(stats?.monthly?.change)}%
-                            </Percentage>
-                            <Indicator positive={stats?.monthly?.change > 0} />
-                        </DataCard>
-                    </DataRow>
-                    <ChartCard>
-                        <ChartHeader>Daily Earnings in DEC</ChartHeader>
-                        <LineChart />
-                    </ChartCard>
-                </>
-            )}
-
-            {!username && (
-                <form onSubmit={form.onSubmit(handleSubmit)}>
-                    <Label htmlFor={'username'}>Username</Label>
-                    <Input
-                        label="Username"
-                        style={{ width: '256px' }}
-                        placeholder="Tameshon"
-                        {...form.getInputProps('username')}
-                    />
-                    <Label style={{ marginTop: '16px' }} htmlFor={'key'}>
-                        Posting Key
-                    </Label>
-                    <Input
-                        label="Posting Key"
-                        style={{ width: '256px' }}
-                        placeholder="12312324123"
-                        {...form.getInputProps('key')}
-                    />
-                    <Button type="submit" style={{ marginTop: '2em' }}>
-                        Login
-                    </Button>
-                </form>
-            )}
+                        </StatCol>
+                        <StatCol>
+                            <Label>RC</Label>
+                            <Text size="32px">{user?.balances?.rc}%</Text>
+                        </StatCol>
+                    </Row>
+                </Card>
+                <DataRow>
+                    <DataCard>
+                        <Label>Daily</Label>
+                        <Text size="48px">
+                            {util.separateNumber(stats?.daily?.amount)}
+                            <DEC>DEC</DEC>
+                        </Text>
+                        <Percentage positive={stats?.daily?.change >= 0}>
+                            {stats?.daily?.change >= 0 ? '+' : ''}
+                            {util.toPercentage(stats?.daily?.change)}%
+                        </Percentage>
+                        <Indicator positive={stats?.daily?.change >= 0} />
+                    </DataCard>
+                    <DataCard>
+                        <Label>Weekly</Label>
+                        <Text size="48px">
+                            {util.separateNumber(stats?.weekly?.amount)}
+                            <DEC>DEC</DEC>
+                        </Text>
+                        <Percentage positive={stats?.weekly?.change >= 0}>
+                            {stats?.weekly?.change >= 0 ? '+' : ''}
+                            {util.toPercentage(stats?.weekly?.change)}%
+                        </Percentage>
+                        <Indicator positive={stats?.weekly?.change >= 0} />
+                    </DataCard>
+                    <DataCard>
+                        <Label>Monthly</Label>
+                        <Text size="48px">
+                            {util.separateNumber(stats?.monthly?.amount)}
+                            <DEC>DEC</DEC>
+                        </Text>
+                        <Percentage positive={stats?.monthly?.change >= 0}>
+                            {stats?.monthly?.change >= 0 ? '+' : ''}
+                            {util.toPercentage(stats?.monthly?.change)}%
+                        </Percentage>
+                        <Indicator positive={stats?.monthly?.change >= 0} />
+                    </DataCard>
+                </DataRow>
+                <ChartCard>
+                    <ChartHeader>Daily Earnings in DEC</ChartHeader>
+                    <LineChart />
+                </ChartCard>
+            </>
         </DashboardPage>
     );
 };
