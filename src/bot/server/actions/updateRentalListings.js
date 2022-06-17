@@ -19,7 +19,7 @@ const filterCollectionByRentalListings = async ({ username }) => {
                     card.market_id != null
                 ) {
                     cardsListedButNotRentedOut.push(card);
-                    searchableRentListByMarketId[card.market_id] = card;
+                    //  searchableRentListByMarketId[card.market_id] = card;
                     searchableRentListByUid[card.uid] = card;
                 }
             }
@@ -28,7 +28,7 @@ const filterCollectionByRentalListings = async ({ username }) => {
         return {
             cardsListedButNotRentedOut,
             searchableRentListByUid,
-            searchableRentListByMarketId,
+            //searchableRentListByMarketId,
         };
     } catch (err) {
         console.error(`filterCollectionByRentalListings error: ${err.message}`);
@@ -36,6 +36,41 @@ const filterCollectionByRentalListings = async ({ username }) => {
     }
 };
 
+const filterRentalListingsByNewPostedTransactions = ({
+    listings,
+    relistings,
+    searchableRentalListings,
+}) => {
+    try {
+        // listings and relistings both arrays of arrays that have [uid, priceInDec]
+        console.log(`filterRentalListingsByNewPostedTransactions start`);
+        const newRentalListings = [];
+        const rentalRelistings = [];
+        listings.forEach((listing) => {
+            const uid = listing[0];
+            const cardInfo = searchableRentalListings[uid];
+            if (cardInfo != null) {
+                newRentalListings.push(cardInfo);
+            }
+        });
+
+        relistings.forEach((relisting) => {
+            const uid = relisting[0];
+            const cardInfo = searchableRentalListings[uid];
+            if (cardInfo != null) {
+                rentalRelistings.push(cardInfo);
+            }
+        });
+        return { newRentalListings, rentalRelistings };
+    } catch (err) {
+        console.error(
+            `filterRentalListingsByNewPostedTransactions error: ${err.message}`
+        );
+        throw err;
+    }
+};
+
 module.exports = {
     filterCollectionByRentalListings,
+    filterRentalListingsByNewPostedTransactions,
 };

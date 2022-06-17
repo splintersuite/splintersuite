@@ -88,8 +88,8 @@ const startRentalBot = async ({ username, settings }) => {
         // console.log(marketIdsForCancellation);
         // we would also want to make sure that cards already listed are seperated
         return {
-            listings: rentalArrayWithPriceAndUid,
-            relistings: relistingPriceForEachMarketId,
+            listings: rentalArrayWithPriceAndUid, // [uid, rentalPriceInDec]
+            relistings: relistingPriceForEachMarketId, // [uid, rentalPriceInDec]
             cancellations: marketIdsForCancellation,
         };
     } catch (err) {
@@ -98,17 +98,31 @@ const startRentalBot = async ({ username, settings }) => {
     }
 };
 
-const updateRentalListings = async ({ username, listings, relistings }) => {
+const updatedRentalListingsToSend = async ({
+    username,
+    listings,
+    relistings,
+}) => {
     try {
-        console.log('updateRentalListings start');
+        console.log('updatedRentalListingsToSend start');
+        // listings and relistings both arrays of arrays that have [uid, priceInDec]
 
-        const {
-            cardsListedButNotRentedOut,
-            searchableRentListByUid,
-            searchableRentListByMarketId,
-        } = await filterCollectionByRentalListings({ username });
+        const listingsNotPosted = [];
+        const relistingsNotRelisted = [];
+
+        const { cardsListedButNotRentedOut, searchableRentListByUid } =
+            await filterCollectionByRentalListings({ username });
+
+        const { newRentalListings, rentalRelistings } =
+            filterRentalListingsByNewPostedTransactions({
+                listings,
+                relistings,
+                searchableRentalListings: searchableRentListByUid,
+            });
+
+        return { newRentalListings, rentalRelistings };
     } catch (err) {
-        console.error(`updateRentalListings error: ${err.message}`);
+        console.error(`updatedRentalListingsToSend error: ${err.message}`);
         throw err;
     }
 };
@@ -148,4 +162,5 @@ const settings = {
 // startRentalBot({ username: "hackinhukk", settings });
 export default {
     startRentalBot,
+    updatedRentalListingsToSend,
 };
