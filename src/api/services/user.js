@@ -4,6 +4,7 @@ import store from '../../store';
 import axios from '../util/axios';
 import splinterlandsService from './splinterlands';
 import hiveService from './hive';
+import invoiceService from './invoice';
 
 const getUser = async () => {
     const username = getUsername();
@@ -13,7 +14,9 @@ const getUser = async () => {
     await setBalances({ dec, sps, rc });
 
     const user = await fetchUser(username);
-    await setInvoices(user.invoices);
+
+    const invoice = await invoiceService.get(username);
+    await setInvoices([invoice]);
 
     return store.get('user');
 };

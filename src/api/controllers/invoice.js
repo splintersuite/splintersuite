@@ -14,7 +14,6 @@ const confirm = async (event, payload) => {
     const isPaid = await invoiceService.confirm(invoice);
 
     if (isPaid) {
-        console.log('UPDATING INVOICE');
         await invoiceService.update(invoice);
     }
 
