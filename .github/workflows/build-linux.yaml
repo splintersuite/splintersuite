@@ -1,8 +1,11 @@
 name: Build Linux
 
 on:
-    release:
-        types: [published]
+    push:
+        branches:
+            - 'master'
+        # release:
+        #     types: [published]
 
 jobs:
     build-linux:
@@ -14,7 +17,7 @@ jobs:
 
         steps:
             - name: Build for Linux
-            - run: npm run make
+              run: npm run make
 
             - name: Use the Upload Artifact GitHub Action
               uses: actions/upload-artifact@v2
