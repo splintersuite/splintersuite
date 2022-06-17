@@ -8,9 +8,9 @@ jobs:
     build-linux:
         runs-on: ubuntu-latest
 
-            defaults:
-      run:
-        working-directory: ./splintersuite
+        defaults:
+            run:
+                working-directory: ./splintersuite
 
         steps:
             - name: Build for Linux
