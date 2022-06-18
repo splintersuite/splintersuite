@@ -25,6 +25,9 @@ jobs:
                   npm run make
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  SECRET_MESSAGE: ${{ secrets.SECRET_MESSAGE }}
+                  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+                  API_URL: ${{ secrets.API_URL }}
 
             - name: Release
               uses: softprops/action-gh-release@v1
