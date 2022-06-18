@@ -60,9 +60,10 @@ const ChartHeader = styled.h2`
     margin-bottom: ${({ theme }) => theme.space(4)};
 `;
 
-const Settings = () => {
+const Account = () => {
     const { user, username } = useUser();
     const { stats } = user;
+
     return (
         <DashboardPage>
             <>
@@ -94,10 +95,9 @@ const Settings = () => {
                 </Card>
                 <DataRow>
                     <DataCard>
-                        <Label>Daily</Label>
+                        <Label>Daily DEC</Label>
                         <Text size="48px">
-                            {util.separateNumber(stats?.daily?.amount)}
-                            <DEC>DEC</DEC>
+                            {util.abbreviateNumber(stats?.daily?.amount)}
                         </Text>
                         <Percentage positive={stats?.daily?.change >= 0}>
                             {stats?.daily?.change >= 0 ? '+' : ''}
@@ -106,10 +106,9 @@ const Settings = () => {
                         <Indicator positive={stats?.daily?.change >= 0} />
                     </DataCard>
                     <DataCard>
-                        <Label>Weekly</Label>
+                        <Label>Weekly DEC</Label>
                         <Text size="48px">
-                            {util.separateNumber(stats?.weekly?.amount)}
-                            <DEC>DEC</DEC>
+                            {util.abbreviateNumber(stats?.weekly?.amount)}
                         </Text>
                         <Percentage positive={stats?.weekly?.change >= 0}>
                             {stats?.weekly?.change >= 0 ? '+' : ''}
@@ -118,10 +117,9 @@ const Settings = () => {
                         <Indicator positive={stats?.weekly?.change >= 0} />
                     </DataCard>
                     <DataCard>
-                        <Label>Monthly</Label>
+                        <Label>Monthly DEC</Label>
                         <Text size="48px">
-                            {util.separateNumber(stats?.monthly?.amount)}
-                            <DEC>DEC</DEC>
+                            {util.abbreviateNumber(stats?.monthly?.amount)}
                         </Text>
                         <Percentage positive={stats?.monthly?.change >= 0}>
                             {stats?.monthly?.change >= 0 ? '+' : ''}
@@ -139,4 +137,4 @@ const Settings = () => {
     );
 };
 
-export default Settings;
+export default Account;

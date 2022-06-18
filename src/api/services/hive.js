@@ -16,15 +16,15 @@ const createRentals = async (cards) => {
 
     const res = await client.broadcast.json(
         {
-            required_posting_auths: [],
-            required_auths: [username],
+            required_posting_auths: [username],
+            required_auths: [],
             id: 'sm_market_list',
             json: JSON.stringify({
                 cards,
                 type: 'rent',
                 fee: 500,
-                required_posting_auths: [],
-                required_auths: [username],
+                required_posting_auths: [username],
+                required_auths: [],
             }),
         },
         key
@@ -39,13 +39,13 @@ const updateRentals = async (ids) => {
 
     const res = await client.broadcast.json(
         {
-            required_posting_auths: [],
-            required_auths: [username],
+            required_posting_auths: [username],
+            required_auths: [],
             id: 'sm_update_rental_price',
             json: JSON.stringify({
                 items: ids,
-                required_posting_auths: [],
-                required_auths: [username],
+                required_posting_auths: [username],
+                required_auths: [],
             }),
         },
         key
@@ -60,13 +60,13 @@ const deleteRentals = async (ids) => {
 
     const res = await client.broadcast.json(
         {
-            required_posting_auths: [],
-            required_auths: [username],
+            required_posting_auths: [username],
+            required_auths: [],
             id: 'sm_market_cancel_rental',
             json: JSON.stringify({
                 items: ids,
-                required_posting_auths: [],
-                required_auths: [username],
+                required_posting_auths: [username],
+                required_auths: [],
             }),
         },
         key

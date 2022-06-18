@@ -34,39 +34,39 @@ const schema = {
                 properties: {
                     dailyRelistings: {
                         type: 'number',
-                        minimum: 0,
+                        minimum: 1,
                     },
                     commonNorm: {
                         type: 'number',
-                        minimum: 0,
+                        minimum: 1,
                     },
                     commonGold: {
                         type: 'number',
-                        minimum: 0,
+                        minimum: 1,
                     },
                     rareNorm: {
                         type: 'number',
-                        minimum: 0,
+                        minimum: 1,
                     },
                     rareGold: {
                         type: 'number',
-                        minimum: 0,
+                        minimum: 1,
                     },
                     epicNorm: {
                         type: 'number',
-                        minimum: 0,
+                        minimum: 1,
                     },
                     epicGold: {
                         type: 'number',
-                        minimum: 0,
+                        minimum: 1,
                     },
                     legendaryNorm: {
                         type: 'number',
-                        minimum: 0,
+                        minimum: 1,
                     },
                     legendaryGold: {
                         type: 'number',
-                        minimum: 0,
+                        minimum: 1,
                     },
                 },
             },
@@ -74,6 +74,9 @@ const schema = {
                 type: 'object',
                 properties: {
                     startedAt: {
+                        type: 'string',
+                    },
+                    endedAt: {
                         type: 'string',
                     },
                     numListed: {
@@ -99,18 +102,19 @@ const defaults = {
         active: false,
         isLoading: false,
         settings: {
-            dailyRelistings: 0,
-            commonNorm: 0,
-            commonGold: 0,
-            rareNorm: 0,
-            rareGold: 0,
-            epicNorm: 0,
-            epicGold: 0,
-            legendaryNorm: 0,
-            legendaryGold: 0,
+            dailyRelistings: 1,
+            commonNorm: 1,
+            commonGold: 1,
+            rareNorm: 1,
+            rareGold: 1,
+            epicNorm: 1,
+            epicGold: 1,
+            legendaryNorm: 1,
+            legendaryGold: 1,
         },
         stats: {
             startedAt: '',
+            endedAt: '',
             numListed: 0,
         },
     },

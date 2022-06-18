@@ -1,4 +1,5 @@
 import keytar from 'keytar';
+import logger from 'electron-timber';
 
 import store from '../../store';
 import axios from '../util/axios';
@@ -10,13 +11,13 @@ const getUser = async () => {
     const username = await getUsername();
     const { dec, sps } = await splinterlandsService.getBalance(username);
     const rc = await hiveService.getRc(username);
+
     await setBalances({ dec, sps, rc });
 
     const user = await fetchUser(username);
+    await setId(user.id);
 
     // await setInvoices(user.invoices);
-
-    await setId(user.id);
 
     return store.get('user');
 };
@@ -92,6 +93,10 @@ const updateRentalListings = async ({ rentalListings }) => {
     return res;
 };
 
+const clear = async () => {
+    await store.clear();
+};
+
 export default {
     getUser,
     setUsername,
@@ -108,4 +113,5 @@ export default {
     updateRentals,
     updateRentalListings,
     getId,
+    clear,
 };

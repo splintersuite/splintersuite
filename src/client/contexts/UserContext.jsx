@@ -55,7 +55,7 @@ export const UserProvider = (props) => {
 
     useEffect(() => {
         getUser();
-    }, []);
+    }, [username]);
 
     return (
         <UserContext.Provider

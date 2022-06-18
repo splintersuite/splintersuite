@@ -18,7 +18,8 @@ const logout = async (event) => {
     const username = await userService.getUsername();
 
     await userService.removeKey(username);
-    await userService.removeUsername();
+    await userService.clear();
+    // await userService.removeUsername();
 
     return util.success();
 };

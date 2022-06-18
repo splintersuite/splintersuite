@@ -20,28 +20,29 @@ app.on('ready', () => {
     // ---
     // Windows
     // ------------------------------------
-
     const mainWindow = new BrowserWindow({
-        width: 1200,
-        height: 800,
-        icon: __dirname + '/client/assets/icons/icon.png',
+        width: 1150,
+        height: 1024,
+        icon: path.join(__dirname, './client/assets/icons/icon.png'),
         webPreferences: {
             sandbox: true,
             contextIsolation: true,
-            preload: path.join(__dirname, './client/preload.js'),
+            // preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+            preload: path.join(__dirname, '/client/preload.js'),
         },
     });
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
     mainWindow.webContents.openDevTools();
 
     const botWindow = new BrowserWindow({
-        //show: false,
-        width: 1200,
-        height: 800,
+        show: false,
+        // width: 1200,
+        // height: 800,
         webPreferences: {
             sandbox: true,
             contextIsolation: true,
-            preload: path.join(__dirname, './bot/preload.js'),
+            // preload: BOT_WINDOW_PRELOAD_WEBPACK_ENTRY,
+            preload: path.join(__dirname, '/bot/preload.js'),
         },
     });
     botWindow.loadURL(BOT_WINDOW_WEBPACK_ENTRY);
@@ -50,7 +51,6 @@ app.on('ready', () => {
     // ---
     // Routes
     // ------------------------------------
-
     ipcMain.handle('user:login', middlewareWrapper(user.login, 'user:login'));
     ipcMain.handle(
         'user:logout',
@@ -61,7 +61,6 @@ app.on('ready', () => {
         'user:updateRentals',
         middlewareWrapper(user.updateRentals, 'user:updateRentals')
     );
-
     ipcMain.handle(
         'user:updateRentalListings',
         middlewareWrapper(

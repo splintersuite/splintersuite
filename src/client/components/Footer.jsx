@@ -60,6 +60,17 @@ const Footer = (props) => {
         ? moment(botStats.startedAt).fromNow(true)
         : 'n/a';
 
+    const getDuration = () => {
+        if (!botStats?.startedAt) {
+            return 'n/a';
+        } else {
+            const start = moment(botStats.startedAt);
+            const end = botStats.endedAt ? moment(botStats.endedAt) : moment();
+            const duration = moment.duration(end.diff(start));
+            return duration.humanize();
+        }
+    };
+
     return (
         <Container>
             <FooterRow>
@@ -83,7 +94,7 @@ const Footer = (props) => {
                 <Row>
                     <StatCol>
                         <Label>Time Active</Label>
-                        <Text size="24px">{startedAt}</Text>
+                        <Text size="24px">{getDuration()}</Text>
                     </StatCol>
                     <StatCol>
                         <Label>Cards Listed</Label>
