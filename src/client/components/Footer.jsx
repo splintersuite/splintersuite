@@ -53,12 +53,7 @@ const StatCol = styled(Col)`
 `;
 
 const Footer = (props) => {
-    const { botActive, botStats, botLoading, getBotLoading, toggleBotActive } =
-        useBot();
-
-    const startedAt = botStats?.startedAt
-        ? moment(botStats.startedAt).fromNow(true)
-        : 'n/a';
+    const { botActive, botStats, botLoading, toggleBotActive } = useBot();
 
     const getDuration = () => {
         if (!botStats?.startedAt) {
