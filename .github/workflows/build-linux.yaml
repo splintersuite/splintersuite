@@ -10,33 +10,32 @@ on:
 
 jobs:
     build:
-      strategy:
-        matrix:
-          os: [ macOS-latest, ubuntu-latest, windows-latest ]
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [macOS-latest, ubuntu-latest, windows-latest]
 
-      runs-on: ${{ matrix.os }}
+            steps:
+                - name: Checkout
+                  uses: actions/checkout@v2.3.4
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2.3.4
+                - name: Build
+                  run: |
+                      npm install
+                      npm run make
+                  env:
+                      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Build
-              run: |
-                  npm install
-                  npm run make
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-            - name: Release
-              uses: softprops/action-gh-release@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  draft: true
-                  files: |
-                      out/**/*.deb
-                      out/**/*.dmg
-                      out/**/*.exe
-                      out/**/*.rpm
-                      out/**/*.zip
-                      out/**/RELEASES
+                - name: Release
+                  uses: softprops/action-gh-release@v1
+                  env:
+                      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  with:
+                      draft: true
+                      files: |
+                          out/**/*.deb
+                          out/**/*.dmg
+                          out/**/*.exe
+                          out/**/*.rpm
+                          out/**/*.zip
+                          out/**/RELEASES
