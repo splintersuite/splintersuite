@@ -9,17 +9,23 @@ on:
     #     types: [published]
 
 jobs:
-    build-linux:
-        runs-on: ubuntu-latest
+    build:
+      strategy:
+        matrix:
+          os: [ macOS-latest, ubuntu-latest, windows-latest ]
+
+      runs-on: ${{ matrix.os }}
 
         steps:
             - name: Checkout
               uses: actions/checkout@v2.3.4
 
-            - name: Build for Linux
+            - name: Build
               run: |
                   npm install
                   npm run make
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Release
               uses: softprops/action-gh-release@v1
@@ -30,80 +36,7 @@ jobs:
                   files: |
                       out/**/*.deb
                       out/**/*.dmg
-                      out/**/*setup*.exe
-                      out/**/*.nupkg
+                      out/**/*.exe
                       out/**/*.rpm
                       out/**/*.zip
                       out/**/RELEASES
-
-                      # - name: Use the Upload Artifact GitHub Action
-                      #   uses: actions/upload-artifact@v2
-                      #   with:
-                      #       name: ouput-test
-                      #       path: out/make
-
-    build-mac:
-        runs-on: macos-latest
-
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2.3.4
-
-            - name: Build for Mac
-              run: |
-                  npm install
-                  npm run make
-
-            - name: Release
-              uses: softprops/action-gh-release@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  draft: true
-                  files: |
-                      out/**/*.deb
-                      out/**/*.dmg
-                      out/**/*setup*.exe
-                      out/**/*.nupkg
-                      out/**/*.rpm
-                      out/**/*.zip
-                      out/**/RELEASES
-
-                      # - name: Use the Upload Artifact GitHub Action
-                      #   uses: actions/upload-artifact@v2
-                      #   with:
-                      #       name: ouput-test
-                      #       path: out/make
-
-    build-windows:
-        runs-on: windows-latest
-
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2.3.4
-
-            - name: Build for Windows
-              run: |
-                  npm install
-                  npm run make
-
-            - name: Release
-              uses: softprops/action-gh-release@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  draft: true
-                  files: |
-                      out/**/*.deb
-                      out/**/*.dmg
-                      out/**/*setup*.exe
-                      out/**/*.nupkg
-                      out/**/*.rpm
-                      out/**/*.zip
-                      out/**/RELEASES
-
-                      # - name: Use the Upload Artifact GitHub Action
-                      #   uses: actions/upload-artifact@v2
-                      #   with:
-                      #       name: ouput-test
-                      #       path: out/make
