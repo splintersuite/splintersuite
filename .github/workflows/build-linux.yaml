@@ -1,11 +1,12 @@
 name: Build Linux
 
 on:
-    # push:
-    #     branches:
-    #         - 'master'
-    release:
-        types: [published]
+    push:
+        branches:
+            - 'qa'
+            # - 'master'
+    # release:
+    #     types: [published]
 
 jobs:
     build-linux:
@@ -20,11 +21,27 @@ jobs:
                   npm install
                   npm run make
 
-            - name: Use the Upload Artifact GitHub Action
-              uses: actions/upload-artifact@v2
+            - name: Release
+              uses: softprops/action-gh-release@v1
+              if: startsWith(github.ref, 'refs/tags/')
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                  name: ouput-test
-                  path: out/make
+                  draft: true
+                  files: |
+                      out/**/*.deb
+                      out/**/*.dmg
+                      out/**/*setup*.exe
+                      out/**/*.nupkg
+                      out/**/*.rpm
+                      out/**/*.zip
+                      out/**/RELEASES
+
+                      # - name: Use the Upload Artifact GitHub Action
+                      #   uses: actions/upload-artifact@v2
+                      #   with:
+                      #       name: ouput-test
+                      #       path: out/make
 
     build-mac:
         runs-on: macos-latest
@@ -38,11 +55,27 @@ jobs:
                   npm install
                   npm run make
 
-            - name: Use the Upload Artifact GitHub Action
-              uses: actions/upload-artifact@v2
+            - name: Release
+              uses: softprops/action-gh-release@v1
+              if: startsWith(github.ref, 'refs/tags/')
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                  name: ouput-test
-                  path: out/make
+                  draft: true
+                  files: |
+                      out/**/*.deb
+                      out/**/*.dmg
+                      out/**/*setup*.exe
+                      out/**/*.nupkg
+                      out/**/*.rpm
+                      out/**/*.zip
+                      out/**/RELEASES
+
+                      # - name: Use the Upload Artifact GitHub Action
+                      #   uses: actions/upload-artifact@v2
+                      #   with:
+                      #       name: ouput-test
+                      #       path: out/make
 
     build-windows:
         runs-on: windows-latest
@@ -56,8 +89,24 @@ jobs:
                   npm install
                   npm run make
 
-            - name: Use the Upload Artifact GitHub Action
-              uses: actions/upload-artifact@v2
+            - name: Release
+              uses: softprops/action-gh-release@v1
+              if: startsWith(github.ref, 'refs/tags/')
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                  name: ouput-test
-                  path: out/make
+                  draft: true
+                  files: |
+                      out/**/*.deb
+                      out/**/*.dmg
+                      out/**/*setup*.exe
+                      out/**/*.nupkg
+                      out/**/*.rpm
+                      out/**/*.zip
+                      out/**/RELEASES
+
+                      # - name: Use the Upload Artifact GitHub Action
+                      #   uses: actions/upload-artifact@v2
+                      #   with:
+                      #       name: ouput-test
+                      #       path: out/make

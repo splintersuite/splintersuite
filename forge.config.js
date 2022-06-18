@@ -4,6 +4,17 @@ const config = {
         name: 'SplinterSuite',
         executableName: 'splintersuite',
     },
+    // publishers: [
+    //     {
+    //         name: '@electron-forge/publisher-github',
+    //         config: {
+    //             repository: {
+    //                 owner: 'splintersuite',
+    //                 name: 'splintersuite',
+    //             },
+    //         },
+    //     },
+    // ],
     makers: [
         {
             name: '@electron-forge/maker-squirrel',
