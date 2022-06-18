@@ -72,11 +72,6 @@ window.api.bot.start(async (event) => {
             relistings,
         });
         await window.api.user.updateRentalListings({ rentalListings });
-        // we should wait like 20 seconds for everything to update before sending the data to back-end.
-        // VALID RENTALS REQUEST
-        // await window.api.user.updateRentals({
-        //     rentals: [{ id: 1 }],
-        // });
 
         // ---
         // Update stats
@@ -95,7 +90,7 @@ window.api.bot.start(async (event) => {
         window.api.bot.log({
             message: `Pause for: ${util.getHours(duration)} hours`,
         });
-        await util.pause(duration);
+        await sleep(duration);
 
         // ---
         // Update settings
