@@ -30,6 +30,7 @@ const {
     filterCollectionByRentalListings,
     filterRentalListingsByNewPostedTransactions,
 } = require('./actions/updateRentalListings');
+const { axiosPostInstance } = require('./requests/axiosPostInstance');
 
 const startRentalBot = async ({ username, settings }) => {
     try {
@@ -147,6 +148,20 @@ const getPreciseRentalPrices = ({ cardsFilteredByUserLevelLimits }) => {
         throw err;
     }
 };
+
+const updateRentalListings = async ({ rentalListings }) => {
+    try {
+        // console.log(`updateRentalListings start`);
+        const res = await axiosPostInstance(
+            `${process.env.API_URL}/api/rentalListings/newrentallistings`,
+            { rentalListings }
+        );
+        return res;
+    } catch (err) {
+        console.error(`updateRentalListings error: ${err.message}`);
+        throw err;
+    }
+};
 const settings = {
     commonNorm: 9,
     commonGold: 9,
@@ -162,4 +177,5 @@ const settings = {
 export default {
     startRentalBot,
     updatedRentalListingsToSend,
+    updateRentalListings,
 };

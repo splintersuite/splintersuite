@@ -7,27 +7,17 @@ import hiveService from './hive';
 import invoiceService from './invoice';
 
 const getUser = async () => {
-    console.log('getUser start');
     const username = await getUsername();
-    console.log(`username is:`);
-    console.log(username);
     const { dec, sps } = await splinterlandsService.getBalance(username);
     const rc = await hiveService.getRc(username);
     await setBalances({ dec, sps, rc });
-    console.log('before fetchUser');
+
     const user = await fetchUser(username);
-    console.log('after fetchUser');
-    console.log('user: ');
-    console.log(user);
-    console.log('before setInvoices');
-    console.log('user.invoices being passed in to setInvoices');
-    console.log(user.invoices);
+
     // await setInvoices(user.invoices);
-    console.log('after setInvoices');
-    console.log('calling setId with user.id: ');
-    console.log(user.id);
+
     await setId(user.id);
-    console.log('after setId');
+
     return store.get('user');
 };
 
@@ -99,6 +89,7 @@ const updateRentalListings = async ({ rentalListings }) => {
         `${process.env.API_URL}/api/rentalListings/newrentallistings`,
         { rentalListings }
     );
+    return res;
 };
 
 export default {

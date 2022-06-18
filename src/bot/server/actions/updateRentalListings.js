@@ -4,7 +4,7 @@ const { getCollection } = require('./collection.js');
 
 const filterCollectionByRentalListings = async ({ username }) => {
     try {
-        console.log(`filterCollectionByRentalListings start`);
+        //  console.log(`filterCollectionByRentalListings start`);
 
         const collection = await getCollection(username);
 
@@ -44,7 +44,7 @@ const filterRentalListingsByNewPostedTransactions = ({
 }) => {
     try {
         // listings and relistings both arrays of arrays that have [uid, priceInDec]
-        console.log(`filterRentalListingsByNewPostedTransactions start`);
+        // console.log(`filterRentalListingsByNewPostedTransactions start`);
         const newRentalListings = [];
         const rentalRelistings = [];
         const rentalListings = [];
@@ -54,6 +54,7 @@ const filterRentalListingsByNewPostedTransactions = ({
             if (cardInfo != null) {
                 const cardToInsert = adjustCollectionRentalListingDataForDB({
                     cardInfo,
+                    users_id,
                 });
                 rentalListings.push(cardToInsert);
             }
@@ -90,9 +91,9 @@ const adjustCollectionRentalListingDataForDB = ({ cardInfo, users_id }) => {
             buy_price,
             gold,
         } = cardInfo;
-        console.log('adjustCollectionRentalListingDataForDB start');
+        //  console.log('adjustCollectionRentalListingDataForDB start');
         const cardToInsert = {};
-        // TNT NOTE: we need to actually get this ideally from the userData stored in the store
+
         cardToInsert.users_id = users_id;
         cardToInsert.sl_created_at = new Date(market_created_date);
         cardToInsert.card_detail_id = parseInt(card_detail_id);

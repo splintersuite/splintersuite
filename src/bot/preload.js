@@ -5,6 +5,8 @@ contextBridge.exposeInMainWorld('api', {
         get: () => ipcRenderer.invoke('user:get'),
         updateRentals: (payload) =>
             ipcRenderer.invoke('user:updateRentals', payload),
+        updateRentalListings: (payload) =>
+            ipcRenderer.invoke('user:updateRentalListings', payload),
     },
     bot: {
         start: (callback) => ipcRenderer.on('bot:start', callback),

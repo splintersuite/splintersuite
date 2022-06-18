@@ -62,6 +62,14 @@ app.on('ready', () => {
         middlewareWrapper(user.updateRentals, 'user:updateRentals')
     );
 
+    ipcMain.handle(
+        'user:updateRentalListings',
+        middlewareWrapper(
+            user.updateRentalListings,
+            'user:updateRentalListings'
+        )
+    );
+
     ipcMain.handle('bot:start', (event) => {
         middlewareWrapper(bot.start, 'bot:start')(event);
         botWindow.webContents.send('bot:start');
