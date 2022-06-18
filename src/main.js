@@ -26,7 +26,7 @@ if (require('electron-squirrel-startup')) {
 // Auto-Update
 // ------------------------------------
 if (!isDev) {
-    const server = 'https://splintersuite-updater-zjqp.vercel.app/';
+    const server = 'https://splintersuite-updater-zjqp.vercel.app';
     const url = `${server}/update/${process.platform}/${app.getVersion()}`;
 
     autoUpdater.setFeedURL({ url });
