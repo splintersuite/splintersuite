@@ -120,6 +120,7 @@ const defaults = {
     },
 };
 
-const store = new Store({ defaults, schema });
+const store = new Store({ defaults });
+// const store = new Store({ defaults, schema });
 
 export default store;
