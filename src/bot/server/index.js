@@ -28,6 +28,7 @@ const { getActiveRentalsByRentalId } = require('./actions/currentRentals');
 
 const {
     filterCollectionByRentalListings,
+    filterRentalListingsByNewPostedTransactions,
 } = require('./actions/updateRentalListings');
 
 const startRentalBot = async ({ username, settings }) => {

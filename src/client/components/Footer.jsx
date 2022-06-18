@@ -56,7 +56,7 @@ const Footer = (props) => {
     const { botActive, botStats, botLoading, getBotLoading, toggleBotActive } =
         useBot();
 
-    const startedAt = botStats.startedAt
+    const startedAt = botStats?.startedAt
         ? moment(botStats.startedAt).fromNow(true)
         : 'n/a';
 
@@ -87,7 +87,7 @@ const Footer = (props) => {
                     </StatCol>
                     <StatCol>
                         <Label>Cards Listed</Label>
-                        <Text size="24px">{botStats.numListed}</Text>
+                        <Text size="24px">{botStats?.numListed || 0}</Text>
                     </StatCol>
                 </Row>
             </FooterRow>

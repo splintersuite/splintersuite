@@ -35,9 +35,9 @@ app.on('ready', () => {
     mainWindow.webContents.openDevTools();
 
     const botWindow = new BrowserWindow({
-        show: false,
-        // width: 1200,
-        // height: 800,
+        //show: false,
+        width: 1200,
+        height: 800,
         webPreferences: {
             sandbox: true,
             contextIsolation: true,
