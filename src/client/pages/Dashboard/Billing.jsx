@@ -84,7 +84,7 @@ const Billing = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {invoices.map((invoice, idx) => (
+                        {invoices?.map((invoice, idx) => (
                             <TableRow key={idx}>
                                 <TableItem>{invoice.season_name}</TableItem>
                                 <TableItem>

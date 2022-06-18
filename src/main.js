@@ -35,9 +35,9 @@ app.on('ready', () => {
     mainWindow.webContents.openDevTools();
 
     const botWindow = new BrowserWindow({
-        show: false,
-        // width: 1200,
-        // height: 800,
+        //show: false,
+        width: 1200,
+        height: 800,
         webPreferences: {
             sandbox: true,
             contextIsolation: true,
@@ -60,6 +60,14 @@ app.on('ready', () => {
     ipcMain.handle(
         'user:updateRentals',
         middlewareWrapper(user.updateRentals, 'user:updateRentals')
+    );
+
+    ipcMain.handle(
+        'user:updateRentalListings',
+        middlewareWrapper(
+            user.updateRentalListings,
+            'user:updateRentalListings'
+        )
     );
 
     ipcMain.handle('bot:start', (event) => {

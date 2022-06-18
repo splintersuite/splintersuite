@@ -1,5 +1,6 @@
 'use strict';
 const cardDetails = require('../cardDetails.json');
+const { setTimeout_safe } = require('../axios_retry/general');
 
 const findCardDetails = (id) => {
     try {
@@ -41,7 +42,12 @@ const isOnCooldown = (date) => {
     }
 };
 
+const sleep = (ms) => {
+    return new Promise((resolve) => setTimeout_safe(resolve, ms));
+};
+
 module.exports = {
     findCardDetails,
     isOnCooldown,
+    sleep,
 };

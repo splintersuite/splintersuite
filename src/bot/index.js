@@ -1,5 +1,5 @@
 import moment from 'moment';
-
+import { sleep } from './server/_helpers.js';
 import rentals from './server';
 import util from './util';
 
@@ -31,6 +31,7 @@ window.api.bot.start(async (event) => {
         const { listings, relistings, cancellations } =
             await rentals.startRentalBot({ username: user.username, settings });
         numListed += listings.length + relistings.length;
+
         window.api.bot.log({
             message: `Number of listings: ${listings.length}`,
         });
@@ -54,19 +55,23 @@ window.api.bot.start(async (event) => {
             ids: cancellations,
         });
         window.api.bot.log({
-            message: `List transaction: ${createTx}`,
+            message: `List transaction: ${JSON.stringify(createTx)}`,
         });
         window.api.bot.log({
-            message: `Relist transaction: ${relistTx}`,
+            message: `Relist transaction: ${JSON.stringify(relistTx)}`,
         });
         window.api.bot.log({
-            message: `Cancel transaction: ${cancelTX}`,
+            message: `Cancel transaction: ${JSON.stringify(cancelTX)}`,
         });
-
-        // VALID RENTALS REQUEST
-        // await window.api.user.updateRentals({
-        //     rentals: [{ id: 1 }],
-        // });
+        // sleep for 10 seconds to let collection endpoint update with listings + relistings
+        await sleep(10000);
+        const { rentalListings } = await rentals.updatedRentalListingsToSend({
+            username: user.username,
+            users_id: user.id,
+            listings,
+            relistings,
+        });
+        await window.api.user.updateRentalListings({ rentalListings });
 
         // ---
         // Update stats
@@ -85,7 +90,7 @@ window.api.bot.start(async (event) => {
         window.api.bot.log({
             message: `Pause for: ${util.getHours(duration)} hours`,
         });
-        await util.pause(duration);
+        await sleep(duration);
 
         // ---
         // Update settings

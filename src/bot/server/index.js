@@ -25,6 +25,13 @@ const {
 } = require('./actions/calculateFilledRentalsToBeCancelled');
 
 const { getActiveRentalsByRentalId } = require('./actions/currentRentals');
+
+const {
+    filterCollectionByRentalListings,
+    filterRentalListingsByNewPostedTransactions,
+} = require('./actions/updateRentalListings');
+const { axiosPostInstance } = require('./requests/axiosPostInstance');
+
 const startRentalBot = async ({ username, settings }) => {
     try {
         console.log(`startRentalsForAccount username: ${username}`);
@@ -83,12 +90,39 @@ const startRentalBot = async ({ username, settings }) => {
         // console.log(marketIdsForCancellation);
         // we would also want to make sure that cards already listed are seperated
         return {
-            listings: rentalArrayWithPriceAndUid,
-            relistings: relistingPriceForEachMarketId,
+            listings: rentalArrayWithPriceAndUid, // [uid, rentalPriceInDec]
+            relistings: relistingPriceForEachMarketId, // [uid, rentalPriceInDec]
             cancellations: marketIdsForCancellation,
         };
     } catch (err) {
         console.error(`startRentalsForAccount error: ${err.message}`);
+        throw err;
+    }
+};
+
+const updatedRentalListingsToSend = async ({
+    username,
+    users_id,
+    listings,
+    relistings,
+}) => {
+    try {
+        console.log('updatedRentalListingsToSend start');
+        // listings and relistings both arrays of arrays that have [uid, priceInDec]
+
+        const { cardsListedButNotRentedOut, searchableRentListByUid } =
+            await filterCollectionByRentalListings({ username });
+
+        const rentalListings = filterRentalListingsByNewPostedTransactions({
+            users_id,
+            listings,
+            relistings,
+            searchableRentalListings: searchableRentListByUid,
+        });
+
+        return { rentalListings };
+    } catch (err) {
+        console.error(`updatedRentalListingsToSend error: ${err.message}`);
         throw err;
     }
 };
@@ -114,6 +148,20 @@ const getPreciseRentalPrices = ({ cardsFilteredByUserLevelLimits }) => {
         throw err;
     }
 };
+
+const updateRentalListings = async ({ rentalListings }) => {
+    try {
+        // console.log(`updateRentalListings start`);
+        const res = await axiosPostInstance(
+            `${process.env.API_URL}/api/rentalListings/newrentallistings`,
+            { rentalListings }
+        );
+        return res;
+    } catch (err) {
+        console.error(`updateRentalListings error: ${err.message}`);
+        throw err;
+    }
+};
 const settings = {
     commonNorm: 9,
     commonGold: 9,
@@ -128,4 +176,6 @@ const settings = {
 // startRentalBot({ username: "hackinhukk", settings });
 export default {
     startRentalBot,
+    updatedRentalListingsToSend,
+    updateRentalListings,
 };
