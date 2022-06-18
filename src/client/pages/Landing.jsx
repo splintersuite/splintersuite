@@ -44,7 +44,7 @@ const Landing = () => {
     const { username, handleLogin } = useUser();
     const navigate = useNavigate();
 
-    console.log('TESTING');
+    console.log('TESTING NEW');
 
     const form = useForm({
         initialValues: {
