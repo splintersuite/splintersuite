@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from '@emotion/styled';
+import moment from 'moment';
 import {
     Chart,
     CategoryScale,
@@ -9,8 +9,6 @@ import {
     Tooltip,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-
-import { useUser } from '../contexts/UserContext.jsx';
 
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip);
 
@@ -29,7 +27,7 @@ const labels = [
 ];
 
 const data = {
-    labels,
+    // labels: ,
     datasets: [
         {
             label: 'Daily Earnings',
@@ -41,7 +39,18 @@ const data = {
 };
 
 const LineChart = (props) => {
-    const { user } = useUser();
+    const data = {
+        labels: props?.data.map((item) => moment(item.date).format('dddd')),
+        datasets: [
+            {
+                label: 'Daily Earnings',
+                data: props?.data.map((item) => item.earnings),
+                borderColor: '#32FFCE',
+                backgroundColor: '#32FFCE',
+            },
+        ],
+    };
+
     return <Line options={options} data={data} />;
 };
 

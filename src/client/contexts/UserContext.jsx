@@ -22,6 +22,7 @@ export const UserProvider = (props) => {
             setUser(res.data.user);
             setInvoices(res.data.user.invoices);
         }
+        console.log(res);
     };
 
     const handleLogout = async () => {

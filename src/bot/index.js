@@ -23,7 +23,7 @@ window.api.bot.start(async (event) => {
     const startedAt = moment().format();
     const duration = util.periodToMs(settings.dailyRelistings);
 
-    while (active && user.username === username) {
+    while (active && user.username === username && !user.locked) {
         await window.api.bot.updateLoading({ isLoading: true });
 
         // ---

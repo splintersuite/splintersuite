@@ -1,10 +1,4 @@
-const {
-    app,
-    BrowserWindow,
-    ipcMain,
-    autoUpdater,
-    dialog,
-} = require('electron');
+const { app, BrowserWindow, ipcMain, autoUpdater } = require('electron');
 const path = require('path');
 const isDev = require('electron-is-dev');
 const dotenv = require('dotenv');
@@ -141,34 +135,35 @@ app.on('ready', () => {
     // ---
     // Auto-Update
     // ------------------------------------
+    const server = 'https://splintersuite-updater-zjqp.vercel.app';
+    const url = `${server}/update/${process.platform}/${app.getVersion()}`;
+    console.log(url);
     if (!isDev) {
         const server = 'https://splintersuite-updater-zjqp.vercel.app';
         const url = `${server}/update/${process.platform}/${app.getVersion()}`;
 
         autoUpdater.setFeedURL({ url });
-
-        setInterval(() => {
-            autoUpdater.checkForUpdates();
-        }, 60000);
+        autoUpdater.checkForUpdates();
 
         autoUpdater.on(
             'update-downloaded',
             (event, releaseNotes, releaseName) => {
-                const dialogOpts = {
-                    type: 'info',
-                    buttons: ['Restart', 'Later'],
-                    title: 'Application Update',
-                    message:
-                        process.platform === 'win32'
-                            ? releaseNotes
-                            : releaseName,
-                    detail: 'A new version has been downloaded. Restart the application to apply the updates.',
-                };
+                log.info('Update Received');
+                // const dialogOpts = {
+                //     type: 'info',
+                //     buttons: ['Restart', 'Later'],
+                //     title: 'Application Update',
+                //     message:
+                //         process.platform === 'win32'
+                //             ? releaseNotes
+                //             : releaseName,
+                //     detail: 'A new version has been downloaded. Restart the application to apply the updates.',
+                // };
 
-                dialog.showMessageBox(dialogOpts).then((returnValue) => {
-                    if (returnValue.response === 0)
-                        autoUpdater.quitAndInstall();
-                });
+                // dialog.showMessageBox(dialogOpts).then((returnValue) => {
+                //     if (returnValue.response === 0)
+                // });
+                autoUpdater.quitAndInstall();
             }
         );
     }

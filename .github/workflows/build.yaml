@@ -41,4 +41,5 @@ jobs:
                       out/**/*Setup*.exe
                       out/**/*.rpm
                       out/**/*.zip
+                      out/**/*.nupkg
                       out/**/RELEASES

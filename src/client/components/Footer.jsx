@@ -10,6 +10,7 @@ import Row from './Row.jsx';
 import Label from './Label.jsx';
 import Text from './Text.jsx';
 import { useBot } from '../contexts/BotContext.jsx';
+import { useUser } from '../contexts/UserContext.jsx';
 
 const Container = styled.div`
     position: fixed;
@@ -54,6 +55,7 @@ const StatCol = styled(Col)`
 
 const Footer = (props) => {
     const { botActive, botStats, botLoading, toggleBotActive } = useBot();
+    const { user } = useUser();
 
     const getDuration = () => {
         if (!botStats?.startedAt) {
@@ -80,6 +82,7 @@ const Footer = (props) => {
                         size="lg"
                         color={botActive ? 'red' : 'primary'}
                         loading={botLoading}
+                        disabled={user.locked}
                         onClick={toggleBotActive}
                     >
                         <Icon icon={faRobot} />
