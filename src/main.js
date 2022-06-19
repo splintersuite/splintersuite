@@ -135,16 +135,25 @@ app.on('ready', () => {
     // ---
     // Auto-Update
     // ------------------------------------
-    const server = 'https://splintersuite-updater-zjqp.vercel.app';
-    const url = `${server}/update/${process.platform}/${app.getVersion()}`;
-    console.log(url);
     if (!isDev) {
-        const server = 'https://splintersuite-updater-zjqp.vercel.app';
-        const url = `${server}/update/${process.platform}/${app.getVersion()}`;
+        // Hazel config
+        // const server = 'https://splintersuite-updater-zjqp.vercel.app';
+        // const url = `${server}/update/${process.platform}/${app.getVersion()}`;
 
-        autoUpdater.setFeedURL({ url });
+        // autoUpdater.setFeedURL({ url });
+        // autoUpdater.checkForUpdates();
+
+        const server = 'https://dist.unlock.sh/v1/electron';
+        const productId = 'ec109002-10fb-48cb-a049-b54965eb0c41';
+        const url = `${server}/${productId}/update/${process.platform}/${
+            process.arch
+        }/${app.getVersion()}`;
+
+        autoUpdater.setFeedURL({
+            url: url,
+            serverType: 'json',
+        });
         autoUpdater.checkForUpdates();
-
         autoUpdater.on(
             'update-downloaded',
             (event, releaseNotes, releaseName) => {
