@@ -60,9 +60,25 @@ const ChartHeader = styled.h2`
     margin-bottom: ${({ theme }) => theme.space(4)};
 `;
 
-const Settings = () => {
+const Account = () => {
     const { user, username } = useUser();
     const { stats } = user;
+
+    const daily = {
+        amount: stats?.earnings?.daily?.amount || 0,
+        change: stats?.earnings?.daily?.change || 0,
+    };
+
+    const weekly = {
+        amount: stats?.earnings?.wtdEearnings?.amount || 0,
+        change: stats?.earnings?.wtdEearnings?.change || 0,
+    };
+
+    const monthly = {
+        amount: stats?.earnings?.mtdEearnings?.amount || 0,
+        change: stats?.earnings?.mtdEearnings?.change || 0,
+    };
+
     return (
         <DashboardPage>
             <>
@@ -94,49 +110,46 @@ const Settings = () => {
                 </Card>
                 <DataRow>
                     <DataCard>
-                        <Label>Daily</Label>
+                        <Label>Daily DEC</Label>
                         <Text size="48px">
-                            {util.separateNumber(stats?.daily?.amount)}
-                            <DEC>DEC</DEC>
+                            {util.abbreviateNumber(daily.amount)}
                         </Text>
-                        <Percentage positive={stats?.daily?.change >= 0}>
-                            {stats?.daily?.change >= 0 ? '+' : ''}
-                            {util.toPercentage(stats?.daily?.change)}%
+                        <Percentage positive={daily.change >= 0}>
+                            {daily.change >= 0 ? '+' : ''}
+                            {util.toPercentage(daily.change)}%
                         </Percentage>
-                        <Indicator positive={stats?.daily?.change >= 0} />
+                        <Indicator positive={daily.change >= 0} />
                     </DataCard>
                     <DataCard>
-                        <Label>Weekly</Label>
+                        <Label>Weekly DEC</Label>
                         <Text size="48px">
-                            {util.separateNumber(stats?.weekly?.amount)}
-                            <DEC>DEC</DEC>
+                            {util.abbreviateNumber(weekly.amount)}
                         </Text>
-                        <Percentage positive={stats?.weekly?.change >= 0}>
-                            {stats?.weekly?.change >= 0 ? '+' : ''}
-                            {util.toPercentage(stats?.weekly?.change)}%
+                        <Percentage positive={weekly.change >= 0}>
+                            {weekly.change >= 0 ? '+' : ''}
+                            {util.toPercentage(weekly.change)}%
                         </Percentage>
-                        <Indicator positive={stats?.weekly?.change >= 0} />
+                        <Indicator positive={weekly.change >= 0} />
                     </DataCard>
                     <DataCard>
-                        <Label>Monthly</Label>
+                        <Label>Monthly DEC</Label>
                         <Text size="48px">
-                            {util.separateNumber(stats?.monthly?.amount)}
-                            <DEC>DEC</DEC>
+                            {util.abbreviateNumber(monthly.amount)}
                         </Text>
-                        <Percentage positive={stats?.monthly?.change >= 0}>
-                            {stats?.monthly?.change >= 0 ? '+' : ''}
-                            {util.toPercentage(stats?.monthly?.change)}%
+                        <Percentage positive={monthly.change >= 0}>
+                            {monthly.change >= 0 ? '+' : ''}
+                            {util.toPercentage(monthly.change)}%
                         </Percentage>
-                        <Indicator positive={stats?.monthly?.change >= 0} />
+                        <Indicator positive={monthly.change >= 0} />
                     </DataCard>
                 </DataRow>
                 <ChartCard>
                     <ChartHeader>Daily Earnings in DEC</ChartHeader>
-                    <LineChart />
+                    <LineChart data={stats.weekly} />
                 </ChartCard>
             </>
         </DashboardPage>
     );
 };
 
-export default Settings;
+export default Account;

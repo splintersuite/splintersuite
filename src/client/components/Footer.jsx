@@ -10,6 +10,7 @@ import Row from './Row.jsx';
 import Label from './Label.jsx';
 import Text from './Text.jsx';
 import { useBot } from '../contexts/BotContext.jsx';
+import { useUser } from '../contexts/UserContext.jsx';
 
 const Container = styled.div`
     position: fixed;
@@ -53,12 +54,19 @@ const StatCol = styled(Col)`
 `;
 
 const Footer = (props) => {
-    const { botActive, botStats, botLoading, getBotLoading, toggleBotActive } =
-        useBot();
+    const { botActive, botStats, botLoading, toggleBotActive } = useBot();
+    const { user } = useUser();
 
-    const startedAt = botStats?.startedAt
-        ? moment(botStats.startedAt).fromNow(true)
-        : 'n/a';
+    const getDuration = () => {
+        if (!botStats?.startedAt) {
+            return 'n/a';
+        } else {
+            const start = moment(botStats.startedAt);
+            const end = botStats.endedAt ? moment(botStats.endedAt) : moment();
+            const duration = moment.duration(end.diff(start));
+            return duration.humanize();
+        }
+    };
 
     return (
         <Container>
@@ -74,6 +82,7 @@ const Footer = (props) => {
                         size="lg"
                         color={botActive ? 'red' : 'primary'}
                         loading={botLoading}
+                        disabled={user.locked}
                         onClick={toggleBotActive}
                     >
                         <Icon icon={faRobot} />
@@ -83,7 +92,7 @@ const Footer = (props) => {
                 <Row>
                     <StatCol>
                         <Label>Time Active</Label>
-                        <Text size="24px">{startedAt}</Text>
+                        <Text size="24px">{getDuration()}</Text>
                     </StatCol>
                     <StatCol>
                         <Label>Cards Listed</Label>

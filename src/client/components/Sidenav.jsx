@@ -62,10 +62,21 @@ const LogoutButton = styled(Button)`
     background: ${({ theme }) => theme.colors.grey[800]};
 `;
 
+const LockedMessage = styled.div`
+    padding: ${({ theme }) => theme.space(1)};
+    margin-top: auto;
+    margin-right: ${({ theme }) => theme.space(4)};
+    margin-left: ${({ theme }) => theme.space(4)};
+    font-size: 16px;
+    font-weight: bold;
+    background: ${({ theme }) => theme.colors.error};
+    border-radius: 8px;
+`;
+
 const Sidenav = (props) => {
     const navigate = useNavigate();
     const { pathname } = useLocation();
-    const { username, handleLogout } = useUser();
+    const { user, username, handleLogout } = useUser();
 
     const handleLogoutClick = async () => {
         await handleLogout();
@@ -112,6 +123,14 @@ const Sidenav = (props) => {
                 <Icon icon={faChartLine} />
                 Stats
             </Item> */}
+
+            {user.locked && (
+                <LockedMessage>
+                    Account locked!
+                    <br />
+                    Please pay your invoices to continue using the bot.
+                </LockedMessage>
+            )}
 
             {username && (
                 <LogoutButton onClick={handleLogoutClick}>Logout</LogoutButton>

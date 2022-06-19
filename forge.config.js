@@ -4,6 +4,17 @@ const config = {
         name: 'SplinterSuite',
         executableName: 'splintersuite',
     },
+    // publishers: [
+    //     {
+    //         name: '@electron-forge/publisher-github',
+    //         config: {
+    //             repository: {
+    //                 owner: 'splintersuite',
+    //                 name: 'splintersuite',
+    //             },
+    //         },
+    //     },
+    // ],
     makers: [
         {
             name: '@electron-forge/maker-squirrel',
@@ -48,11 +59,13 @@ const config = {
                             html: './src/client/index.html',
                             js: './src/client/renderer.js',
                             name: 'main_window',
+                            // preload: { js: './src/client/preload.js' },
                         },
                         {
                             html: './src/bot/index.html',
                             js: './src/bot/renderer.js',
                             name: 'bot_window',
+                            // preload: { js: './src/bot/preload.js' },
                         },
                     ],
                 },

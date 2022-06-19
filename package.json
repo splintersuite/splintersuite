@@ -1,7 +1,7 @@
 {
   "name": "splintersuite",
   "productName": "splintersuite",
-  "version": "1.0.0",
+  "version": "0.0.9",
   "description": "My Electron application description",
   "main": ".webpack/main",
   "scripts": {
@@ -46,6 +46,7 @@
     "style-loader": "^3.0.0"
   },
   "dependencies": {
+    "@electron-forge/publisher-github": "^6.0.0-beta.64",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "@fortawesome/fontawesome-svg-core": "^6.1.1",
@@ -60,9 +61,10 @@
     "chart.js": "^3.8.0",
     "crypto": "^1.0.1",
     "dotenv": "^16.0.1",
+    "electron-is-dev": "^2.0.0",
+    "electron-log": "^4.4.7",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.1",
-    "electron-timber": "^0.5.1",
     "keytar": "^7.9.0",
     "moment": "^2.29.3",
     "react": "^18.1.0",

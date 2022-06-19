@@ -8,15 +8,19 @@ import invoiceService from './invoice';
 
 const getUser = async () => {
     const username = await getUsername();
+
     const { dec, sps } = await splinterlandsService.getBalance(username);
     const rc = await hiveService.getRc(username);
     await setBalances({ dec, sps, rc });
 
     const user = await fetchUser(username);
-
-    // await setInvoices(user.invoices);
-
     await setId(user.id);
+    await setStats(user.stats);
+    await setLocked(false);
+    // await setLocked(user.locked)
+
+    const invoices = await invoiceService.get(username);
+    await setInvoices(invoices);
 
     return store.get('user');
 };
@@ -69,6 +73,22 @@ const getId = () => {
     return store.get('user.id');
 };
 
+const setLocked = (locked) => {
+    return store.set('user.locked', locked);
+};
+
+const getLocked = () => {
+    return store.get('user.locked');
+};
+
+const setStats = (stats) => {
+    return store.set('user.stats', stats);
+};
+
+const getStats = () => {
+    return store.get('user.stats');
+};
+
 const fetchUser = async (username) => {
     const { data } = await axios.get(
         `${process.env.API_URL}/api/users/${username}`
@@ -92,6 +112,10 @@ const updateRentalListings = async ({ rentalListings }) => {
     return res;
 };
 
+const clear = async () => {
+    await store.clear();
+};
+
 export default {
     getUser,
     setUsername,
@@ -108,4 +132,5 @@ export default {
     updateRentals,
     updateRentalListings,
     getId,
+    clear,
 };

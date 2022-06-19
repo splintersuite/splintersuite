@@ -14,6 +14,7 @@ window.api.bot.start(async (event) => {
     let user = userRes.data.user;
     let active = activeRes.data.active;
     let settings = settingsRes.data.settings;
+    const username = user.username;
 
     // ---
     // Get stats
@@ -22,14 +23,17 @@ window.api.bot.start(async (event) => {
     const startedAt = moment().format();
     const duration = util.periodToMs(settings.dailyRelistings);
 
-    while (active && user.username) {
+    while (active && user.username === username && !user.locked) {
         await window.api.bot.updateLoading({ isLoading: true });
 
         // ---
         // Get cards
         // ------------------------------------
         const { listings, relistings, cancellations } =
-            await rentals.startRentalBot({ username: user.username, settings });
+            await rentals.startRentalBot({
+                username,
+                settings,
+            });
         numListed += listings.length + relistings.length;
 
         window.api.bot.log({
@@ -63,10 +67,17 @@ window.api.bot.start(async (event) => {
         window.api.bot.log({
             message: `Cancel transaction: ${JSON.stringify(cancelTX)}`,
         });
-        // sleep for 10 seconds to let collection endpoint update with listings + relistings
+
+        // ---
+        // Sleep - wait for collection endpoint update
+        // ------------------------------------
+        window.api.bot.log({
+            message: `Sleep for: 10 seconds`,
+        });
         await sleep(10000);
+
         const { rentalListings } = await rentals.updatedRentalListingsToSend({
-            username: user.username,
+            username,
             users_id: user.id,
             listings,
             relistings,
@@ -79,16 +90,17 @@ window.api.bot.start(async (event) => {
         await window.api.bot.updateStats({
             stats: {
                 startedAt,
+                endedAt: moment().format(),
                 numListed,
             },
         });
         await window.api.bot.updateLoading({ isLoading: false });
 
         // ---
-        // Pause
+        // Sleep
         // ------------------------------------
         window.api.bot.log({
-            message: `Pause for: ${util.getHours(duration)} hours`,
+            message: `Sleep for: ${util.getHours(duration)} hours`,
         });
         await sleep(duration);
 
@@ -103,6 +115,14 @@ window.api.bot.start(async (event) => {
         active = activeRes.data.active;
         settings = settingsRes.data.settings;
     }
+
+    await window.api.bot.updateStats({
+        stats: {
+            startedAt,
+            endedAt: moment().format(),
+            numListed,
+        },
+    });
 });
 
 window.api.bot.stop((event) => {
