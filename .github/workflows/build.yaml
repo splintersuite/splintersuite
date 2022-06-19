@@ -1,10 +1,11 @@
 name: Build
 
 on:
-    push:
-        branches:
-            - 'qa'
-            # - 'master'
+    workflow_dispatch
+    # push:
+    #     branches:
+    #         - 'qa'
+    # - 'master'
     # release:
     #     types: [published]
 
