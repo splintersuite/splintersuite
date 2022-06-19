@@ -8,6 +8,7 @@ const {
 const path = require('path');
 const isDev = require('electron-is-dev');
 const dotenv = require('dotenv');
+const logger = require('electron-timber');
 dotenv.config();
 
 const user = require('./api/controllers/user').default;
@@ -22,34 +23,6 @@ if (require('electron-squirrel-startup')) {
     app.quit();
 }
 
-// ---
-// Auto-Update
-// ------------------------------------
-if (!isDev) {
-    const server = 'https://splintersuite-updater-zjqp.vercel.app';
-    const url = `${server}/update/${process.platform}/${app.getVersion()}`;
-
-    autoUpdater.setFeedURL({ url });
-
-    setInterval(() => {
-        autoUpdater.checkForUpdates();
-    }, 60000);
-
-    autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-        const dialogOpts = {
-            type: 'info',
-            buttons: ['Restart', 'Later'],
-            title: 'Application Update',
-            message: process.platform === 'win32' ? releaseNotes : releaseName,
-            detail: 'A new version has been downloaded. Restart the application to apply the updates.',
-        };
-
-        dialog.showMessageBox(dialogOpts).then((returnValue) => {
-            if (returnValue.response === 0) autoUpdater.quitAndInstall();
-        });
-    });
-}
-
 app.on('ready', () => {
     // ---
     // Windows
@@ -61,7 +34,6 @@ app.on('ready', () => {
         webPreferences: {
             sandbox: true,
             contextIsolation: true,
-            // preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
             preload: path.join(__dirname, '/client/preload.js'),
         },
     });
@@ -75,7 +47,6 @@ app.on('ready', () => {
         webPreferences: {
             sandbox: true,
             contextIsolation: true,
-            // preload: BOT_WINDOW_PRELOAD_WEBPACK_ENTRY,
             preload: path.join(__dirname, '/bot/preload.js'),
         },
     });
@@ -166,6 +137,41 @@ app.on('ready', () => {
         'invoice:confirm',
         middlewareWrapper(invoice.confirm, 'invoice:confirm')
     );
+
+    // ---
+    // Auto-Update
+    // ------------------------------------
+    if (!isDev) {
+        const server = 'https://splintersuite-updater-zjqp.vercel.app';
+        const url = `${server}/update/${process.platform}/${app.getVersion()}`;
+
+        autoUpdater.setFeedURL({ url });
+
+        setInterval(() => {
+            autoUpdater.checkForUpdates();
+        }, 60000);
+
+        autoUpdater.on(
+            'update-downloaded',
+            (event, releaseNotes, releaseName) => {
+                const dialogOpts = {
+                    type: 'info',
+                    buttons: ['Restart', 'Later'],
+                    title: 'Application Update',
+                    message:
+                        process.platform === 'win32'
+                            ? releaseNotes
+                            : releaseName,
+                    detail: 'A new version has been downloaded. Restart the application to apply the updates.',
+                };
+
+                dialog.showMessageBox(dialogOpts).then((returnValue) => {
+                    if (returnValue.response === 0)
+                        autoUpdater.quitAndInstall();
+                });
+            }
+        );
+    }
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
