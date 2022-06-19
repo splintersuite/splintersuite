@@ -8,7 +8,7 @@ const {
 const path = require('path');
 const isDev = require('electron-is-dev');
 const dotenv = require('dotenv');
-const logger = require('electron-timber');
+const log = require('electron-log');
 dotenv.config();
 
 const user = require('./api/controllers/user').default;

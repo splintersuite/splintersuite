@@ -1,5 +1,4 @@
 import keytar from 'keytar';
-import logger from 'electron-timber';
 
 import store from '../../store';
 import axios from '../util/axios';

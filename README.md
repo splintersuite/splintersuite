@@ -5,15 +5,13 @@ npm install
 npm start
 ```
 
-# File Structure
+# Links
 
-```
-/src
-	/main.js			- root
-	/client 			- React app
-	/api				- API (main thread)
-	/bot				- Rental bot
-```
+-   [splinterlands-updater page](https://splintersuite-updater-zjqp.vercel.app/)
+-   [splinterlands-updater dashboard](https://vercel.com/hoodsy44/splintersuite-updater-zjqp/3LJFen52sAyZmNpdjpLWJotXzV5T)
+-   splinterlands-api IP: `54.161.248.145`
+-   [digital ocean db](https://cloud.digitalocean.com/databases?i=c68d38)
+-   [splintersuite.com](splintersuite.com)
 
 # Release Process
 
