@@ -135,35 +135,35 @@ app.on('ready', () => {
     // ---
     // Auto-Update
     // ------------------------------------
-    // if (!isDev) {
-    //     const server = 'https://splintersuite-updater-zjqp.vercel.app';
-    //     const url = `${server}/update/${process.platform}/${app.getVersion()}`;
+    if (!isDev) {
+        const server = 'https://splintersuite-updater-zjqp.vercel.app';
+        const url = `${server}/update/${process.platform}/${app.getVersion()}`;
 
-    //     autoUpdater.setFeedURL({ url });
-    //     autoUpdater.checkForUpdates();
+        autoUpdater.setFeedURL({ url });
+        autoUpdater.checkForUpdates();
 
-    //     autoUpdater.on(
-    //         'update-downloaded',
-    //         (event, releaseNotes, releaseName) => {
-    //             log.info('Update Received');
-    //             // const dialogOpts = {
-    //             //     type: 'info',
-    //             //     buttons: ['Restart', 'Later'],
-    //             //     title: 'Application Update',
-    //             //     message:
-    //             //         process.platform === 'win32'
-    //             //             ? releaseNotes
-    //             //             : releaseName,
-    //             //     detail: 'A new version has been downloaded. Restart the application to apply the updates.',
-    //             // };
+        autoUpdater.on(
+            'update-downloaded',
+            (event, releaseNotes, releaseName) => {
+                log.info('Update Received');
+                // const dialogOpts = {
+                //     type: 'info',
+                //     buttons: ['Restart', 'Later'],
+                //     title: 'Application Update',
+                //     message:
+                //         process.platform === 'win32'
+                //             ? releaseNotes
+                //             : releaseName,
+                //     detail: 'A new version has been downloaded. Restart the application to apply the updates.',
+                // };
 
-    //             // dialog.showMessageBox(dialogOpts).then((returnValue) => {
-    //             //     if (returnValue.response === 0)
-    //             // });
-    //             autoUpdater.quitAndInstall();
-    //         }
-    //     );
-    // }
+                // dialog.showMessageBox(dialogOpts).then((returnValue) => {
+                //     if (returnValue.response === 0)
+                // });
+                autoUpdater.quitAndInstall();
+            }
+        );
+    }
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
