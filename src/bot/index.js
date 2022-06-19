@@ -45,15 +45,35 @@ window.api.bot.start(async (event) => {
         // ---
         // List, relist, cancel
         // ------------------------------------
-        const createTx = await window.api.hive.createRentals({
-            cards: listings,
-        });
-        const relistTx = await window.api.hive.updateRentals({
-            ids: relistings,
-        });
-        const cancelTX = await window.api.hive.deleteRentals({
-            ids: cancellations,
-        });
+        Promise.all(
+            listings.map(async (listingGroup) => {
+                await window.api.hive.createRentals({
+                    cards: listingGroup,
+                });
+            })
+        );
+
+        Promise.all(
+            relistings.map(async (relistingGroup) => {
+                await window.api.hive.updateRentals({
+                    ids: relistings,
+                });
+            })
+        );
+        // const relistTx = await window.api.hive.updateRentals({
+        //     ids: relistings,
+        // });
+
+        Promise.all(
+            cancellations.map(async (cancelGroup) => {
+                await window.api.hive.deleteRentals({
+                    ids: cancellations,
+                });
+            })
+        );
+        // const cancelTX = await window.api.hive.deleteRentals({
+        //     ids: cancellations,
+        // });
         window.api.bot.log({
             message: `List transaction: ${JSON.stringify(createTx)}`,
         });
@@ -65,12 +85,12 @@ window.api.bot.start(async (event) => {
         });
         // sleep for 10 seconds to let collection endpoint update with listings + relistings
         await sleep(10000);
-        const { rentalListings } = await rentals.updatedRentalListingsToSend({
-            username: user.username,
-            users_id: user.id,
-            listings,
-            relistings,
-        });
+        // const { rentalListings } = await rentals.updatedRentalListingsToSend({
+        //     username: user.username,
+        //     users_id: user.id,
+        //     listings,
+        //     relistings,
+        // });
         await window.api.user.updateRentalListings({ rentalListings });
 
         // ---

@@ -31,6 +31,7 @@ const {
     filterRentalListingsByNewPostedTransactions,
 } = require('./actions/updateRentalListings');
 const { axiosPostInstance } = require('./requests/axiosPostInstance');
+const _ = require('lodash');
 
 const startRentalBot = async ({ username, settings }) => {
     try {
@@ -89,13 +90,54 @@ const startRentalBot = async ({ username, settings }) => {
         // console.log(relistingPriceForEachMarketId);
         // console.log(marketIdsForCancellation);
         // we would also want to make sure that cards already listed are seperated
+        const listings = fmtToLimitCardsInEachHiveTx(
+            rentalArrayWithPriceAndUid
+        );
+        console.log('listings: ');
+        console.log(listings);
+        console.log('listings.length: ');
+        console.log(listings.length);
+        // throw new Error('checking listings');
         return {
-            listings: rentalArrayWithPriceAndUid, // [uid, rentalPriceInDec]
+            listings, // array of arrays that are formated by :[uid, rentalPriceInDec]
             relistings: relistingPriceForEachMarketId, // [uid, rentalPriceInDec]
             cancellations: marketIdsForCancellation,
         };
     } catch (err) {
         console.error(`startRentalsForAccount error: ${err.message}`);
+        throw err;
+    }
+};
+
+const fmtToLimitCardsInEachHiveTx = (input) => {
+    try {
+        console.log(`fmtToLimitCardsInEachHiveTx start`);
+        const dataLimit = 5;
+        let chunks = input;
+        console.log('chunks before potentially _.chunking :');
+        console.log(chunks);
+        if (input.length > dataLimit) {
+            chunks = _.chunk(input, dataLimit);
+        }
+        console.log('chunks after potential _.chunk :');
+        console.log(chunks);
+
+        if (chunks.length === input.length) {
+            chunks = [chunks];
+        }
+        console.log('chunks after [chunks] :');
+        console.log(chunks);
+        let outputArray = [];
+        for (const transChunk of chunks) {
+            console.log('transChunk: ');
+            console.log(transChunk);
+            outputArray.push(transChunk);
+        }
+        console.log('outputArray is: ');
+        console.log(outputArray);
+        return outputArray;
+    } catch (err) {
+        console.error(`fmtToLimitCardsInEachHiveTx error: ${err.message}`);
         throw err;
     }
 };
