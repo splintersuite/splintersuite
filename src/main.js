@@ -154,6 +154,7 @@ app.on('ready', () => {
             serverType: 'json',
         });
         autoUpdater.checkForUpdates();
+
         autoUpdater.on(
             'update-downloaded',
             (event, releaseNotes, releaseName) => {
