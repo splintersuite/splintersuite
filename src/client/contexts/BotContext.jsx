@@ -92,6 +92,15 @@ export const BotProvider = (props) => {
         }
     };
 
+    const stopBot = async () => {
+        setBotActive(false);
+        await window.api.bot.stop();
+    };
+
+    useEffect(() => {
+        stopBot();
+    }, []);
+
     useEffect(() => {
         getActive();
         getSettings();
