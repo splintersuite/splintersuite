@@ -1,9 +1,7 @@
 const { app, BrowserWindow, ipcMain, autoUpdater } = require('electron');
 const path = require('path');
 const isDev = require('electron-is-dev');
-const dotenv = require('dotenv');
 const log = require('electron-log');
-dotenv.config();
 
 const user = require('./api/controllers/user').default;
 const bot = require('./api/controllers/bot').default;

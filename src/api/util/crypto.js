@@ -1,6 +1,4 @@
 const crypto = require('crypto');
-const dotenv = require('dotenv');
-dotenv.config();
 
 const encrypt = (text) => {
     const iv = crypto.randomBytes(16);
