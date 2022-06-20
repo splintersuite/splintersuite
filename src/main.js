@@ -30,7 +30,6 @@ app.on('ready', () => {
         },
     });
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-    mainWindow.webContents.openDevTools();
 
     const botWindow = new BrowserWindow({
         show: false,
@@ -43,7 +42,11 @@ app.on('ready', () => {
         },
     });
     botWindow.loadURL(BOT_WINDOW_WEBPACK_ENTRY);
-    botWindow.webContents.openDevTools();
+
+    if (isDev) {
+        mainWindow.webContents.openDevTools();
+        botWindow.webContents.openDevTools();
+    }
 
     // ---
     // Routes
