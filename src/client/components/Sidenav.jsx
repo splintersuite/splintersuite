@@ -7,7 +7,7 @@ import {
     faChartLine,
     faFileInvoice,
 } from '@fortawesome/free-solid-svg-icons';
-import { Button } from '@mantine/core';
+import { Button, Tooltip } from '@mantine/core';
 
 import logo from '../assets/images/logo.png';
 import { useUser } from '../contexts/UserContext.jsx';
@@ -55,10 +55,14 @@ const Icon = styled(FontAwesomeIcon)`
     margin-right: ${({ theme }) => theme.space(2)};
 `;
 
-const LogoutButton = styled(Button)`
+const LogoutTooltip = styled(Tooltip)`
     margin-top: auto;
     margin-right: ${({ theme }) => theme.space(4)};
     margin-left: ${({ theme }) => theme.space(4)};
+`;
+
+const LogoutButton = styled(Button)`
+    width: 100%;
     background: ${({ theme }) => theme.colors.grey[800]};
 `;
 
@@ -133,7 +137,14 @@ const Sidenav = (props) => {
             )}
 
             {username && (
-                <LogoutButton onClick={handleLogoutClick}>Logout</LogoutButton>
+                <LogoutTooltip
+                    label="You will have to re-enter your posting key to login"
+                    withArrow
+                >
+                    <LogoutButton onClick={handleLogoutClick}>
+                        Logout
+                    </LogoutButton>
+                </LogoutTooltip>
             )}
         </Nav>
     );
