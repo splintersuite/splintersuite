@@ -23,7 +23,7 @@ jobs:
             - name: 'Create env file Windows'
               if: matrix.os == 'windows-latest'
               run: |
-                  type nul >> .env & copy .env +,,
+                  ECHO text>.env
                   API_URL=${{ secrets.API_URL }} >> .env
                   SECRET_MESSAGE=${{ secrets.SECRET_MESSAGE }} >> .env
                   SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
