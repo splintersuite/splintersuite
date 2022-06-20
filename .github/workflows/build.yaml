@@ -24,9 +24,9 @@ jobs:
               if: matrix.os == 'windows-latest'
               run: |
                   ECHO text>.env
-                  API_URL=${{ secrets.API_URL }} >> .env
-                  SECRET_MESSAGE=${{ secrets.SECRET_MESSAGE }} >> .env
-                  SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+                  ECHO API_URL=${{ secrets.API_URL }} >> .env
+                  ECHO SECRET_MESSAGE=${{ secrets.SECRET_MESSAGE }} >> .env
+                  ECHO SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
 
             - name: 'Create env file Mac/Linux'
               if: matrix.os == 'macOS-latest' || matrix.os == 'ubuntu-latest'
