@@ -67,7 +67,7 @@ window.api.bot.start(async (event) => {
         Promise.all(
             cancellations.map(async (cancelGroup) => {
                 await window.api.hive.deleteRentals({
-                    ids: cancellations,
+                    ids: cancelGroup,
                 });
             })
         );

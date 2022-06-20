@@ -97,11 +97,19 @@ const startRentalBot = async ({ username, settings }) => {
         console.log(listings);
         console.log('listings.length: ');
         console.log(listings.length);
+
+        const relistings = fmtToLimitCardsInEachHiveTx(
+            relistingPriceForEachMarketId
+        );
+
+        const cancellations = fmtToLimitCardsInEachHiveTx(
+            marketIdsForCancellation
+        );
         // throw new Error('checking listings');
         return {
             listings, // array of arrays that are formated by :[uid, rentalPriceInDec]
-            relistings: relistingPriceForEachMarketId, // [uid, rentalPriceInDec]
-            cancellations: marketIdsForCancellation,
+            relistings, // [uid, rentalPriceInDec]
+            cancellations,
         };
     } catch (err) {
         console.error(`startRentalsForAccount error: ${err.message}`);
