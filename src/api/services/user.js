@@ -16,8 +16,7 @@ const getUser = async () => {
     const user = await fetchUser(username);
     await setId(user.id);
     await setStats(user.stats);
-    await setLocked(false);
-    // await setLocked(user.locked)
+    await setLocked(user.locked);
 
     const invoices = await invoiceService.get(username);
     await setInvoices(invoices);
@@ -128,6 +127,8 @@ export default {
     getBalances,
     setInvoices,
     getInvoices,
+    setLocked,
+    getLocked,
     fetchUser,
     updateRentals,
     updateRentalListings,

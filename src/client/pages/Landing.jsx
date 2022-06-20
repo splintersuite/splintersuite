@@ -44,8 +44,6 @@ const Landing = () => {
     const { username, handleLogin } = useUser();
     const navigate = useNavigate();
 
-    console.log('successful update');
-
     const form = useForm({
         initialValues: {
             username: '',

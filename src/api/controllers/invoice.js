@@ -1,5 +1,6 @@
 import util from '../util';
 import invoiceService from '../services/invoice';
+import userService from '../services/user';
 
 const get = async () => {};
 
@@ -14,7 +15,8 @@ const confirm = async (event, payload) => {
     const isPaid = await invoiceService.confirm(invoice);
 
     if (isPaid) {
-        await invoiceService.update(invoice);
+        const { locked } = await invoiceService.update(invoice);
+        userService.setLocked(locked);
     }
 
     return util.success({ isPaid });
