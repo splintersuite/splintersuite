@@ -120,7 +120,7 @@ const startRentalBot = async ({ username, settings }) => {
 const fmtToLimitCardsInEachHiveTx = (input) => {
     try {
         console.log(`fmtToLimitCardsInEachHiveTx start`);
-        const dataLimit = 5;
+        const dataLimit = 2;
         let chunks = input;
         console.log('chunks before potentially _.chunking :');
         console.log(chunks);
