@@ -82,8 +82,8 @@ const addPriceRelistInformationForEachCardByMarketId = ({
         } else {
             const price = priceData.low_price;
 
-            //      const rentalRelistingPriceForMarketId = [market_id, price];
-            const rentalRelistingPriceForMarketId = [uid, `${price}`];
+            const rentalRelistingPriceForMarketId = [market_id, `${price}`];
+            // const rentalRelistingPriceForMarketId = [uid, `${price}`];
             return rentalRelistingPriceForMarketId;
         }
     } catch (err) {

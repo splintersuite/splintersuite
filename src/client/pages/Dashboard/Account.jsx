@@ -200,7 +200,9 @@ const Account = () => {
 
                 <ChartCard>
                     <ChartHeader>Daily Earnings in DEC</ChartHeader>
-                    <LineChart data={[stats.bot.weekly, stats.total.weekly]} />
+                    <LineChart
+                        data={[stats?.bot?.weekly, stats?.total?.weekly]}
+                    />
                 </ChartCard>
             </>
         </DashboardPage>
