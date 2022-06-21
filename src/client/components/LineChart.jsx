@@ -49,8 +49,6 @@ const LineChart = (props) => {
         ],
     };
 
-    console.log(data);
-
     return <Line options={options} data={data} />;
 };
 
