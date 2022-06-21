@@ -14,6 +14,7 @@ window.api.bot.start(async (event) => {
     let user = userRes.data.user;
     let active = activeRes.data.active;
     let settings = settingsRes.data.settings;
+    let hiveTransactions = 0;
     const username = user.username;
 
     // ---
@@ -34,46 +35,63 @@ window.api.bot.start(async (event) => {
                 username,
                 settings,
             });
-        numListed += listings.length + relistings.length;
-
-        window.api.bot.log({
-            message: `Number of listings: ${listings.length}`,
-        });
-        window.api.bot.log({
-            message: `Number of relistings: ${relistings.length}`,
-        });
-        window.api.bot.log({
-            message: `Number of cancellations: ${cancellations.length}`,
-        });
 
         // ---
         // List, relist, cancel
         // ------------------------------------
-        const createTx = await window.api.hive.createRentals({
-            cards: listings,
-        });
-        const relistTx = await window.api.hive.updateRentals({
-            ids: relistings,
-        });
-        const cancelTX = await window.api.hive.deleteRentals({
-            ids: cancellations,
-        });
+        if (listings.length > 0) {
+            for (const listingGroup of listings) {
+                if (hiveTransactions % 4 === 0) {
+                    await sleep(4000);
+                }
+                await window.api.hive.createRentals({
+                    cards: listingGroup,
+                });
+                hiveTransactions = hiveTransactions + 1;
+                numListed += listingGroup.length;
+            }
+        }
+
+        let listingsNum = numListed;
         window.api.bot.log({
-            message: `List transaction: ${JSON.stringify(createTx)}`,
-        });
-        window.api.bot.log({
-            message: `Relist transaction: ${JSON.stringify(relistTx)}`,
-        });
-        window.api.bot.log({
-            message: `Cancel transaction: ${JSON.stringify(cancelTX)}`,
+            message: `Number of listings: ${listingsNum}`,
         });
 
-        // ---
-        // Sleep - wait for collection endpoint update
-        // ------------------------------------
+        if (relistings.length > 0) {
+            for (const relistingGroup of relistings) {
+                if (hiveTransactions % 4 === 0) {
+                    await sleep(4000);
+                }
+                await window.api.hive.updateRentals({
+                    cards: relistingGroup,
+                });
+                hiveTransactions = hiveTransactions + 1;
+                numListed += relistingGroup.length;
+            }
+        }
+
+        listingsNum = numListed - listingsNum;
         window.api.bot.log({
-            message: `Sleep for: 10 seconds`,
+            message: `Number of relistings: ${listingsNum}`,
         });
+
+        if (cancellations.length > 0) {
+            for (const cancelGroup of cancellations) {
+                if (hiveTransactions % 4 === 0) {
+                    await sleep(4000);
+                }
+                await window.api.hive.deleteRentals({
+                    cards: cancelGroup,
+                });
+                hiveTransactions = hiveTransactions + 1;
+            }
+        }
+
+        listingsNum = 0;
+        hiveTransactions = 0;
+
+        window.api.bot.log({ message: 'sleeping for 10 seconds' });
+
         await sleep(10000);
 
         const { rentalListings } = await rentals.updatedRentalListingsToSend({
