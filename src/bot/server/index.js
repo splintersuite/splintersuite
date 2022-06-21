@@ -31,6 +31,7 @@ const {
     filterRentalListingsByNewPostedTransactions,
 } = require('./actions/updateRentalListings');
 const { axiosPostInstance } = require('./requests/axiosPostInstance');
+const _ = require('lodash');
 
 const startRentalBot = async ({ username, settings }) => {
     try {
@@ -89,13 +90,47 @@ const startRentalBot = async ({ username, settings }) => {
         // console.log(relistingPriceForEachMarketId);
         // console.log(marketIdsForCancellation);
         // we would also want to make sure that cards already listed are seperated
+        const listings = fmtToLimitCardsInEachHiveTx(
+            rentalArrayWithPriceAndUid
+        );
+
+        const relistings = fmtToLimitCardsInEachHiveTx(
+            relistingPriceForEachMarketId
+        );
+
+        const cancellations = fmtToLimitCardsInEachHiveTx(
+            marketIdsForCancellation
+        );
+        // throw new Error('checking listings');
         return {
-            listings: rentalArrayWithPriceAndUid, // [uid, rentalPriceInDec]
-            relistings: relistingPriceForEachMarketId, // [uid, rentalPriceInDec]
-            cancellations: marketIdsForCancellation,
+            listings, // array of arrays that are formated by :[uid, rentalPriceInDec]
+            relistings, // [uid, rentalPriceInDec]
+            cancellations,
         };
     } catch (err) {
         console.error(`startRentalsForAccount error: ${err.message}`);
+        throw err;
+    }
+};
+
+const fmtToLimitCardsInEachHiveTx = (input) => {
+    try {
+        const dataLimit = 100;
+        let chunks = input;
+        if (input.length > dataLimit) {
+            chunks = _.chunk(input, dataLimit);
+        }
+
+        if (chunks.length === input.length) {
+            chunks = [chunks];
+        }
+        let outputArray = [];
+        for (const transChunk of chunks) {
+            outputArray.push(transChunk);
+        }
+        return outputArray;
+    } catch (err) {
+        console.error(`fmtToLimitCardsInEachHiveTx error: ${err.message}`);
         throw err;
     }
 };
@@ -113,16 +148,35 @@ const updatedRentalListingsToSend = async ({
         const { cardsListedButNotRentedOut, searchableRentListByUid } =
             await filterCollectionByRentalListings({ username });
 
+        const fmtedListings = formatListingGroups({ listings });
+        const fmtedRelistings = formatListingGroups({ listings: relistings });
+
         const rentalListings = filterRentalListingsByNewPostedTransactions({
             users_id,
-            listings,
-            relistings,
+            listings: fmtedListings,
+            relistings: fmtedRelistings,
             searchableRentalListings: searchableRentListByUid,
         });
 
         return { rentalListings };
     } catch (err) {
         console.error(`updatedRentalListingsToSend error: ${err.message}`);
+        throw err;
+    }
+};
+
+const formatListingGroups = ({ listings }) => {
+    try {
+        console.log(`formatListingGroups start`);
+        const fmtedListing = [];
+
+        for (const listingGroup of listings) {
+            fmtedListing.push(...listingGroup);
+        }
+
+        return fmtedListing;
+    } catch (err) {
+        console.error(`formatListingGroups error: ${err.message}`);
         throw err;
     }
 };
