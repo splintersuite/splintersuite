@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 
 import hooks from '../hooks';
+import { useUser } from './UserContext.jsx';
 
 const initialState = {
     botActive: false,
@@ -36,6 +37,7 @@ export const BotProvider = (props) => {
     const [botSettings, setBotSettings] = useState(initialState.botSettings);
     const [botStats, setBotStats] = useState(initialState.botStats);
     const [botLoading, setBotLoading] = useState(initialState.botLoading);
+    const { username } = useUser();
 
     const getStats = async () => {
         const res = await window.api.bot.getStats();
@@ -90,11 +92,24 @@ export const BotProvider = (props) => {
         }
     };
 
+    const stopBot = async () => {
+        setBotActive(false);
+        await window.api.bot.stop();
+    };
+
+    useEffect(() => {
+        stopBot();
+    }, []);
+
     useEffect(() => {
         getActive();
         getSettings();
         getStats();
-    }, []);
+    }, [username]);
+
+    useEffect(() => {
+        getStats();
+    }, [botActive]);
 
     hooks.useInterval(async () => {
         await getStats();

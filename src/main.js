@@ -1,8 +1,7 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, autoUpdater } = require('electron');
 const path = require('path');
-const logger = require('electron-timber');
-const dotenv = require('dotenv');
-dotenv.config();
+const isDev = require('electron-is-dev');
+const log = require('electron-log');
 
 const user = require('./api/controllers/user').default;
 const bot = require('./api/controllers/bot').default;
@@ -20,37 +19,38 @@ app.on('ready', () => {
     // ---
     // Windows
     // ------------------------------------
-
     const mainWindow = new BrowserWindow({
-        width: 1200,
-        height: 800,
-        icon: __dirname + '/client/assets/icons/icon.png',
+        width: 1150,
+        height: 1024,
+        icon: path.join(__dirname, './client/assets/icons/icon.png'),
         webPreferences: {
             sandbox: true,
             contextIsolation: true,
-            preload: path.join(__dirname, './client/preload.js'),
+            preload: path.join(__dirname, '/client/preload.js'),
         },
     });
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-    mainWindow.webContents.openDevTools();
 
     const botWindow = new BrowserWindow({
-        //show: false,
-        width: 1200,
-        height: 800,
+        show: false,
+        // width: 1200,
+        // height: 800,
         webPreferences: {
             sandbox: true,
             contextIsolation: true,
-            preload: path.join(__dirname, './bot/preload.js'),
+            preload: path.join(__dirname, '/bot/preload.js'),
         },
     });
     botWindow.loadURL(BOT_WINDOW_WEBPACK_ENTRY);
-    botWindow.webContents.openDevTools();
+
+    if (isDev) {
+        mainWindow.webContents.openDevTools();
+        botWindow.webContents.openDevTools();
+    }
 
     // ---
     // Routes
     // ------------------------------------
-
     ipcMain.handle('user:login', middlewareWrapper(user.login, 'user:login'));
     ipcMain.handle(
         'user:logout',
@@ -61,7 +61,6 @@ app.on('ready', () => {
         'user:updateRentals',
         middlewareWrapper(user.updateRentals, 'user:updateRentals')
     );
-
     ipcMain.handle(
         'user:updateRentalListings',
         middlewareWrapper(
@@ -133,6 +132,39 @@ app.on('ready', () => {
         'invoice:confirm',
         middlewareWrapper(invoice.confirm, 'invoice:confirm')
     );
+
+    // ---
+    // Auto-Update
+    // ------------------------------------
+    if (!isDev) {
+        const server = 'https://splintersuite-updater-zjqp.vercel.app';
+        const url = `${server}/update/${process.platform}/${app.getVersion()}`;
+
+        autoUpdater.setFeedURL({ url });
+        autoUpdater.checkForUpdates();
+
+        autoUpdater.on(
+            'update-downloaded',
+            (event, releaseNotes, releaseName) => {
+                log.info('Update Received');
+                // const dialogOpts = {
+                //     type: 'info',
+                //     buttons: ['Restart', 'Later'],
+                //     title: 'Application Update',
+                //     message:
+                //         process.platform === 'win32'
+                //             ? releaseNotes
+                //             : releaseName,
+                //     detail: 'A new version has been downloaded. Restart the application to apply the updates.',
+                // };
+
+                // dialog.showMessageBox(dialogOpts).then((returnValue) => {
+                //     if (returnValue.response === 0)
+                // });
+                autoUpdater.quitAndInstall();
+            }
+        );
+    }
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

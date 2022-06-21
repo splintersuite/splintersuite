@@ -1,14 +1,14 @@
 import moment from 'moment';
-import logger from 'electron-timber';
+import log from 'electron-log';
 
 export const wrap = (fn, name) => {
     return async (event, payload) => {
         const now = moment().format('DD/MM/YYYY HH:mm:ss Z');
         try {
-            logger.log(`[${now}] ${name}`);
+            log.info(`[${now}] ${name}`);
             return await fn(event, payload);
         } catch (error) {
-            logger.error(`[${now}] `, error);
+            log.error(`[${now}] `, error);
         }
     };
 };

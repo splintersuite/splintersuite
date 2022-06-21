@@ -16,6 +16,7 @@ import billing2 from '../../assets/images/billing-2.png';
 import billing3 from '../../assets/images/billing-3.png';
 
 const StyledTable = styled(Table)`
+    min-height: 256px;
     margin-top: ${({ theme }) => theme.space(3)};
 `;
 

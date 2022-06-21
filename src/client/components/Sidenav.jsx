@@ -7,7 +7,7 @@ import {
     faChartLine,
     faFileInvoice,
 } from '@fortawesome/free-solid-svg-icons';
-import { Button } from '@mantine/core';
+import { Button, Tooltip } from '@mantine/core';
 
 import logo from '../assets/images/logo.png';
 import { useUser } from '../contexts/UserContext.jsx';
@@ -55,17 +55,32 @@ const Icon = styled(FontAwesomeIcon)`
     margin-right: ${({ theme }) => theme.space(2)};
 `;
 
-const LogoutButton = styled(Button)`
+const LogoutTooltip = styled(Tooltip)`
     margin-top: auto;
     margin-right: ${({ theme }) => theme.space(4)};
     margin-left: ${({ theme }) => theme.space(4)};
+`;
+
+const LogoutButton = styled(Button)`
+    width: 100%;
     background: ${({ theme }) => theme.colors.grey[800]};
+`;
+
+const LockedMessage = styled.div`
+    padding: ${({ theme }) => theme.space(1)};
+    margin-top: auto;
+    margin-right: ${({ theme }) => theme.space(4)};
+    margin-left: ${({ theme }) => theme.space(4)};
+    font-size: 16px;
+    font-weight: bold;
+    background: ${({ theme }) => theme.colors.error};
+    border-radius: 8px;
 `;
 
 const Sidenav = (props) => {
     const navigate = useNavigate();
     const { pathname } = useLocation();
-    const { username, handleLogout } = useUser();
+    const { user, username, handleLogout } = useUser();
 
     const handleLogoutClick = async () => {
         await handleLogout();
@@ -113,8 +128,23 @@ const Sidenav = (props) => {
                 Stats
             </Item> */}
 
+            {user.locked && (
+                <LockedMessage>
+                    Account locked!
+                    <br />
+                    Please pay your invoices to continue using the bot.
+                </LockedMessage>
+            )}
+
             {username && (
-                <LogoutButton onClick={handleLogoutClick}>Logout</LogoutButton>
+                <LogoutTooltip
+                    label="You will have to re-enter your posting key to login"
+                    withArrow
+                >
+                    <LogoutButton onClick={handleLogoutClick}>
+                        Logout
+                    </LogoutButton>
+                </LogoutTooltip>
             )}
         </Nav>
     );

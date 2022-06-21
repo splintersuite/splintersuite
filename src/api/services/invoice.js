@@ -1,6 +1,5 @@
 import moment from 'moment';
 
-import store from '../../store';
 import axios from '../util/axios';
 import splinterlandsService from '../services/splinterlands';
 import userService from '../services/user';
@@ -17,7 +16,7 @@ const update = async (invoice) => {
         `${process.env.API_URL}/api/invoices/${invoice.id}`,
         { paid_at: moment() }
     );
-    return res;
+    return res.data;
 };
 
 const confirm = async (invoice) => {

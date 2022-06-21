@@ -1,0 +1,58 @@
+name: Build
+
+on:
+    workflow_dispatch
+    # push:
+    #     branches:
+    #         - 'qa'
+    # - 'master'
+    # release:
+    #     types: [published]
+
+jobs:
+    build:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [macOS-latest, ubuntu-latest, windows-latest]
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2.3.4
+
+            - name: 'Create env file Windows'
+              if: matrix.os == 'windows-latest'
+              run: |
+                  ECHO text>.env
+                  ECHO API_URL=${{ secrets.API_URL }} >> .env
+                  ECHO SECRET_MESSAGE=${{ secrets.SECRET_MESSAGE }} >> .env
+                  ECHO SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+
+            - name: 'Create env file Mac/Linux'
+              if: matrix.os == 'macOS-latest' || matrix.os == 'ubuntu-latest'
+              run: |
+                  touch .env
+                  echo API_URL=${{ secrets.API_URL }} >> .env
+                  echo SECRET_MESSAGE=${{ secrets.SECRET_MESSAGE }} >> .env
+                  echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+                  cat .env
+
+            - name: Build
+              run: |
+                  npm install
+                  npm run make
+
+            - name: Release
+              uses: softprops/action-gh-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  draft: true
+                  files: |
+                      out/**/*.deb
+                      out/**/*.dmg
+                      out/**/*Setup*.exe
+                      out/**/*.rpm
+                      out/**/*.zip
+                      out/**/*.nupkg
+                      out/**/RELEASES
