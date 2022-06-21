@@ -64,19 +64,36 @@ const Account = () => {
     const { user, username } = useUser();
     const { stats } = user;
 
-    const daily = {
-        amount: stats?.earnings?.daily?.amount || 0,
-        change: stats?.earnings?.daily?.change || 0,
+    const bot = {
+        daily: {
+            amount: stats?.bot?.daily?.amount || 0,
+            change: stats?.bot?.daily?.change || 0,
+        },
+        weekly: {
+            amount: stats?.bot?.wtd?.amount || 0,
+            change: stats?.bot?.wtd?.change || 0,
+        },
+
+        monthly: {
+            amount: stats?.bot?.mtd?.amount || 0,
+            change: stats?.bot?.mtd?.change || 0,
+        },
     };
 
-    const weekly = {
-        amount: stats?.earnings?.wtdEearnings?.amount || 0,
-        change: stats?.earnings?.wtdEearnings?.change || 0,
-    };
+    const total = {
+        daily: {
+            amount: stats?.total?.daily?.amount || 0,
+            change: stats?.total?.daily?.change || 0,
+        },
+        weekly: {
+            amount: stats?.total?.wtd?.amount || 0,
+            change: stats?.total?.wtd?.change || 0,
+        },
 
-    const monthly = {
-        amount: stats?.earnings?.mtdEearnings?.amount || 0,
-        change: stats?.earnings?.mtdEearnings?.change || 0,
+        monthly: {
+            amount: stats?.total?.mtd?.amount || 0,
+            change: stats?.total?.mtd?.change || 0,
+        },
     };
 
     return (
@@ -108,44 +125,82 @@ const Account = () => {
                         </StatCol>
                     </Row>
                 </Card>
+
                 <DataRow>
                     <DataCard>
-                        <Label>Daily DEC</Label>
+                        <Label>Total Daily DEC</Label>
                         <Text size="48px">
-                            {util.abbreviateNumber(daily.amount)}
+                            {util.abbreviateNumber(total.daily.amount)}
                         </Text>
-                        <Percentage positive={daily.change >= 0}>
-                            {daily.change >= 0 ? '+' : ''}
-                            {util.toPercentage(daily.change)}%
+                        <Percentage positive={total.daily.change >= 0}>
+                            {total.daily.change >= 0 ? '+' : ''}
+                            {util.toPercentage(total.daily.change)}%
                         </Percentage>
-                        <Indicator positive={daily.change >= 0} />
+                        <Indicator positive={total.daily.change >= 0} />
                     </DataCard>
                     <DataCard>
-                        <Label>Weekly DEC</Label>
+                        <Label>Total Weekly DEC</Label>
                         <Text size="48px">
-                            {util.abbreviateNumber(weekly.amount)}
+                            {util.abbreviateNumber(total.weekly.amount)}
                         </Text>
-                        <Percentage positive={weekly.change >= 0}>
-                            {weekly.change >= 0 ? '+' : ''}
-                            {util.toPercentage(weekly.change)}%
+                        <Percentage positive={total.weekly.change >= 0}>
+                            {total.weekly.change >= 0 ? '+' : ''}
+                            {util.toPercentage(total.weekly.change)}%
                         </Percentage>
-                        <Indicator positive={weekly.change >= 0} />
+                        <Indicator positive={total.weekly.change >= 0} />
                     </DataCard>
                     <DataCard>
-                        <Label>Monthly DEC</Label>
+                        <Label>Total Monthly DEC</Label>
                         <Text size="48px">
-                            {util.abbreviateNumber(monthly.amount)}
+                            {util.abbreviateNumber(total.monthly.amount)}
                         </Text>
-                        <Percentage positive={monthly.change >= 0}>
-                            {monthly.change >= 0 ? '+' : ''}
-                            {util.toPercentage(monthly.change)}%
+                        <Percentage positive={total.monthly.change >= 0}>
+                            {total.monthly.change >= 0 ? '+' : ''}
+                            {util.toPercentage(total.monthly.change)}%
                         </Percentage>
-                        <Indicator positive={monthly.change >= 0} />
+                        <Indicator positive={total.monthly.change >= 0} />
                     </DataCard>
                 </DataRow>
+
+                <DataRow>
+                    <DataCard>
+                        <Label>Bot Daily DEC</Label>
+                        <Text size="48px">
+                            {util.abbreviateNumber(bot.daily.amount)}
+                        </Text>
+                        <Percentage positive={bot.daily.change >= 0}>
+                            {bot.daily.change >= 0 ? '+' : ''}
+                            {util.toPercentage(bot.daily.change)}%
+                        </Percentage>
+                        <Indicator positive={bot.daily.change >= 0} />
+                    </DataCard>
+                    <DataCard>
+                        <Label>Bot Weekly DEC</Label>
+                        <Text size="48px">
+                            {util.abbreviateNumber(bot.weekly.amount)}
+                        </Text>
+                        <Percentage positive={bot.weekly.change >= 0}>
+                            {bot.weekly.change >= 0 ? '+' : ''}
+                            {util.toPercentage(bot.weekly.change)}%
+                        </Percentage>
+                        <Indicator positive={bot.weekly.change >= 0} />
+                    </DataCard>
+                    <DataCard>
+                        <Label>Bot Monthly DEC</Label>
+                        <Text size="48px">
+                            {util.abbreviateNumber(bot.monthly.amount)}
+                        </Text>
+                        <Percentage positive={bot.monthly.change >= 0}>
+                            {bot.monthly.change >= 0 ? '+' : ''}
+                            {util.toPercentage(bot.monthly.change)}%
+                        </Percentage>
+                        <Indicator positive={bot.monthly.change >= 0} />
+                    </DataCard>
+                </DataRow>
+
                 <ChartCard>
                     <ChartHeader>Daily Earnings in DEC</ChartHeader>
-                    <LineChart data={stats.weekly} />
+                    <LineChart data={[stats.bot.weekly, stats.total.weekly]} />
                 </ChartCard>
             </>
         </DashboardPage>

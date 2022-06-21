@@ -7,49 +7,50 @@ import {
     PointElement,
     LineElement,
     Tooltip,
+    Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
-Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip);
+Chart.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Tooltip,
+    Legend
+);
 
 const options = {
     responsive: true,
-};
-
-const labels = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-];
-
-const data = {
-    // labels: ,
-    datasets: [
-        {
-            label: 'Daily Earnings',
-            data: labels.map(() => 100 - Math.random() * 80),
-            borderColor: '#32FFCE',
-            backgroundColor: '#32FFCE',
+    plugins: {
+        legend: {
+            position: 'top',
         },
-    ],
+    },
 };
 
 const LineChart = (props) => {
+    const [botData, totalData] = props.data;
     const data = {
-        labels: props?.data.map((item) => moment(item.date).format('dddd')),
+        labels: [1, 2, 3, 4, 5],
+        labels: botData?.map((item) => moment(item.date).format('dddd')),
         datasets: [
             {
-                label: 'Daily Earnings',
-                data: props?.data.map((item) => item.earnings),
+                label: 'Bot Earnings',
+                data: botData?.map((item) => item.earnings),
                 borderColor: '#32FFCE',
                 backgroundColor: '#32FFCE',
             },
+            {
+                label: 'Total Earnings',
+                data: totalData?.map((item) => item.earnings),
+                borderColor: '#7950f2',
+                backgroundColor: '#7950f2',
+            },
         ],
     };
+
+    console.log(data);
 
     return <Line options={options} data={data} />;
 };
