@@ -93,10 +93,6 @@ const startRentalBot = async ({ username, settings }) => {
         const listings = fmtToLimitCardsInEachHiveTx(
             rentalArrayWithPriceAndUid
         );
-        console.log('listings: ');
-        console.log(listings);
-        console.log('listings.length: ');
-        console.log(listings.length);
 
         const relistings = fmtToLimitCardsInEachHiveTx(
             relistingPriceForEachMarketId
@@ -119,30 +115,19 @@ const startRentalBot = async ({ username, settings }) => {
 
 const fmtToLimitCardsInEachHiveTx = (input) => {
     try {
-        console.log(`fmtToLimitCardsInEachHiveTx start`);
-        const dataLimit = 2;
+        const dataLimit = 100;
         let chunks = input;
-        console.log('chunks before potentially _.chunking :');
-        console.log(chunks);
         if (input.length > dataLimit) {
             chunks = _.chunk(input, dataLimit);
         }
-        console.log('chunks after potential _.chunk :');
-        console.log(chunks);
 
         if (chunks.length === input.length) {
             chunks = [chunks];
         }
-        console.log('chunks after [chunks] :');
-        console.log(chunks);
         let outputArray = [];
         for (const transChunk of chunks) {
-            console.log('transChunk: ');
-            console.log(transChunk);
             outputArray.push(transChunk);
         }
-        console.log('outputArray is: ');
-        console.log(outputArray);
         return outputArray;
     } catch (err) {
         console.error(`fmtToLimitCardsInEachHiveTx error: ${err.message}`);
@@ -186,7 +171,7 @@ const formatListingGroups = ({ listings }) => {
         const fmtedListing = [];
 
         for (const listingGroup of listings) {
-            fmtedListing.push(...listingGRoup);
+            fmtedListing.push(...listingGroup);
         }
 
         return fmtedListing;
