@@ -39,11 +39,11 @@ window.api.bot.start(async (event) => {
         // ---
         // List, relist, cancel
         // ------------------------------------
-        if (listings.length > 0) {
-            for (const listingGroup of listings) {
-                if (hiveTransactions % 4 === 0) {
-                    await sleep(4000);
-                }
+        for (const listingGroup of listings) {
+            if (hiveTransactions % 4 === 0) {
+                await sleep(4000);
+            }
+            if (listingGroup.length > 0) {
                 await window.api.hive.createRentals({
                     cards: listingGroup,
                 });
@@ -57,11 +57,11 @@ window.api.bot.start(async (event) => {
             message: `Number of listings: ${listingsNum}`,
         });
 
-        if (relistings.length > 0) {
-            for (const relistingGroup of relistings) {
-                if (hiveTransactions % 4 === 0) {
-                    await sleep(4000);
-                }
+        for (const relistingGroup of relistings) {
+            if (hiveTransactions % 4 === 0) {
+                await sleep(4000);
+            }
+            if (relistingGroup.length > 0) {
                 await window.api.hive.updateRentals({
                     cards: relistingGroup,
                 });
@@ -75,11 +75,11 @@ window.api.bot.start(async (event) => {
             message: `Number of relistings: ${listingsNum}`,
         });
 
-        if (cancellations.length > 0) {
-            for (const cancelGroup of cancellations) {
-                if (hiveTransactions % 4 === 0) {
-                    await sleep(4000);
-                }
+        for (const cancelGroup of cancellations) {
+            if (hiveTransactions % 4 === 0) {
+                await sleep(4000);
+            }
+            if (cancelGroup.length > 0) {
                 await window.api.hive.deleteRentals({
                     cards: cancelGroup,
                 });
