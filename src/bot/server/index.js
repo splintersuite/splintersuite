@@ -163,16 +163,35 @@ const updatedRentalListingsToSend = async ({
         const { cardsListedButNotRentedOut, searchableRentListByUid } =
             await filterCollectionByRentalListings({ username });
 
+        const fmtedListings = formatListingGroups({ listings });
+        const fmtedRelistings = formatListingGroups({ listings: relistings });
+
         const rentalListings = filterRentalListingsByNewPostedTransactions({
             users_id,
-            listings,
-            relistings,
+            listings: fmtedListings,
+            relistings: fmtedRelistings,
             searchableRentalListings: searchableRentListByUid,
         });
 
         return { rentalListings };
     } catch (err) {
         console.error(`updatedRentalListingsToSend error: ${err.message}`);
+        throw err;
+    }
+};
+
+const formatListingGroups = ({ listings }) => {
+    try {
+        console.log(`formatListingGroups start`);
+        const fmtedListing = [];
+
+        for (const listingGroup of listings) {
+            fmtedListing.push(...listingGRoup);
+        }
+
+        return fmtedListing;
+    } catch (err) {
+        console.error(`formatListingGroups error: ${err.message}`);
         throw err;
     }
 };
