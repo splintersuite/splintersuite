@@ -32,8 +32,6 @@ const Settings = () => {
         },
     });
 
-    console.log(form);
-
     const handleSubmit = (values) => {
         const formattedValues = {};
         for (const [key, value] of Object.entries(values)) {

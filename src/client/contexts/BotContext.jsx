@@ -66,7 +66,6 @@ export const BotProvider = (props) => {
         if (res.code === 1) {
             setBotSettings(res.data.settings);
         }
-        console.log(res.data.settings);
     };
 
     const getLoading = async () => {
