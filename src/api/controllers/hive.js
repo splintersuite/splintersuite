@@ -10,17 +10,17 @@ const createRentals = async (event, payload) => {
 };
 
 const updateRentals = async (event, payload) => {
-    const { ids, price } = payload;
+    const { cards, price } = payload;
 
-    const res = await hiveService.updateRentals(ids, price);
+    const res = await hiveService.updateRentals(cards, price);
 
     return util.success(res);
 };
 
 const deleteRentals = async (event, payload) => {
-    const { ids } = payload;
+    const { cards } = payload;
 
-    const res = await hiveService.deleteRentals(ids);
+    const res = await hiveService.deleteRentals(cards);
 
     return util.success(res);
 };

@@ -90,8 +90,10 @@ window.api.bot.start(async (event) => {
         listingsNum = 0;
         hiveTransactions = 0;
 
-        window.api.bot.log({ message: 'sleeping for 10 seconds' });
-
+        // ---
+        // Sleep - wait for api to propogate
+        // ------------------------------------
+        window.api.bot.log({ message: 'Sleep for 10 seconds' });
         await sleep(10000);
 
         const { rentalListings } = await rentals.updatedRentalListingsToSend({
