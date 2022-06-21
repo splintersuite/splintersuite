@@ -69,7 +69,7 @@ const addPriceRelistInformationForEachCardByMarketId = ({
         if (priceData == null || priceData.low_price == null) {
             const rentalNotFoundForCard = ['N', uid, market_id];
             return rentalNotFoundForCard;
-        } else if (priceData.low_price < buy_price) {
+        } else if (priceData.low_price >= buy_price) {
             // this means that the card should NOT be relisted
             const doNotChangeThePrice = [
                 'C',
