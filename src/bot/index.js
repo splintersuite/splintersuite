@@ -127,12 +127,12 @@ window.api.bot.start(async (event) => {
         // });
         // sleep for 10 seconds to let collection endpoint update with listings + relistings
         await sleep(10000);
-        // const { rentalListings } = await rentals.updatedRentalListingsToSend({
-        //     username: user.username,
-        //     users_id: user.id,
-        //     listings,
-        //     relistings,
-        // });
+        const { rentalListings } = await rentals.updatedRentalListingsToSend({
+            username: user.username,
+            users_id: user.id,
+            listings,
+            relistings,
+        });
         await window.api.user.updateRentalListings({ rentalListings });
 
         // ---
