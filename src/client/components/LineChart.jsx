@@ -32,7 +32,6 @@ const options = {
 const LineChart = (props) => {
     const [botData, totalData] = props.data;
     const data = {
-        labels: [1, 2, 3, 4, 5],
         labels: botData?.map((item) => moment(item.date).format('dddd')),
         datasets: [
             {
