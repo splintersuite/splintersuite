@@ -1,10 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
 import moment from 'moment';
 
+import hooks from '../hooks';
+
 const initialState = {
     username: '',
     invoices: [],
 };
+
+const ONE_HOUR = 3600000;
 
 export const UserContext = React.createContext({ ...initialState });
 
@@ -57,6 +61,10 @@ export const UserProvider = (props) => {
     useEffect(() => {
         getUser();
     }, [username]);
+
+    hooks.useInterval(async () => {
+        await getUser();
+    }, ONE_HOUR);
 
     return (
         <UserContext.Provider
