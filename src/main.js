@@ -93,10 +93,10 @@ app.on('ready', () => {
         'bot:getStats',
         middlewareWrapper(bot.getStats, 'bot:getStats')
     );
-    ipcMain.handle(
-        'bot:updateStats',
-        middlewareWrapper(bot.updateStats, 'bot:updateStats')
-    );
+    ipcMain.handle('bot:updateStats', (event, payload) => {
+        middlewareWrapper(bot.updateStats, 'bot:updateStats')(event, payload);
+        mainWindow.webContents.send('bot:reloadStats', payload);
+    });
     ipcMain.handle(
         'bot:getLoading',
         middlewareWrapper(bot.getLoading, 'bot:getLoading')

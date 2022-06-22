@@ -124,6 +124,10 @@ export const BotProvider = (props) => {
         setBotLoading(isLoading);
     });
 
+    window.api.bot.reloadStats(async (event, payload) => {
+        await getStats();
+    });
+
     return (
         <BotContext.Provider
             value={{
