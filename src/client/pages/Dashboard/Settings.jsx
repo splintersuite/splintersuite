@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { Button } from '@mantine/core';
+import { Button, Input } from '@mantine/core';
 import { useForm } from '@mantine/form';
 
 import Text from '../../components/Text.jsx';
@@ -16,6 +16,12 @@ const SectionSubheader = styled(Text)`
 
 const InputRow = styled(Row)`
     margin-bottom: ${({ theme }) => theme.space(4)};
+`;
+
+const CPInput = styled(LineInput)`
+    input {
+        width: 108px;
+    }
 `;
 
 const Settings = () => {
@@ -49,6 +55,23 @@ const Settings = () => {
             </Card>
 
             <form onSubmit={form.onSubmit(handleSubmit)}>
+                <Card>
+                    <h2>Choose Daily Relistings</h2>
+                    <SectionSubheader>
+                        This will determine how frequently the bot attempts to
+                        relist your cards.
+                    </SectionSubheader>
+
+                    <LineInput
+                        label="Daily Relistings"
+                        min={1}
+                        max={24}
+                        {...form.getInputProps('dailyRelistings', {
+                            type: 'number',
+                        })}
+                    />
+                </Card>
+
                 <Card>
                     <h2>Choose Minimum Levels</h2>
                     <SectionSubheader>
@@ -132,24 +155,71 @@ const Settings = () => {
                         />
                     </Row>
                 </Card>
+
+                <Card>
+                    <h2>Choose Minimum CP</h2>
+                    <SectionSubheader>
+                        All monsters and summoners greater than or equal to the
+                        selected CP will be listed for rental.
+                    </SectionSubheader>
+
+                    <InputRow>
+                        <CPInput
+                            label="Common Cards"
+                            min={0}
+                            step={5}
+                            {...form.getInputProps('commonCP', {
+                                type: 'number',
+                            })}
+                        />
+                    </InputRow>
+
+                    <InputRow>
+                        <CPInput
+                            label="Rare Cards"
+                            min={0}
+                            step={10}
+                            {...form.getInputProps('rareCP', {
+                                type: 'number',
+                            })}
+                        />
+                    </InputRow>
+
+                    <InputRow>
+                        <CPInput
+                            label="Epic Cards"
+                            min={0}
+                            step={100}
+                            {...form.getInputProps('epicCP', {
+                                type: 'number',
+                            })}
+                        />
+                    </InputRow>
+
+                    <Row>
+                        <CPInput
+                            label="Legendary Cards"
+                            min={0}
+                            step={500}
+                            {...form.getInputProps('legendaryCP', {
+                                type: 'number',
+                            })}
+                        />
+                    </Row>
+                </Card>
+
+                <Card>
+                    <Row>
+                        <h1>Settings</h1>
+                        <Button
+                            style={{ marginLeft: 'auto' }}
+                            onClick={form.onSubmit(handleSubmit)}
+                        >
+                            Save Settings
+                        </Button>
+                    </Row>
+                </Card>
             </form>
-
-            <Card>
-                <h2>Choose Daily Relistings</h2>
-                <SectionSubheader>
-                    This will determine how frequently the bot attempts to
-                    relist your cards.
-                </SectionSubheader>
-
-                <LineInput
-                    label="Daily Relistings"
-                    min={1}
-                    max={24}
-                    {...form.getInputProps('dailyRelistings', {
-                        type: 'number',
-                    })}
-                />
-            </Card>
         </DashboardPage>
     );
 };

@@ -10,7 +10,7 @@ const initialState = {
     botActive: false,
     botLoading: false,
     botSettings: {
-        dailyRelistings: 0,
+        dailyRelistings: 1,
         commonNorm: 1,
         commonGold: 1,
         rareNorm: 1,
@@ -19,6 +19,10 @@ const initialState = {
         epicGold: 1,
         legendaryNorm: 1,
         legendaryGold: 1,
+        commonCP: 0,
+        rareCP: 0,
+        epicCP: 0,
+        legendaryCP: 0,
     },
     botStats: {
         startedAt: '',
