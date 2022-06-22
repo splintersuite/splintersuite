@@ -103,6 +103,15 @@ export const BotProvider = (props) => {
 
     useEffect(() => {
         stopBot();
+
+        window.api.bot.updateLoading((event, payload) => {
+            const { isLoading } = payload;
+            setBotLoading(isLoading);
+        });
+
+        window.api.bot.reloadStats(async (event, payload) => {
+            await getStats();
+        });
     }, []);
 
     useEffect(() => {
@@ -118,15 +127,6 @@ export const BotProvider = (props) => {
     hooks.useInterval(async () => {
         await getStats();
     }, FIVE_MINUTES);
-
-    window.api.bot.updateLoading((event, payload) => {
-        const { isLoading } = payload;
-        setBotLoading(isLoading);
-    });
-
-    window.api.bot.reloadStats(async (event, payload) => {
-        await getStats();
-    });
 
     return (
         <BotContext.Provider
