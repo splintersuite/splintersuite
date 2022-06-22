@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('api', {
         getStats: () => ipcRenderer.invoke('bot:getStats'),
         updateLoading: (callback) =>
             ipcRenderer.on('bot:updateLoading', callback),
+        reloadStats: (callback) => ipcRenderer.on('bot:reloadStats', callback),
     },
     invoice: {
         get: () => ipcRenderer.invoke('invoice:get'),

@@ -34,7 +34,7 @@ const Input = styled.input`
 
 const LineInput = ({ label, min, max, ...props }) => {
     return (
-        <Container>
+        <Container className={props.className}>
             <InputLabel>{label}</InputLabel>
             <Input {...props} min={min} max={max} type="number" />
         </Container>

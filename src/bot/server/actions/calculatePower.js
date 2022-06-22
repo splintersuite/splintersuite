@@ -39,7 +39,7 @@ const XPLevels = [
     [1000, 3000, 7000],
 ];
 
-const findCardPower = (id, rarity, _xp, alpha_xp, _tier, edition, gold) => {
+const findCardPower = ({ id, rarity, _xp, alpha_xp, _tier, edition, gold }) => {
     try {
         // idk what tier is, seems like its a way for reward cards + gladius cards to get counted tho tbh
 

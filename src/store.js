@@ -111,6 +111,10 @@ const defaults = {
             epicGold: 1,
             legendaryNorm: 1,
             legendaryGold: 1,
+            commonCP: 20,
+            rareCP: 40,
+            epicCP: 100,
+            legendaryCP: 500,
         },
         stats: {
             startedAt: '',

@@ -1,41 +1,49 @@
-"use strict";
+'use strict';
 
 const {
-  filterCollectionArraysByLevelLimitThresholds,
-  sortCollectionArrayByLevel,
-  filterCollectionArrayByLevel,
-} = require("./collection");
+    filterCollectionArraysByLevelLimitThresholds,
+    sortCollectionArrayByLevel,
+    filterCollectionArrayByLevel,
+} = require('./collection');
+
+const { filterCollectionArraysByCPLimitThresholds } = require('./settings');
 
 const transformCollectionIntoCollectionByLevelObj = ({
-  settings,
-  collection,
+    settings,
+    collection,
 }) => {
-  try {
-    console.log(`transformCollectionIntoCollectionByLevelObj start`);
+    try {
+        console.log(`transformCollectionIntoCollectionByLevelObj start`);
 
-    const cardsFilteredByUserLevelLimits =
-      filterCollectionArraysByLevelLimitThresholds({
-        collection,
-        settings,
-      });
+        const cardsFilteredByUserLevelLimits =
+            filterCollectionArraysByLevelLimitThresholds({
+                collection,
+                settings,
+            });
 
-    const sortedByLevelArray = sortCollectionArrayByLevel({
-      collection: cardsFilteredByUserLevelLimits,
-    });
+        const cardsFilteredByUserPowerLimits =
+            filterCollectionArraysByCPLimitThresholds({
+                collection: cardsFilteredByUserLevelLimits,
+                settings,
+            });
 
-    const collectionByLevelObj = filterCollectionArrayByLevel({
-      collection: sortedByLevelArray,
-    });
+        const sortedByLevelArray = sortCollectionArrayByLevel({
+            collection: cardsFilteredByUserPowerLimits,
+        });
 
-    return collectionByLevelObj;
-  } catch (err) {
-    console.error(
-      `transformCollectionIntoCollectionByLevelObj error: ${err.message}`
-    );
-    throw err;
-  }
+        const collectionByLevelObj = filterCollectionArrayByLevel({
+            collection: sortedByLevelArray,
+        });
+
+        return collectionByLevelObj;
+    } catch (err) {
+        console.error(
+            `transformCollectionIntoCollectionByLevelObj error: ${err.message}`
+        );
+        throw err;
+    }
 };
 
 module.exports = {
-  transformCollectionIntoCollectionByLevelObj,
+    transformCollectionIntoCollectionByLevelObj,
 };
