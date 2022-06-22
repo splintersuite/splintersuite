@@ -4,8 +4,9 @@ const {
     filterCollectionArraysByLevelLimitThresholds,
     sortCollectionArrayByLevel,
     filterCollectionArrayByLevel,
-    filterCollectionArraysByCPLimitThresholds,
 } = require('./collection');
+
+const { filterCollectionArraysByCPLimitThresholds } = require('./settings');
 
 const transformCollectionIntoCollectionByLevelObj = ({
     settings,
