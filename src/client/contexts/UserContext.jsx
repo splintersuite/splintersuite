@@ -18,6 +18,7 @@ export const UserProvider = (props) => {
     const [user, setUser] = useState({});
     const [username, setUsername] = useState('');
     const [invoices, setInvoices] = useState(initialState.invoices);
+    const [userLoading, setUserLoading] = useState(true);
 
     const getUser = async () => {
         const res = await window.api.user.get();
@@ -39,6 +40,7 @@ export const UserProvider = (props) => {
         if (res?.code === 1) {
             setUsername(username);
         }
+        await getUser();
         return res;
     };
 
@@ -59,8 +61,10 @@ export const UserProvider = (props) => {
     };
 
     useEffect(() => {
-        getUser();
-    }, [username]);
+        getUser().then(() => {
+            setUserLoading(false);
+        });
+    }, []);
 
     hooks.useInterval(async () => {
         await getUser();
@@ -73,7 +77,7 @@ export const UserProvider = (props) => {
                 user,
                 username,
                 invoices,
-                getUser,
+                userLoading,
                 handleLogout,
                 handleLogin,
                 handleConfirmInvoice,
