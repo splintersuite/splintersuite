@@ -56,12 +56,6 @@ const Landing = () => {
         navigate('/app');
     };
 
-    useEffect(() => {
-        if (username !== '') {
-            navigate('/app');
-        }
-    }, []);
-
     return (
         <PageBackground>
             {username !== '' && <Navigate to="/app" />}
