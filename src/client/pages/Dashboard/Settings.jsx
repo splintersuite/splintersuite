@@ -40,6 +40,10 @@ const Settings = () => {
         updateBotSettings(formattedValues);
     };
 
+    const handleBlur = () => {
+        handleSubmit(form.values);
+    };
+
     return (
         <DashboardPage>
             <Card>
@@ -54,7 +58,7 @@ const Settings = () => {
                 </Row>
             </Card>
 
-            <form onSubmit={form.onSubmit(handleSubmit)}>
+            <form onSubmit={form.onSubmit(handleSubmit)} onBlur={handleBlur}>
                 <Card>
                     <h2>Choose Daily Relistings</h2>
                     <SectionSubheader>
@@ -205,18 +209,6 @@ const Settings = () => {
                                 type: 'number',
                             })}
                         />
-                    </Row>
-                </Card>
-
-                <Card>
-                    <Row>
-                        <h1>Settings</h1>
-                        <Button
-                            style={{ marginLeft: 'auto' }}
-                            onClick={form.onSubmit(handleSubmit)}
-                        >
-                            Save Settings
-                        </Button>
                     </Row>
                 </Card>
             </form>
