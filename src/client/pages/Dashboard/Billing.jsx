@@ -15,8 +15,11 @@ import billing1 from '../../assets/images/billing-1.png';
 import billing2 from '../../assets/images/billing-2.png';
 import billing3 from '../../assets/images/billing-3.png';
 
-const StyledTable = styled(Table)`
+const InvoicesCard = styled(Card)`
     min-height: 256px;
+`;
+
+const StyledTable = styled(Table)`
     margin-top: ${({ theme }) => theme.space(3)};
 `;
 
@@ -73,7 +76,7 @@ const Billing = () => {
                 </Row>
             </Card>
 
-            <Card>
+            <InvoicesCard>
                 <h2>Invoices</h2>
                 <StyledTable>
                     <thead>
@@ -113,7 +116,7 @@ const Billing = () => {
                         ))}
                     </tbody>
                 </StyledTable>
-            </Card>
+            </InvoicesCard>
 
             <Card>
                 <h2>How do I pay?</h2>
