@@ -27,6 +27,10 @@ const calculateRentalPriceToList = async ({ collectionObj }) => {
                 });
 
             for (const card of collectionObj[level]) {
+                // JBOXXX NOTE:
+                // need to add some pricing info here or
+                // send ALL of the current data to the frontend and then just lookup
+                // rather than sending a bunch of calls
                 const rentalPriceForUid =
                     addPriceListInformationForEachCardByUid({
                         card,
@@ -39,6 +43,9 @@ const calculateRentalPriceToList = async ({ collectionObj }) => {
                 }
             }
         }
+
+        // JBOXXX NOTE: lookup old prices for cardsUnableToFindPriceFor
+
         // TNT TODO: find new price data for the cards in cardsUnableToFindPriceFor
         return rentalPriceForEachCardUid;
     } catch (err) {
@@ -73,6 +80,8 @@ const addPriceListInformationForEachCardByUid = ({
 
         // TNT TODO: make this more robust obviously
 
+        // JBOXXX NOTE: this is where TNT gets the low price
+        // SOME MATH HERE
         const price = priceData.low_price;
 
         const rentalPriceForUid = [uid, price];

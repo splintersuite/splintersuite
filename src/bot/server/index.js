@@ -33,7 +33,7 @@ const {
 const { axiosPostInstance } = require('./requests/axiosPostInstance');
 const _ = require('lodash');
 
-const startRentalBot = async ({ username, settings }) => {
+const startRentalBot = async ({ username, settings, marketPrices }) => {
     try {
         console.log(`startRentalsForAccount username: ${username}`);
 

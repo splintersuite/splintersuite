@@ -26,6 +26,7 @@ window.api.bot.start(async (event) => {
 
     while (active && user.username === username && !user.locked) {
         await window.api.bot.updateLoading({ isLoading: true });
+        const marketPrices = await window.api.market.getMarketPrices();
 
         // ---
         // Get cards
@@ -34,6 +35,7 @@ window.api.bot.start(async (event) => {
             await rentals.startRentalBot({
                 username,
                 settings,
+                marketPrices,
             });
 
         // ---

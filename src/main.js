@@ -4,6 +4,7 @@ const isDev = require('electron-is-dev');
 const log = require('electron-log');
 
 const user = require('./api/controllers/user').default;
+const market = require('./api/controllers/market').default;
 const bot = require('./api/controllers/bot').default;
 const hive = require('./api/controllers/hive').default;
 const invoice = require('./api/controllers/invoice').default;
@@ -67,6 +68,11 @@ app.on('ready', () => {
             user.updateRentalListings,
             'user:updateRentalListings'
         )
+    );
+
+    ipcMain.handle(
+        'market:getMarketPrices',
+        middlewareWrapper(market.getMarketPrices, 'market:getMarketPrices')
     );
 
     ipcMain.handle('bot:start', (event) => {
