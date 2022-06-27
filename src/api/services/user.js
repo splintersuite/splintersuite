@@ -105,7 +105,7 @@ const updateRentals = async (username, rentals) => {
 
 const updateRentalListings = async ({ rentalListings }) => {
     const res = await axios.post(
-        `${process.env.API_URL}/api/rentalListings/newrentallistings`,
+        `${process.env.API_URL}/api/rentallistings/newrentallistings`,
         { rentalListings }
     );
     return res;
