@@ -7,7 +7,7 @@ const setMarketPrices = async (marketPrices) => {
 
 const fetchMarketPrices = async () => {
     const { data } = await axios.get(
-        `${process.env.API_URL}/market/current_prices`
+        `${process.env.API_URL}/api/market/current_prices`
     );
     return data;
 };
