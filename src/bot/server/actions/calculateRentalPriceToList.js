@@ -6,7 +6,7 @@ const {
 } = require('./rentalListInfo');
 
 // this requires the object that has key = level, value [ array of cards with level = key]
-const calculateRentalPriceToList = async ({ collectionObj }) => {
+const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
     try {
         //  console.log("calculateRentalPriceToList start");
         const rentalPriceForEachCardUid = [];
@@ -34,7 +34,9 @@ const calculateRentalPriceToList = async ({ collectionObj }) => {
                 const rentalPriceForUid =
                     addPriceListInformationForEachCardByUid({
                         card,
+                        level,
                         searchableRentList,
+                        marketPrices,
                     });
                 if (rentalPriceForUid[1] === 'N') {
                     cardsUnableToFindPriceFor.push(rentalPriceForUid);
@@ -56,7 +58,9 @@ const calculateRentalPriceToList = async ({ collectionObj }) => {
 
 const addPriceListInformationForEachCardByUid = ({
     card,
+    level,
     searchableRentList,
+    marketPrices,
 }) => {
     try {
         //  console.log(`addPriceListInformationForEachCardByUid start`);
@@ -70,9 +74,11 @@ const addPriceListInformationForEachCardByUid = ({
         }
 
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
-        const priceData = searchableRentList[rentListKey];
+        const groupedPrices = searchableRentList[rentListKey];
 
-        if (priceData == null || priceData.low_price == null) {
+        const goldHandle = _gold === 'T';
+        const marketKey = `${card_detail_id}-${level}=${goldHandle}`;
+        if (groupedPrices == null || groupedPrices.low_price == null) {
             const rentalNotFoundForCard = [uid, 'N'];
 
             return rentalNotFoundForCard;
@@ -82,7 +88,7 @@ const addPriceListInformationForEachCardByUid = ({
 
         // JBOXXX NOTE: this is where TNT gets the low price
         // SOME MATH HERE
-        const price = priceData.low_price;
+        const price = groupedPrices.low_price;
 
         const rentalPriceForUid = [uid, price];
 
