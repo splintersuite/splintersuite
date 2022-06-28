@@ -90,6 +90,7 @@ const adjustCollectionRentalListingDataForDB = ({ cardInfo, users_id }) => {
             market_id,
             buy_price,
             gold,
+            edition,
         } = cardInfo;
         //  console.log('adjustCollectionRentalListingDataForDB start');
         const cardToInsert = {};
@@ -102,6 +103,7 @@ const adjustCollectionRentalListingDataForDB = ({ cardInfo, users_id }) => {
         cardToInsert.sell_trx_id = market_id;
         cardToInsert.price = parseFloat(buy_price);
         cardToInsert.is_gold = gold;
+        cardToInsert.edition = parseInt(edition);
 
         return cardToInsert;
     } catch (err) {
