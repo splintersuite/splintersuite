@@ -78,6 +78,8 @@ const startRentalBot = async ({ username, settings, marketPrices }) => {
             marketPrices,
         });
 
+        console.log('rentalArrayWithPriceAndUid', rentalArrayWithPriceAndUid);
+
         const { relistingPriceForEachMarketId, cardsNotWorthRelisting } =
             await calculateRelistingPrice({
                 collectionObj: collectionByLevelObjLstedButNotRentedOut,

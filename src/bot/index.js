@@ -22,7 +22,9 @@ window.api.bot.start(async (event) => {
     // ------------------------------------
     let numListed = 0;
     const startedAt = moment().format();
-    const duration = util.periodToMs(settings.dailyRelistings);
+    const duration = !Number.isFinite(util.periodToMs(settings.dailyRelistings))
+        ? util.periodToMs(1)
+        : util.periodToMs(settings.dailyRelistings);
 
     while (active && user.username === username && !user.locked) {
         await window.api.bot.updateLoading({ isLoading: true });
@@ -38,6 +40,7 @@ window.api.bot.start(async (event) => {
                 marketPrices,
             });
 
+        process.exit();
         // ---
         // List, relist, cancel
         // ------------------------------------

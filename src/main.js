@@ -33,7 +33,7 @@ app.on('ready', () => {
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
     const botWindow = new BrowserWindow({
-        show: false,
+        // show: false,
         // width: 1200,
         // height: 800,
         webPreferences: {
