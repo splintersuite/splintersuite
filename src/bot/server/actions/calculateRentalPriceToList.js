@@ -118,6 +118,7 @@ const calculateRentalPrice = ({
 }) => {
     const { avg, low, high, stdDev, median, volume } =
         currentPriceStats[ALL_OPEN_TRADES];
+
     if (cardRarity[card_detail_id] === 4) {
         // is legie
     }
@@ -132,6 +133,20 @@ const calculateRentalPrice = ({
         const zScoreOfListingFromLowestTrade =
             Math.abs(lowestListing - low) / stdDev;
         const zScoreOfLowestTrade = Math.abs(low - avg) / stdDev;
+
+        // most common example
+        // avg = 8;
+        // stddev = 3;
+        // low = 2;
+        // llisting = 1;
+        if (volume > 10 && zScoreOfListing >= 2.0 && lowestListing <= low) {
+            if (average - stdDev > low) {
+                return average - stdDev;
+            } else {
+                // low is greater than average - stdDev
+                return low;
+            }
+        }
 
         // scenario #1.
         // The lowest trade is actually very far away from the average
