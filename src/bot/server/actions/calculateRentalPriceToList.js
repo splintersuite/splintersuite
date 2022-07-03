@@ -90,7 +90,8 @@ const addPriceListInformationForEachCardByUid = ({
         if (marketPrices[marketKey] != null) {
             const price = calculateRentalPrice({
                 card_detail_id,
-                groupedLowPrice: groupedPrices.low_price,
+                lowPrice: groupedPrices.low_price,
+                numListings: groupedPrices.qty,
                 currentPriceStats: marketPrices[marketKey],
             });
         }
@@ -113,25 +114,27 @@ const addPriceListInformationForEachCardByUid = ({
 
 const calculateRentalPrice = ({
     card_detail_id,
-    lowestListing,
+    lowPrice,
+    numListings,
     currentPriceStats,
 }) => {
     const { avg, low, high, stdDev, median, volume } =
         currentPriceStats[ALL_OPEN_TRADES];
 
-    if (cardRarity[card_detail_id] === 4) {
-        // is legie
+    if (cardRarity[card_detail_id] === 4 && numListings < 3 && lowPrice) {
+        // is legie and at max only 2 are listed
+        return avg - stdDev;
     }
     if (
         Number.isFinite(avg) &&
         Number.isFinite(stdDev) &&
         Number.isFinite(low) &&
-        Number.isFinite(lowestListing) &&
+        Number.isFinite(lowPrice) &&
         stdDev > 0
     ) {
-        const zScoreOfListing = Math.abs(lowestListing - avg) / stdDev;
+        const zScoreOfListing = Math.abs(lowPrice - avg) / stdDev;
         const zScoreOfListingFromLowestTrade =
-            Math.abs(lowestListing - low) / stdDev;
+            Math.abs(lowPrice - low) / stdDev;
         const zScoreOfLowestTrade = Math.abs(low - avg) / stdDev;
 
         // most common example
@@ -139,7 +142,7 @@ const calculateRentalPrice = ({
         // stddev = 3;
         // low = 2;
         // llisting = 1;
-        if (volume > 10 && zScoreOfListing >= 2.0 && lowestListing <= low) {
+        if (volume > 10 && zScoreOfListing >= 2.0 && lowPrice <= low) {
             if (average - stdDev > low) {
                 return average - stdDev;
             } else {
@@ -152,19 +155,19 @@ const calculateRentalPrice = ({
         // The lowest trade is actually very far away from the average
         // we probably want to list closer to the average
         // but we should probably be hitting the api for that card's listings for more clarity
-        if (zScoreOfLowestTrade > 2 && lowestListing > low) {
-            return lowestListing;
+        if (zScoreOfLowestTrade > 2 && lowPrice > low) {
+            return lowPrice;
         } else if (zScoreOfLowestTrade > 2) {
             // we really should want some more information here about active listings
             // the low trade is far away from the average
             // and the lowest listing is greater than the low trade
-            return lowestListing;
+            return lowPrice;
         }
 
         // scenario #2 (the most likely)
         // the lowest offer is 2 standard deviations away from the avg
         // and the low is greater than the lowestlisting
-        if (zScoreOfListing > 2 && low > lowestListing) {
+        if (zScoreOfListing > 2 && low > lowPrice) {
             // we probably want to wait before listing
             // alternatively we can list at the lowest trade
             return low;
