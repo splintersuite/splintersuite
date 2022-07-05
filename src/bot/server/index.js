@@ -26,11 +26,6 @@ const {
 
 const { getActiveRentalsByRentalId } = require('./actions/currentRentals');
 
-const {
-    filterCollectionByRentalListings,
-    filterRentalListingsByNewPostedTransactions,
-} = require('./actions/updateRentalListings');
-const { axiosPostInstance } = require('./requests/axiosPostInstance');
 const _ = require('lodash');
 
 const startRentalBot = async ({ username, settings }) => {
@@ -135,52 +130,6 @@ const fmtToLimitCardsInEachHiveTx = (input) => {
     }
 };
 
-const updatedRentalListingsToSend = async ({
-    username,
-    users_id,
-    listings,
-    relistings,
-}) => {
-    try {
-        console.log('updatedRentalListingsToSend start');
-        // listings and relistings both arrays of arrays that have [uid, priceInDec]
-
-        const { cardsListedButNotRentedOut, searchableRentListByUid } =
-            await filterCollectionByRentalListings({ username });
-
-        const fmtedListings = formatListingGroups({ listings });
-        const fmtedRelistings = formatListingGroups({ listings: relistings });
-
-        const rentalListings = filterRentalListingsByNewPostedTransactions({
-            users_id,
-            listings: fmtedListings,
-            relistings: fmtedRelistings,
-            searchableRentalListings: searchableRentListByUid,
-        });
-
-        return { rentalListings };
-    } catch (err) {
-        console.error(`updatedRentalListingsToSend error: ${err.message}`);
-        throw err;
-    }
-};
-
-const formatListingGroups = ({ listings }) => {
-    try {
-        console.log(`formatListingGroups start`);
-        const fmtedListing = [];
-
-        for (const listingGroup of listings) {
-            fmtedListing.push(...listingGroup);
-        }
-
-        return fmtedListing;
-    } catch (err) {
-        console.error(`formatListingGroups error: ${err.message}`);
-        throw err;
-    }
-};
-
 // tnt note: this was what I was doing to find the most precise data before I learned about grouped_by endpoint.
 // need to sort them by filteredUserLevelLimits, before going back in more depth. TNT TODO: finisht he more precise algorithmn later
 const getPreciseRentalPrices = ({ cardsFilteredByUserLevelLimits }) => {
@@ -203,19 +152,6 @@ const getPreciseRentalPrices = ({ cardsFilteredByUserLevelLimits }) => {
     }
 };
 
-const updateRentalListings = async ({ rentalListings }) => {
-    try {
-        // console.log(`updateRentalListings start`);
-        const res = await axiosPostInstance(
-            `${process.env.API_URL}/api/rentalListings/newrentallistings`,
-            { rentalListings }
-        );
-        return res;
-    } catch (err) {
-        console.error(`updateRentalListings error: ${err.message}`);
-        throw err;
-    }
-};
 const settings = {
     commonNorm: 9,
     commonGold: 9,
@@ -230,6 +166,4 @@ const settings = {
 // startRentalBot({ username: "hackinhukk", settings });
 export default {
     startRentalBot,
-    updatedRentalListingsToSend,
-    updateRentalListings,
 };

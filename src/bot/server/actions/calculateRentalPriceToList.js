@@ -72,8 +72,15 @@ const addPriceListInformationForEachCardByUid = ({
         }
 
         // TNT TODO: make this more robust obviously
+        let price;
+        price = parseFloat(priceData.low_price);
 
-        const price = priceData.low_price;
+        if (price < 1) {
+            throw new Error('price is less than 1 on listing');
+            const rentalNotFoundForCard = [uid, 'N'];
+
+            return rentalNotFoundForCard;
+        }
 
         const rentalPriceForUid = [uid, price];
 
