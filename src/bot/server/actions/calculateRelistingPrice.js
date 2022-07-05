@@ -80,7 +80,18 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             ];
             return doNotChangeThePrice;
         } else {
-            const price = priceData.low_price;
+            const price = parseFloat(priceData.low_price);
+
+            if (price < 1) {
+                const doNotChangeThePrice = [
+                    'C',
+                    uid,
+                    market_id,
+                    buy_price,
+                    priceData.low_price,
+                ];
+                return doNotChangeThePrice;
+            }
 
             const rentalRelistingPriceForMarketId = [market_id, `${price}`];
             // const rentalRelistingPriceForMarketId = [uid, `${price}`];

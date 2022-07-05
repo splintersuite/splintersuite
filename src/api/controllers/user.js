@@ -38,12 +38,4 @@ const updateRentals = async (event, payload) => {
     return util.success();
 };
 
-const updateRentalListings = async (event, payload) => {
-    const { rentalListings } = payload;
-
-    await userService.updateRentalListings({ rentalListings });
-
-    return util.success();
-};
-
-export default { login, logout, get, updateRentals, updateRentalListings };
+export default { login, logout, get, updateRentals };

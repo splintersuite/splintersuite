@@ -103,14 +103,6 @@ const updateRentals = async (username, rentals) => {
     return res;
 };
 
-const updateRentalListings = async ({ rentalListings }) => {
-    const res = await axios.post(
-        `${process.env.API_URL}/api/rentalListings/newrentallistings`,
-        { rentalListings }
-    );
-    return res;
-};
-
 const clear = async () => {
     await store.clear();
 };
@@ -131,7 +123,6 @@ export default {
     getLocked,
     fetchUser,
     updateRentals,
-    updateRentalListings,
     getId,
     clear,
 };
