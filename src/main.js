@@ -57,10 +57,6 @@ app.on('ready', () => {
         middlewareWrapper(user.logout, 'user:logout')
     );
     ipcMain.handle('user:get', middlewareWrapper(user.get, 'user:get'));
-    ipcMain.handle(
-        'user:updateRentals',
-        middlewareWrapper(user.updateRentals, 'user:updateRentals')
-    );
 
     ipcMain.handle('bot:start', (event) => {
         middlewareWrapper(bot.start, 'bot:start')(event);

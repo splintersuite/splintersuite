@@ -95,14 +95,6 @@ const fetchUser = async (username) => {
     return data;
 };
 
-const updateRentals = async (username, rentals) => {
-    const res = await axios.post(
-        `${process.env.API_URL}/api/rentals/${username}`,
-        { rentals }
-    );
-    return res;
-};
-
 const clear = async () => {
     await store.clear();
 };
@@ -122,7 +114,6 @@ export default {
     setLocked,
     getLocked,
     fetchUser,
-    updateRentals,
     getId,
     clear,
 };
