@@ -88,19 +88,28 @@ const addPriceListInformationForEachCardByUid = ({
 
         const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
 
+        // TNT TODO: make this more robust obviously
+
+        // JBOXXX NOTE: this is where TNT gets the low price
+        // SOME MATH HERE
+        // TNT TODO: make this more robust obviously
+        let price;
         if (marketPrices[marketKey] != null) {
-            const price = calculateRentalPrice({
+            price = calculateRentalPrice({
                 card_detail_id,
                 lowestListingPrice: groupedPrices.low_price,
                 numListings: groupedPrices.qty,
                 currentPriceStats: marketPrices[marketKey],
             });
+        } else {
+            price = parseFloat(groupedPrices.low_price);
         }
-        // TNT TODO: make this more robust obviously
 
-        // JBOXXX NOTE: this is where TNT gets the low price
-        // SOME MATH HERE
-        const price = groupedPrices.low_price;
+        if (price < 1) {
+            const rentalNotFoundForCard = [uid, 'N'];
+
+            return rentalNotFoundForCard;
+        }
 
         const rentalPriceForUid = [uid, price];
 
@@ -119,74 +128,56 @@ const calculateRentalPrice = ({
     numListings,
     currentPriceStats,
 }) => {
-    const { avg, low, high, stdDev, median, volume } =
-        currentPriceStats[ALL_OPEN_TRADES];
-    const {
-        recentAvg,
-        recentLow,
-        recentHigh,
-        recentStdDev,
-        recentMedian,
-        recentVolume,
-    } = currentPriceStats[TRADES_DURING_PERIOD];
+    const { avg, low, stdDev, volume } = currentPriceStats[ALL_OPEN_TRADES];
+    const { recentLow } = currentPriceStats[TRADES_DURING_PERIOD];
+
+    // handle for recent prices being higher than before
+    const bestLow =
+        Number.isFinite(recentLow) && recentLow > low ? recentLow : low;
 
     // handling for uncommon legies like Epona, id = 297
     if (cardRarity[card_detail_id] === 4 && numListings < 4) {
-        // is legie and at max only 2 are listed
-        return _.max([avg - stdDev, low, lowestListingPrice, recentLow]);
+        // is legie and at max only 3 are listed
+        // tames idea implemented below... find a reasonable price to list
+        return _.max([avg - stdDev, lowestListingPrice, bestLow]);
     }
 
     // general logic
-    // first test to see if we have data
+    // this is bare bones logic that should ideally not hinder returns and fetch better prices
     if (
         Number.isFinite(avg) &&
         Number.isFinite(stdDev) &&
-        Number.isFinite(low) &&
+        Number.isFinite(bestLow) &&
         Number.isFinite(lowestListingPrice) &&
-        stdDev > 0
+        stdDev > 0 &&
+        volume >= 10 // should really be using 25 here to assume normal distribution
     ) {
         const zScoreOfListing = Math.abs(lowestListingPrice - avg) / stdDev;
-        const zScoreOfLowestTrade = Math.abs(low - avg) / stdDev;
+        const zScoreOfLowestTrade = Math.abs(bestLow - avg) / stdDev;
 
-        // handle for listings at like 0.1
-        // avg = 8;
-        // stddev = 3;
-        // low = 2;
-        // listing = 0.1;
-        // LIST at the low
-        if (
-            volume > 10 &&
-            zScoreOfListing >= 2.0 &&
-            lowestListingPrice <= low
-        ) {
-            return low;
-        }
-
-        if (lowestListingPrice > low) {
-            return lowestListingPrice;
-        }
-
-        if (zScoreOfLowestTrade > 2 && lowestListingPrice > low) {
+        if (zScoreOfLowestTrade > 1.5 && lowestListingPrice > bestLow) {
             // scenario #1.
             // The lowest trade is actually very far away from the average
             // we probably want to list closer to the average
             // but we should probably be hitting the api for that card's listings for more clarity
-            return lowestListingPrice;
-        } else if (zScoreOfLowestTrade > 2) {
-            // we really should want some more information here about active listings
-            // the low trade is far away from the average
-            // and the lowest listing is greater than the low trade
             return lowestListingPrice;
         }
 
         // scenario #2 (the most likely)
         // the lowest offer is 2 standard deviations away from the avg
         // and the low is greater than the lowestlisting
-        if (zScoreOfListing > 2 && low > lowestListingPrice) {
+        // handle for listings at like 0.1
+        if (zScoreOfListing > 1.5 && bestLow >= lowestListingPrice) {
             // we probably want to wait before listing
-            // alternatively we can list at the lowest trade
-            return low;
+            // alternatively we can list at the recent lowest trade
+            return bestLow;
         }
+    }
+    // final catch all
+    if (lowestListingPrice > bestLow) {
+        return lowestListingPrice;
+    } else {
+        return bestLow;
     }
 };
 
