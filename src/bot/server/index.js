@@ -96,7 +96,7 @@ const startRentalBot = async ({ username, settings }) => {
         const cancellations = fmtToLimitCardsInEachHiveTx(
             marketIdsForCancellation
         );
-        // throw new Error('checking listings');
+
         return {
             listings, // array of arrays that are formated by :[uid, rentalPriceInDec]
             relistings, // [uid, rentalPriceInDec]
