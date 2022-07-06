@@ -30,21 +30,14 @@ const options = {
 };
 
 const LineChart = (props) => {
-    const [botData, totalData] = props.data;
     const data = {
-        labels: botData?.map((item) => moment(item.date).format('dddd')),
+        labels: props.data?.map((item) => moment(item.date).format('dddd')),
         datasets: [
             {
-                label: 'Bot Earnings',
-                data: botData?.map((item) => item.earnings),
+                label: 'Total Earnings',
+                data: props.data?.map((item) => item.earnings),
                 borderColor: '#32FFCE',
                 backgroundColor: '#32FFCE',
-            },
-            {
-                label: 'Total Earnings',
-                data: totalData?.map((item) => item.earnings),
-                borderColor: '#7950f2',
-                backgroundColor: '#7950f2',
             },
         ],
     };
