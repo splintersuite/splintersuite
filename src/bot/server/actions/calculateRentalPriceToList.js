@@ -76,7 +76,6 @@ const addPriceListInformationForEachCardByUid = ({
         price = parseFloat(priceData.low_price);
 
         if (price < 1) {
-            throw new Error('price is less than 1 on listing');
             const rentalNotFoundForCard = [uid, 'N'];
 
             return rentalNotFoundForCard;
