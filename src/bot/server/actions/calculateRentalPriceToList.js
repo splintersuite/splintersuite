@@ -105,6 +105,14 @@ const addPriceListInformationForEachCardByUid = ({
                 numListings: groupedPrices.qty,
                 currentPriceStats: marketPrices[marketKey],
             });
+            if (price === null) {
+                price = priceWithoutMedian({
+                    card_detail_id,
+                    lowestListingPrice: parseFloat(groupedPrices.low_price),
+                    numListings: groupedPrices.qty,
+                    currentPriceStats: marketPrices[marketKey],
+                });
+            }
         } else {
             price = parseFloat(groupedPrices.low_price);
         }
@@ -174,6 +182,7 @@ const getListingPrice = ({
             return recentMedian > median ? recentMedian : median;
         }
     }
+    // call priceWithoutMedian afterwards... basically chooses the low carefully
     return null;
 };
 
