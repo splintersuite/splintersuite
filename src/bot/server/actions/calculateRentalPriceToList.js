@@ -99,7 +99,7 @@ const addPriceListInformationForEachCardByUid = ({
         console.log('marketPrices[marketKey]', marketPrices[marketKey]);
         console.log('marketKey', marketKey);
         if (marketPrices[marketKey] != null) {
-            price = calculateRentalPrice({
+            price = getListingPrice({
                 card_detail_id,
                 lowestListingPrice: parseFloat(groupedPrices.low_price),
                 numListings: groupedPrices.qty,
@@ -134,7 +134,50 @@ const addPriceListInformationForEachCardByUid = ({
     }
 };
 
-const calculateRentalPrice = ({
+const getListingPrice = ({
+    card_detail_id,
+    lowestListingPrice,
+    numListings,
+    currentPriceStats,
+}) => {
+    const { avg, low, stdDev, volume, median } =
+        currentPriceStats[ALL_OPEN_TRADES];
+    const { recentMedian, recentLow } = currentPriceStats[TRADES_DURING_PERIOD];
+
+    const bestLow =
+        Number.isFinite(recentLow) && recentLow > low ? recentLow : low;
+
+    // handling for uncommon legies like Epona, id = 297
+    if (cardRarity[card_detail_id] === 4 && numListings < 4) {
+        // is legie and at max only 3 are listed
+        // tames idea implemented below... find a reasonable price to list
+        return _.max([avg - stdDev, lowestListingPrice, bestLow]);
+    }
+
+    if (
+        Number.isFinite(volume) &&
+        volume > 3 &&
+        numListings > 5 &&
+        (Number.isFinite(median) || Number.isFinite(recentMedian)) &&
+        Number.isFinite(lowestListingPrice)
+    ) {
+        if (lowestListingPrice < _.min([median, recentMedian])) {
+            // if the median is higher than the lowest listing
+            // return the median
+            return recentMedian > median ? recentMedian : median;
+        } else if (Number.isFinite(avg) && Number.isFinite(stdDev)) {
+            // if average and standard deviation are defined
+            // and the lowestListing is higher than the medians
+            return _.min([lowestListingPrice, avg + stdDev]);
+        } else {
+            // no average and no standard deviation
+            return recentMedian > median ? recentMedian : median;
+        }
+    }
+    return null;
+};
+
+const priceWithoutMedian = ({
     card_detail_id,
     lowestListingPrice,
     numListings,
