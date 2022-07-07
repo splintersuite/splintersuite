@@ -6,6 +6,8 @@ const {
 } = require('./rentalListInfo');
 const { cardRarity } = require('./cardToRarity');
 const _ = require('lodash');
+const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
+const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';
 
 // this requires the object that has key = level, value [ array of cards with level = key]
 const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
@@ -94,10 +96,12 @@ const addPriceListInformationForEachCardByUid = ({
         // SOME MATH HERE
         // TNT TODO: make this more robust obviously
         let price;
+        console.log('marketPrices[marketKey]', marketPrices[marketKey]);
+        console.log('marketKey', marketKey);
         if (marketPrices[marketKey] != null) {
             price = calculateRentalPrice({
                 card_detail_id,
-                lowestListingPrice: groupedPrices.low_price,
+                lowestListingPrice: parseFloat(groupedPrices.low_price),
                 numListings: groupedPrices.qty,
                 currentPriceStats: marketPrices[marketKey],
             });
@@ -105,6 +109,14 @@ const addPriceListInformationForEachCardByUid = ({
             price = parseFloat(groupedPrices.low_price);
         }
 
+        console.log('price', price);
+        console.log('card212', card);
+        console.log({
+            card_detail_id,
+            lowestListingPrice: groupedPrices.low_price,
+            numListings: groupedPrices.qty,
+            currentPriceStats: marketPrices[marketKey],
+        });
         if (price < 1) {
             const rentalNotFoundForCard = [uid, 'N'];
 

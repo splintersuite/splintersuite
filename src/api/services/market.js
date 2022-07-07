@@ -2,7 +2,10 @@ import store from '../../store';
 import axios from '../util/axios';
 
 const setMarketPrices = async (marketPrices) => {
-    return store.set('market.prices', marketPrices);
+    return store.set('market.prices', {
+        marketPrices,
+        fetch_timestamp: new Date(),
+    });
 };
 
 const fetchMarketPrices = async () => {
@@ -13,18 +16,20 @@ const fetchMarketPrices = async () => {
 };
 
 const getMarketPrices = async () => {
-    let marketPrices = store.get('market.prices');
+    let priceData = store.get('market.prices');
 
     // is there data? is so is it data from more than 12 hours ago?
     if (
-        !marketPrices?.fetch_timestamp ||
-        new Date(marketPrices.fetch_timestamp).getTime() <
+        !priceData?.fetch_timestamp ||
+        new Date(priceData.fetch_timestamp).getTime() <
             new Date().getTime() - 1000 * 60 * 60 * 12
     ) {
-        marketPrices = await fetchMarketPrices();
+        const marketPrices = await fetchMarketPrices();
         setMarketPrices(marketPrices);
+        return marketPrices;
+    } else {
+        return priceData.marketPrices;
     }
-    return marketPrices;
 };
 
 export default {

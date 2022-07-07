@@ -28,8 +28,14 @@ window.api.bot.start(async (event) => {
 
     while (active && user.username === username && !user.locked) {
         await window.api.bot.updateLoading({ isLoading: true });
-        const marketPrices = await window.api.market.getMarketPrices();
-
+        let marketRes = await window.api.market.getMarketPrices();
+        let marketPrices = {};
+        if (
+            marketRes.code === 1 &&
+            Object.keys(marketRes.data?.marketPrices).length > 0
+        ) {
+            marketPrices = marketRes.data.marketPrices;
+        }
         // ---
         // Get cards
         // ------------------------------------
