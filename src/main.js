@@ -4,6 +4,7 @@ const isDev = require('electron-is-dev');
 const log = require('electron-log');
 
 const user = require('./api/controllers/user').default;
+const market = require('./api/controllers/market').default;
 const bot = require('./api/controllers/bot').default;
 const hive = require('./api/controllers/hive').default;
 const invoice = require('./api/controllers/invoice').default;
@@ -32,7 +33,7 @@ app.on('ready', () => {
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
     const botWindow = new BrowserWindow({
-        show: false,
+        // show: false,
         // width: 1200,
         // height: 800,
         webPreferences: {
@@ -95,7 +96,10 @@ app.on('ready', () => {
         mainWindow.webContents.send('bot:updateLoading', payload);
     });
     ipcMain.handle('bot:log', bot.log);
-
+    ipcMain.handle(
+        'market:getMarketPrices',
+        middlewareWrapper(market.getMarketPrices, 'market:getMarketPrices')
+    );
     ipcMain.handle(
         'hive:createRentals',
         middlewareWrapper(hive.createRentals, 'hive:createRentals')

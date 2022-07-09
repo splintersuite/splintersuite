@@ -4,6 +4,9 @@ contextBridge.exposeInMainWorld('api', {
     user: {
         get: () => ipcRenderer.invoke('user:get'),
     },
+    market: {
+        getMarketPrices: () => ipcRenderer.invoke('market:getMarketPrices'),
+    },
     bot: {
         start: (callback) => ipcRenderer.on('bot:start', callback),
         stop: (callback) => ipcRenderer.on('bot:stop', callback),

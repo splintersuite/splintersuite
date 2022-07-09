@@ -28,7 +28,7 @@ const { getActiveRentalsByRentalId } = require('./actions/currentRentals');
 
 const _ = require('lodash');
 
-const startRentalBot = async ({ username, settings }) => {
+const startRentalBot = async ({ username, settings, marketPrices }) => {
     try {
         console.log(`startRentalsForAccount username: ${username}`);
 
@@ -70,6 +70,7 @@ const startRentalBot = async ({ username, settings }) => {
         // this gives us the output of [uid, rentalPriceInDec] which is needed for initial market listings.
         const rentalArrayWithPriceAndUid = await calculateRentalPriceToList({
             collectionObj: collectionByLevelObjAvailableForRent,
+            marketPrices,
         });
 
         const { relistingPriceForEachMarketId, cardsNotWorthRelisting } =
