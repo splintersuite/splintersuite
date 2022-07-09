@@ -70,9 +70,9 @@ const addPriceListInformationForEachCardByUid = ({
         }
 
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
-        const groupedPrices = searchableRentList[rentListKey];
+        const currentPriceData = searchableRentList[rentListKey];
 
-        if (groupedPrices == null || groupedPrices.low_price == null) {
+        if (currentPriceData == null || currentPriceData.low_price == null) {
             const rentalNotFoundForCard = [uid, 'N'];
 
             return rentalNotFoundForCard;
@@ -92,20 +92,20 @@ const addPriceListInformationForEachCardByUid = ({
         if (marketPrices[marketKey] != null) {
             price = getListingPrice({
                 card_detail_id,
-                lowestListingPrice: parseFloat(groupedPrices.low_price),
-                numListings: groupedPrices.qty,
+                lowestListingPrice: parseFloat(currentPriceData.low_price),
+                numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
             });
             if (price === null) {
                 price = priceWithoutMedian({
                     card_detail_id,
-                    lowestListingPrice: parseFloat(groupedPrices.low_price),
-                    numListings: groupedPrices.qty,
+                    lowestListingPrice: parseFloat(currentPriceData.low_price),
+                    numListings: currentPriceData.qty,
                     currentPriceStats: marketPrices[marketKey],
                 });
             }
         } else {
-            price = parseFloat(groupedPrices.low_price);
+            price = parseFloat(currentPriceData.low_price);
         }
 
         const rentalPriceForUid = [uid, price];

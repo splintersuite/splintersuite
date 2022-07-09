@@ -4,8 +4,12 @@ const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
 } = require('./rentalListInfo');
+const {
+    getListingPrice,
+    priceWithoutMedian,
+} = require('./calculateRentalPriceToList');
 
-const calculateRelistingPrice = async ({ collectionObj }) => {
+const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
     try {
         // console.log('calculateRelistingPrice start');
 
@@ -31,6 +35,8 @@ const calculateRelistingPrice = async ({ collectionObj }) => {
                     addPriceRelistInformationForEachCardByMarketId({
                         card,
                         searchableRentList,
+                        level,
+                        marketPrices,
                     });
                 if (rentalPriceForMarketId[0] === 'N') {
                     cardsUnableToFindPriceFor.push(rentalPriceForMarketId);
@@ -52,6 +58,8 @@ const calculateRelistingPrice = async ({ collectionObj }) => {
 const addPriceRelistInformationForEachCardByMarketId = ({
     card,
     searchableRentList,
+    level,
+    marketPrices,
 }) => {
     try {
         //   console.log(`addPriceRelistInformationForEachCardByUid start`);
@@ -64,23 +72,52 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             _gold = 'F';
         }
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
-        const priceData = searchableRentList[rentListKey];
+        const currentPriceData = searchableRentList[rentListKey];
 
-        if (priceData == null || priceData.low_price == null) {
+        if (currentPriceData == null || currentPriceData.low_price == null) {
             const rentalNotFoundForCard = ['N', uid, market_id];
             return rentalNotFoundForCard;
-        } else if (priceData.low_price >= buy_price) {
+        } else if (currentPriceData.low_price >= buy_price) {
             // this means that the card should NOT be relisted
+            // relist up?
             const doNotChangeThePrice = [
                 'C',
                 uid,
                 market_id,
                 buy_price,
-                priceData.low_price,
+                currentPriceData.low_price,
             ];
             return doNotChangeThePrice;
         } else {
-            const price = parseFloat(priceData.low_price);
+            // current lowest listings is greater than the buy price
+            // relist at median
+
+            const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
+            let price;
+            // console.log('marketPrices[marketKey]', marketPrices[marketKey]);
+            // console.log('marketKey', marketKey);
+            if (marketPrices[marketKey] != null) {
+                price = getListingPrice({
+                    card_detail_id,
+                    lowestListingPrice: parseFloat(currentPriceData.low_price),
+                    numListings: currentPriceData.qty,
+                    currentPriceStats: marketPrices[marketKey],
+                });
+                if (price === null) {
+                    price = priceWithoutMedian({
+                        card_detail_id,
+                        lowestListingPrice: parseFloat(
+                            currentPriceData.low_price
+                        ),
+                        numListings: currentPriceData.qty,
+                        currentPriceStats: marketPrices[marketKey],
+                    });
+                }
+            } else {
+                price = parseFloat(currentPriceData.low_price);
+            }
+
+            // const price = parseFloat(currentPriceData.low_price);
 
             if (price < 1) {
                 const doNotChangeThePrice = [
@@ -88,7 +125,7 @@ const addPriceRelistInformationForEachCardByMarketId = ({
                     uid,
                     market_id,
                     buy_price,
-                    priceData.low_price,
+                    currentPriceData.low_price,
                 ];
                 return doNotChangeThePrice;
             }
