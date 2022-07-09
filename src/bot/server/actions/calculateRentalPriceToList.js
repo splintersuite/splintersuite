@@ -96,8 +96,8 @@ const addPriceListInformationForEachCardByUid = ({
         // SOME MATH HERE
         // TNT TODO: make this more robust obviously
         let price;
-        console.log('marketPrices[marketKey]', marketPrices[marketKey]);
-        console.log('marketKey', marketKey);
+        // console.log('marketPrices[marketKey]', marketPrices[marketKey]);
+        // console.log('marketKey', marketKey);
         if (marketPrices[marketKey] != null) {
             price = getListingPrice({
                 card_detail_id,
@@ -117,14 +117,14 @@ const addPriceListInformationForEachCardByUid = ({
             price = parseFloat(groupedPrices.low_price);
         }
 
-        console.log('price', price);
-        console.log('card212', card);
-        console.log({
-            card_detail_id,
-            lowestListingPrice: groupedPrices.low_price,
-            numListings: groupedPrices.qty,
-            currentPriceStats: marketPrices[marketKey],
-        });
+        // console.log('price', price);
+        // console.log('card212', card);
+        // console.log({
+        //     card_detail_id,
+        //     lowestListingPrice: groupedPrices.low_price,
+        //     numListings: groupedPrices.qty,
+        //     currentPriceStats: marketPrices[marketKey],
+        // });
         if (price < 1) {
             const rentalNotFoundForCard = [uid, 'N'];
 

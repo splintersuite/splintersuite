@@ -36,6 +36,7 @@ window.api.bot.start(async (event) => {
         ) {
             marketPrices = marketRes.data.marketPrices;
         }
+        // console.log('marketPrices', marketPrices);
         // ---
         // Get cards
         // ------------------------------------
@@ -46,7 +47,7 @@ window.api.bot.start(async (event) => {
                 marketPrices,
             });
 
-        process.exit();
+        // process.exit();
         // ---
         // List, relist, cancel
         // ------------------------------------

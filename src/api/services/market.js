@@ -22,7 +22,8 @@ const getMarketPrices = async () => {
     if (
         !priceData?.fetch_timestamp ||
         new Date(priceData.fetch_timestamp).getTime() <
-            new Date().getTime() - 1000 * 60 * 60 * 12
+            new Date().getTime() - 1000 * 60 * 60 * 12 ||
+        Object.keys(priceData?.marketPrices).length < 75
     ) {
         const marketPrices = await fetchMarketPrices();
         setMarketPrices(marketPrices);
