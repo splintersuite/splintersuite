@@ -224,4 +224,6 @@ const priceWithoutMedian = ({
 
 module.exports = {
     calculateRentalPriceToList,
+    getListingPrice,
+    priceWithoutMedian,
 };

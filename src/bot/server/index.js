@@ -55,7 +55,7 @@ const startRentalBot = async ({ username, settings, marketPrices }) => {
                 collection: cardsAvailableForRent,
             });
 
-        const collectionByLevelObjLstedButNotRentedOut =
+        const collectionByLevelObjListedButNotRentedOut =
             transformCollectionIntoCollectionByLevelObj({
                 settings,
                 collection: cardsListedButNotRentedOut,
@@ -75,7 +75,8 @@ const startRentalBot = async ({ username, settings, marketPrices }) => {
 
         const { relistingPriceForEachMarketId, cardsNotWorthRelisting } =
             await calculateRelistingPrice({
-                collectionObj: collectionByLevelObjLstedButNotRentedOut,
+                collectionObj: collectionByLevelObjListedButNotRentedOut,
+                marketPrices,
             });
 
         const { marketIdsForCancellation, cardsNotWorthCancelling } =

@@ -36,7 +36,6 @@ window.api.bot.start(async (event) => {
         ) {
             marketPrices = marketRes.data.marketPrices;
         }
-        console.log('marketPrices', marketPrices);
         // ---
         // Get cards
         // ------------------------------------
@@ -46,7 +45,7 @@ window.api.bot.start(async (event) => {
                 settings,
                 marketPrices,
             });
-        process.exit();
+
         // ---
         // List, relist, cancel
         // ------------------------------------
@@ -100,20 +99,6 @@ window.api.bot.start(async (event) => {
 
         listingsNum = 0;
         hiveTransactions = 0;
-
-        // ---
-        // Sleep - wait for api to propogate
-        // ------------------------------------
-        window.api.bot.log({ message: 'Sleep for 10 seconds' });
-        await sleep(10000);
-
-        const { rentalListings } = await rentals.updatedRentalListingsToSend({
-            username,
-            users_id: user.id,
-            listings,
-            relistings,
-        });
-        await window.api.user.updateRentalListings({ rentalListings });
 
         // ---
         // Update stats

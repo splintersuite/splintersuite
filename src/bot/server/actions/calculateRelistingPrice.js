@@ -78,8 +78,8 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             const rentalNotFoundForCard = ['N', uid, market_id];
             return rentalNotFoundForCard;
         } else if (currentPriceData.low_price >= buy_price) {
-            // this means that the card should NOT be relisted
-            // relist up?
+            // current low is greater than the buy_price, technically impossible for greater than
+            // because we would be the low...
             const doNotChangeThePrice = [
                 'C',
                 uid,
@@ -89,14 +89,14 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             ];
             return doNotChangeThePrice;
         } else {
-            // current lowest listings is greater than the buy price
-            // relist at median
-
+            // current lowest listings is less than than the buy price
+            // we were listed at the median, we could relist a bit lower...
             const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
             let price;
             // console.log('marketPrices[marketKey]', marketPrices[marketKey]);
             // console.log('marketKey', marketKey);
             if (marketPrices[marketKey] != null) {
+                console.log('marketPrices[marketKey]', marketPrices[marketKey]);
                 price = getListingPrice({
                     card_detail_id,
                     lowestListingPrice: parseFloat(currentPriceData.low_price),
@@ -113,6 +113,7 @@ const addPriceRelistInformationForEachCardByMarketId = ({
                         currentPriceStats: marketPrices[marketKey],
                     });
                 }
+                console.log('price here', price);
             } else {
                 price = parseFloat(currentPriceData.low_price);
             }
@@ -130,7 +131,20 @@ const addPriceRelistInformationForEachCardByMarketId = ({
                 return doNotChangeThePrice;
             }
 
+            console.log('card', card);
+            console.log('currentPriceData', currentPriceData);
+            console.log(
+                'currentPriceData.low_price',
+                currentPriceData.low_price
+            );
+            console.log('marketKey', marketKey);
+            console.log('price', price);
+
             const rentalRelistingPriceForMarketId = [market_id, `${price}`];
+            console.log(
+                'rentalRelistingPriceForMarketId',
+                rentalRelistingPriceForMarketId
+            );
             // const rentalRelistingPriceForMarketId = [uid, `${price}`];
             return rentalRelistingPriceForMarketId;
         }
