@@ -8,7 +8,7 @@ const {
 } = require('../axios_retry/axios_retry');
 
 const axiosInstance = axios.create({
-    timeout: 5000,
+    timeout: 60000,
 });
 
 axiosRetry(axiosInstance, {
