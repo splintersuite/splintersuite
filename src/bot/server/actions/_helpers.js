@@ -19,10 +19,15 @@ const findCardDetails = (id) => {
     }
 };
 
+// https://stackoverflow.com/questions/17648395/which-is-faster-for-loop-or-hasownproperty
 const updateCardDetails = async (collection) => {
+    const seen = {};
     for (const card of collection) {
-        if (findCardDetails(card.card_detail_id) === null) {
-            cardDetails = await getCardDetails();
+        if (seen[card.card_detail_id] === undefined) {
+            seen[card.card_detail_id] = 'dummy';
+            if (findCardDetails(card.card_detail_id) === null) {
+                cardDetails = await getCardDetails();
+            }
         }
     }
 };
