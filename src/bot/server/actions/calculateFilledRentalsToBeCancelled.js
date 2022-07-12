@@ -46,6 +46,9 @@ const calculateCancelActiveRentalPrices = async ({ collectionObj }) => {
         // TNT TODO: find new price data for the cards in cardsUnableToFindPriceFor
         return { marketIdsForCancellation, cardsNotWorthCancelling };
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`calculateCancelActiveRentalPrices ${err.message}`);
         throw err;
     }
@@ -75,7 +78,6 @@ const addMarketIdsForCancelling = ({ card, searchableRentList }) => {
         } else if (priceData.low_price > cancelFloorPrice) {
             // this means that we should cancel this and relist it
             const rentalToCancel = ['C', market_id];
-
             return rentalToCancel;
         } else {
             const shouldNotCancelRental = [
@@ -88,6 +90,9 @@ const addMarketIdsForCancelling = ({ card, searchableRentList }) => {
             return shouldNotCancelRental;
         }
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`addMarketIdsForCancelling error: ${err.message}`);
         throw err;
     }

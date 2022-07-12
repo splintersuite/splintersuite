@@ -103,6 +103,9 @@ const startRentalBot = async ({ username, settings }) => {
             cancellations,
         };
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`startRentalsForAccount error: ${err.message}`);
         throw err;
     }
@@ -125,6 +128,9 @@ const fmtToLimitCardsInEachHiveTx = (input) => {
         }
         return outputArray;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`fmtToLimitCardsInEachHiveTx error: ${err.message}`);
         throw err;
     }
@@ -147,6 +153,9 @@ const getPreciseRentalPrices = ({ cardsFilteredByUserLevelLimits }) => {
             collection: goldCollection,
         });
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`getPreciseRentalPrices error: ${err.message}`);
         throw err;
     }

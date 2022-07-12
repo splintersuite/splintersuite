@@ -91,6 +91,9 @@ const findCardLevel = ({ id, rarity, _xp, gold, edition, tier, alpha_xp }) => {
 
         return level;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`findCardLevel error: ${err.message}`);
         throw err;
     }
@@ -125,6 +128,9 @@ const bcxToLevel = ({ bcx, rarity, gold, edition, id, tier }) => {
         // console.log(`bcxToLevel returning level: ${level}`);
         return level;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`bcxToLevel error: ${err.message}`);
         throw err;
     }
@@ -153,6 +159,9 @@ const getBcxLevelComboForEdition = ({ rarity, gold, edition, id, tier }) => {
 
         return combinationRates;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`getBcxLevelComboForEdition error: ${err.message}`);
         throw err;
     }

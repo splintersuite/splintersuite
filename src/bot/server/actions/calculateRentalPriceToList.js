@@ -42,6 +42,9 @@ const calculateRentalPriceToList = async ({ collectionObj }) => {
         // TNT TODO: find new price data for the cards in cardsUnableToFindPriceFor
         return rentalPriceForEachCardUid;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`calculateRentalPriceToList error: ${err.message}`);
         throw err;
     }
@@ -85,6 +88,9 @@ const addPriceListInformationForEachCardByUid = ({
 
         return rentalPriceForUid;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(
             `addPriceListInformationForEachCardByUid error: ${err.message}`
         );
