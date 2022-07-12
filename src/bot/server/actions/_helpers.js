@@ -1,11 +1,16 @@
 'use strict';
 const cardDetails = require('../cardDetails.json');
 const { setTimeout_safe } = require('../axios_retry/general');
+const { axiosInstance } = require('../requests/axiosGetInstance');
 
 const findCardDetails = (id) => {
     try {
         //  console.log(`findCardDetails start`);
         const card = cardDetails.find((o) => parseInt(o.id) === parseInt(id));
+        // if (!card) {
+        //   cardDetails = await getCardDetails();
+        //   card = cardDetails.find((o) => parseInt(o.id) === parseInt(id));
+        // }
         const { name, rarity, editions, is_promo, tier } = card;
 
         return { name, rarity, editions, is_promo, tier };
@@ -13,6 +18,13 @@ const findCardDetails = (id) => {
         console.error(`findCardDetails error: ${err.message}`);
         throw err;
     }
+};
+
+const getCardDetails = async () => {
+    const res = await axiosInstance(
+        `https://api2.splinterlands.com/cards/get_details`
+    );
+    return res.data;
 };
 
 const isOnCooldown = (date) => {
@@ -50,4 +62,5 @@ module.exports = {
     findCardDetails,
     isOnCooldown,
     sleep,
+    getCardDetails,
 };
