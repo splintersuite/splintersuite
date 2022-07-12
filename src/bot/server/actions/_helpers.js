@@ -1,22 +1,29 @@
 'use strict';
-const cardDetails = require('../cardDetails.json');
+let cardDetails = require('../cardDetails.json');
 const { setTimeout_safe } = require('../axios_retry/general');
 const { axiosInstance } = require('../requests/axiosGetInstance');
 
 const findCardDetails = (id) => {
     try {
         //  console.log(`findCardDetails start`);
-        const card = cardDetails.find((o) => parseInt(o.id) === parseInt(id));
-        // if (!card) {
-        //   cardDetails = await getCardDetails();
-        //   card = cardDetails.find((o) => parseInt(o.id) === parseInt(id));
-        // }
+        let card = cardDetails.find((o) => parseInt(o.id) === parseInt(id));
+        if (!card) {
+            return null;
+        }
         const { name, rarity, editions, is_promo, tier } = card;
 
         return { name, rarity, editions, is_promo, tier };
     } catch (err) {
         console.error(`findCardDetails error: ${err.message}`);
         throw err;
+    }
+};
+
+const updateCardDetails = async (collection) => {
+    for (const card of collection) {
+        if (findCardDetails(card.card_detail_id) === null) {
+            cardDetails = await getCardDetails();
+        }
     }
 };
 
@@ -63,4 +70,5 @@ module.exports = {
     isOnCooldown,
     sleep,
     getCardDetails,
+    updateCardDetails,
 };

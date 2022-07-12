@@ -24,6 +24,8 @@ const {
     calculateCancelActiveRentalPrices,
 } = require('./actions/calculateFilledRentalsToBeCancelled');
 
+const { updateCardDetails } = require('./actions/_helpers');
+
 const { getActiveRentalsByRentalId } = require('./actions/currentRentals');
 
 const _ = require('lodash');
@@ -33,6 +35,10 @@ const startRentalBot = async ({ username, settings, marketPrices }) => {
         console.log(`startRentalsForAccount username: ${username}`);
 
         const collection = await getCollection(username);
+        // if there is a card in the collection we don't need
+        // grab the card_details endpoint
+        await updateCardDetails(collection);
+
         const activeRentalsByRentalId = await getActiveRentalsByRentalId(
             username
         );
