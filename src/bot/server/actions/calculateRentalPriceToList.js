@@ -86,18 +86,18 @@ const addPriceListInformationForEachCardByUid = ({
         // JBOXXX NOTE: this is where TNT gets the low price
         // SOME MATH HERE
         // TNT TODO: make this more robust obviously
-        let price;
+        let listingPrice;
         // console.log('marketPrices[marketKey]', marketPrices[marketKey]);
         // console.log('marketKey', marketKey);
         if (marketPrices[marketKey] != null) {
-            price = getListingPrice({
+            listingPrice = getListingPrice({
                 card_detail_id,
                 lowestListingPrice: parseFloat(currentPriceData.low_price),
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
             });
-            if (price === null) {
-                price = priceWithoutMedian({
+            if (listingPrice === null) {
+                listingPrice = priceWithoutMedian({
                     card_detail_id,
                     lowestListingPrice: parseFloat(currentPriceData.low_price),
                     numListings: currentPriceData.qty,
@@ -105,10 +105,15 @@ const addPriceListInformationForEachCardByUid = ({
                 });
             }
         } else {
-            price = parseFloat(currentPriceData.low_price);
+            listingPrice = parseFloat(currentPriceData.low_price);
         }
 
-        const rentalPriceForUid = [uid, price];
+        const rentalPriceForUid = [
+            uid,
+            parseFloat(currentPriceData.low_price) > listingPrice
+                ? currentPriceData.low_price
+                : `${listingPrice}`,
+        ];
 
         return rentalPriceForUid;
     } catch (err) {

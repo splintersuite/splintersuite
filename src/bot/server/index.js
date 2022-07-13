@@ -88,7 +88,9 @@ const startRentalBot = async ({ username, settings, marketPrices }) => {
         const { marketIdsForCancellation, cardsNotWorthCancelling } =
             await calculateCancelActiveRentalPrices({
                 collectionObj: collectionByLevelObjBeingRentedOut,
+                marketPrices,
             });
+
         // console.log(rentalArrayWithPriceAndUid);
         // console.log(relistingPriceForEachMarketId);
         // console.log(marketIdsForCancellation);

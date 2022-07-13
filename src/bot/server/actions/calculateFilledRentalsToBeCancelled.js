@@ -4,8 +4,15 @@ const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
 } = require('./rentalListInfo');
+const {
+    getListingPrice,
+    priceWithoutMedian,
+} = require('./calculateRentalPriceToList');
 
-const calculateCancelActiveRentalPrices = async ({ collectionObj }) => {
+const calculateCancelActiveRentalPrices = async ({
+    collectionObj,
+    marketPrices,
+}) => {
     try {
         //   console.log('calculateCancelActiveRentalPrices start');
 
@@ -30,6 +37,8 @@ const calculateCancelActiveRentalPrices = async ({ collectionObj }) => {
                 const cancelPriceForMarketId = addMarketIdsForCancelling({
                     card,
                     searchableRentList,
+                    marketPrices,
+                    level,
                 });
                 if (cancelPriceForMarketId[0] === 'N') {
                     unableToFindPriceFor.push(card);
@@ -51,11 +60,17 @@ const calculateCancelActiveRentalPrices = async ({ collectionObj }) => {
     }
 };
 
-const addMarketIdsForCancelling = ({ card, searchableRentList }) => {
+const addMarketIdsForCancelling = ({
+    card,
+    searchableRentList,
+    marketPrices,
+    level,
+}) => {
     try {
         // console.log('addMarketIdsForCancelling start');
         const { card_detail_id, gold, edition, market_id, buy_price, uid } =
             card;
+        console.log('card', card);
         let _gold = 'F';
         if (gold) {
             _gold = 'T';
@@ -64,15 +79,42 @@ const addMarketIdsForCancelling = ({ card, searchableRentList }) => {
         }
 
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
-        const priceData = searchableRentList[rentListKey];
-        const threshold = 0.3;
+        const currentPriceData = searchableRentList[rentListKey];
+        const threshold = 0.15;
 
-        const cancelFloorPrice = (1 + threshold) * buy_price;
+        const cancelFloorPrice = (1 + threshold) * parseFloat(buy_price);
+        const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
+        let listingPrice;
+        // console.log('marketPrices[marketKey]', marketPrices[marketKey]);
+        // console.log('marketKey', marketKey);
+        if (marketPrices[marketKey] != null) {
+            listingPrice = getListingPrice({
+                card_detail_id,
+                lowestListingPrice: parseFloat(currentPriceData.low_price),
+                numListings: currentPriceData.qty,
+                currentPriceStats: marketPrices[marketKey],
+            });
+            if (listingPrice === null) {
+                listingPrice = priceWithoutMedian({
+                    card_detail_id,
+                    lowestListingPrice: parseFloat(currentPriceData.low_price),
+                    numListings: currentPriceData.qty,
+                    currentPriceStats: marketPrices[marketKey],
+                });
+            }
+        } else {
+            listingPrice = parseFloat(currentPriceData.low_price);
+        }
+        // console.log('card', card);
+        // console.log('buy_price', buy_price);
+        // console.log('listingPrice', listingPrice);
+        // console.log('cancelFloorPrice', cancelFloorPrice);
 
-        if (priceData == null || priceData.low_price == null) {
+        if (currentPriceData == null || currentPriceData.low_price == null) {
             const priceNotFoundForCard = ['N', uid, market_id];
             return priceNotFoundForCard;
-        } else if (priceData.low_price > cancelFloorPrice) {
+            // if i think i can make another 15% by relisting, cancel this
+        } else if (cancelFloorPrice < listingPrice) {
             // this means that we should cancel this and relist it
             const rentalToCancel = ['C', market_id];
 
@@ -82,7 +124,7 @@ const addMarketIdsForCancelling = ({ card, searchableRentList }) => {
                 'NC',
                 market_id,
                 buy_price,
-                priceData.low_price,
+                currentPriceData.low_price,
             ];
 
             return shouldNotCancelRental;
