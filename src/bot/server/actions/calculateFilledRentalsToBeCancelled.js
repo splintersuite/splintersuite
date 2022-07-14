@@ -10,7 +10,7 @@ const {
     getAvg,
 } = require('./calculateRentalPriceToList');
 
-const threeDaysTime = 1000 * 60 * 60 * 24 * 3
+const threeDaysTime = 1000 * 60 * 60 * 24 * 3;
 
 const calculateCancelActiveRentalPrices = async ({
     collectionObj,
@@ -71,8 +71,15 @@ const addMarketIdsForCancelling = ({
 }) => {
     try {
         // console.log('addMarketIdsForCancelling start');
-        const { card_detail_id, gold, edition, market_id, buy_price, uid, market_created_date } =
-            card;
+        const {
+            card_detail_id,
+            gold,
+            edition,
+            market_id,
+            buy_price,
+            uid,
+            market_created_date,
+        } = card;
 
         console.log('card', card);
         let _gold = 'F';
@@ -120,16 +127,18 @@ const addMarketIdsForCancelling = ({
             return priceNotFoundForCard;
             // if i think i can make another 15% by relisting, cancel this
         } else if (cancelFloorPrice < listingPrice && cancelFloorPrice < avg) {
+            const now = new Date();
             if (
-                new Date().getTime() = new Date(market_created_date).getTime() > threeDaysTime &&
-                listingPrice * 0.7 < cancelFloorPrice
+                (now =
+                    new Date(market_created_date).getTime() > threeDaysTime &&
+                    listingPrice * 0.7 < cancelFloorPrice)
             ) {
                 const shouldNotCancelRental = [
                     'NC',
                     market_id,
                     buy_price,
                     currentPriceData.low_price,
-                ]
+                ];
 
                 return shouldNotCancelRental;
             }
