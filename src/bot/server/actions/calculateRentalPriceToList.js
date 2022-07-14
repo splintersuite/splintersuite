@@ -227,8 +227,24 @@ const priceWithoutMedian = ({
     }
 };
 
+const getAvg = ({ currentPriceStats }) => {
+    const { avg } = currentPriceStats[ALL_OPEN_TRADES];
+    const { recentAvg } = currentPriceStats[TRADES_DURING_PERIOD];
+
+    // handle for recent prices being higher than before
+    if (Number.isFinite(avg) && Number.isFinite(recentAvg)) {
+        return avg > recentAvg ? avg : recentAvg;
+    } else if (Number.isFinite(avg)) {
+        return avg;
+    } else if (Number.isFinite(recentAvg)) {
+        return recentAvg;
+    }
+    return null;
+};
+
 module.exports = {
     calculateRentalPriceToList,
     getListingPrice,
     priceWithoutMedian,
+    getAvg,
 };

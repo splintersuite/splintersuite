@@ -7,7 +7,10 @@ const {
 const {
     getListingPrice,
     priceWithoutMedian,
+    getAvg,
 } = require('./calculateRentalPriceToList');
+
+const threeDaysTime = 1000 * 60 * 60 * 24 * 3
 
 const calculateCancelActiveRentalPrices = async ({
     collectionObj,
@@ -68,8 +71,9 @@ const addMarketIdsForCancelling = ({
 }) => {
     try {
         // console.log('addMarketIdsForCancelling start');
-        const { card_detail_id, gold, edition, market_id, buy_price, uid } =
+        const { card_detail_id, gold, edition, market_id, buy_price, uid, market_created_date } =
             card;
+
         console.log('card', card);
         let _gold = 'F';
         if (gold) {
@@ -80,7 +84,7 @@ const addMarketIdsForCancelling = ({
 
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
         const currentPriceData = searchableRentList[rentListKey];
-        const threshold = 0.15;
+        const threshold = 0.3;
 
         const cancelFloorPrice = (1 + threshold) * parseFloat(buy_price);
         const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
@@ -105,6 +109,7 @@ const addMarketIdsForCancelling = ({
         } else {
             listingPrice = parseFloat(currentPriceData.low_price);
         }
+        const avg = getAvg({ currentPriceStats: marketPrices[marketKey] });
         // console.log('card', card);
         // console.log('buy_price', buy_price);
         // console.log('listingPrice', listingPrice);
@@ -114,7 +119,20 @@ const addMarketIdsForCancelling = ({
             const priceNotFoundForCard = ['N', uid, market_id];
             return priceNotFoundForCard;
             // if i think i can make another 15% by relisting, cancel this
-        } else if (cancelFloorPrice < listingPrice) {
+        } else if (cancelFloorPrice < listingPrice && cancelFloorPrice < avg) {
+            if (
+                new Date().getTime() = new Date(market_created_date).getTime() > threeDaysTime &&
+                listingPrice * 0.7 < cancelFloorPrice
+            ) {
+                const shouldNotCancelRental = [
+                    'NC',
+                    market_id,
+                    buy_price,
+                    currentPriceData.low_price,
+                ]
+
+                return shouldNotCancelRental;
+            }
             // this means that we should cancel this and relist it
             const rentalToCancel = ['C', market_id];
 
