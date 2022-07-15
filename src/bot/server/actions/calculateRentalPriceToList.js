@@ -130,6 +130,9 @@ const getListingPrice = ({
     numListings,
     currentPriceStats,
 }) => {
+    if (currentPriceStats === undefined) {
+        return null;
+    }
     const { avg, low, stdDev, volume, median } =
         currentPriceStats[ALL_OPEN_TRADES];
     const { recentMedian, recentLow } = currentPriceStats[TRADES_DURING_PERIOD];
@@ -174,6 +177,9 @@ const priceWithoutMedian = ({
     numListings,
     currentPriceStats,
 }) => {
+    if (currentPriceStats === undefined) {
+        return lowestListingPrice;
+    }
     const { avg, low, stdDev, volume } = currentPriceStats[ALL_OPEN_TRADES];
     const { recentLow } = currentPriceStats[TRADES_DURING_PERIOD];
 

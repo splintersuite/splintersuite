@@ -27,6 +27,7 @@ window.api.bot.start(async (event) => {
         : util.periodToMs(settings.dailyRelistings);
 
     while (active && user.username === username && !user.locked) {
+        let nextBotLoopTime = util.getNextRunTime(duration);
         await window.api.bot.updateLoading({ isLoading: true });
         let marketRes = await window.api.market.getMarketPrices();
         let marketPrices = {};
@@ -44,6 +45,7 @@ window.api.bot.start(async (event) => {
                 username,
                 settings,
                 marketPrices,
+                nextBotLoopTime,
             });
 
         // ---

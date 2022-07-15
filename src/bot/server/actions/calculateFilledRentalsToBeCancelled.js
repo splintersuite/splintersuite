@@ -15,6 +15,7 @@ const threeDaysTime = 1000 * 60 * 60 * 24 * 3;
 const calculateCancelActiveRentalPrices = async ({
     collectionObj,
     marketPrices,
+    nextBotLoopTime,
 }) => {
     try {
         //   console.log('calculateCancelActiveRentalPrices start');
@@ -42,6 +43,7 @@ const calculateCancelActiveRentalPrices = async ({
                     searchableRentList,
                     marketPrices,
                     level,
+                    nextBotLoopTime,
                 });
                 if (cancelPriceForMarketId[0] === 'N') {
                     unableToFindPriceFor.push(card);
@@ -68,6 +70,7 @@ const addMarketIdsForCancelling = ({
     searchableRentList,
     marketPrices,
     level,
+    nextBotLoopTime,
 }) => {
     try {
         // console.log('addMarketIdsForCancelling start');
@@ -96,9 +99,13 @@ const addMarketIdsForCancelling = ({
         const cancelFloorPrice = (1 + threshold) * parseFloat(buy_price);
         const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
         let listingPrice;
+        let avg;
         // console.log('marketPrices[marketKey]', marketPrices[marketKey]);
         // console.log('marketKey', marketKey);
         if (marketPrices[marketKey] != null) {
+            avg = getAvg({
+                currentPriceStats: marketPrices[marketKey],
+            });
             listingPrice = getListingPrice({
                 card_detail_id,
                 lowestListingPrice: parseFloat(currentPriceData.low_price),
@@ -116,7 +123,7 @@ const addMarketIdsForCancelling = ({
         } else {
             listingPrice = parseFloat(currentPriceData.low_price);
         }
-        const avg = getAvg({ currentPriceStats: marketPrices[marketKey] });
+
         // console.log('card', card);
         // console.log('buy_price', buy_price);
         // console.log('listingPrice', listingPrice);
@@ -126,12 +133,15 @@ const addMarketIdsForCancelling = ({
             const priceNotFoundForCard = ['N', uid, market_id];
             return priceNotFoundForCard;
             // if i think i can make another 15% by relisting, cancel this
-        } else if (cancelFloorPrice < listingPrice && cancelFloorPrice < avg) {
+        } else if (
+            cancelFloorPrice < listingPrice &&
+            Number.isFinite(avg) &&
+            cancelFloorPrice < avg
+        ) {
             const now = new Date();
             if (
-                (now =
-                    new Date(market_created_date).getTime() > threeDaysTime &&
-                    listingPrice * 0.7 < cancelFloorPrice)
+                now - new Date(market_created_date).getTime() > threeDaysTime &&
+                listingPrice * 0.7 < cancelFloorPrice
             ) {
                 const shouldNotCancelRental = [
                     'NC',

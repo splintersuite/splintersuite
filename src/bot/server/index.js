@@ -30,7 +30,12 @@ const { getActiveRentalsByRentalId } = require('./actions/currentRentals');
 
 const _ = require('lodash');
 
-const startRentalBot = async ({ username, settings, marketPrices }) => {
+const startRentalBot = async ({
+    username,
+    settings,
+    marketPrices,
+    nextBotLoopTime,
+}) => {
     try {
         console.log(`startRentalsForAccount username: ${username}`);
 
@@ -89,6 +94,7 @@ const startRentalBot = async ({ username, settings, marketPrices }) => {
             await calculateCancelActiveRentalPrices({
                 collectionObj: collectionByLevelObjBeingRentedOut,
                 marketPrices,
+                nextBotLoopTime,
             });
 
         // console.log(rentalArrayWithPriceAndUid);
