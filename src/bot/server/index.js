@@ -96,6 +96,7 @@ const startRentalBot = async ({
                 activeRentalsBySellTrxId:
                     activeRentals.activeRentalsBySellTrxId,
                 nextBotLoopTime,
+                cancellationMatrix: settings.cancellationMatrix,
             });
 
         // console.log(rentalArrayWithPriceAndUid);

@@ -13,6 +13,7 @@ const calculateCancelActiveRentalPrices = async ({
     marketPrices,
     nextBotLoopTime,
     activeRentalsBySellTrxId,
+    cancellationMatrix,
 }) => {
     try {
         //   console.log('calculateCancelActiveRentalPrices start');
@@ -42,6 +43,7 @@ const calculateCancelActiveRentalPrices = async ({
                     level,
                     nextBotLoopTime,
                     rentalTransaction: activeRentalsBySellTrxId[card.market_id],
+                    cancellationMatrix,
                 });
                 if (cancelPriceForMarketId[0] === 'N') {
                     unableToFindPriceFor.push(card);
@@ -70,6 +72,7 @@ const addMarketIdsForCancelling = ({
     level,
     nextBotLoopTime,
     rentalTransaction,
+    cancellationMatrix,
 }) => {
     try {
         // console.log('addMarketIdsForCancelling start');
