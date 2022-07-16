@@ -77,3 +77,22 @@ module.exports = {
     getCardDetails,
     updateCardDetails,
 };
+
+// cancellationMatrix[0]
+// when there is 1 days (days_till_eos) till end of sesaon.  we will cancel your rental when
+// your rental price is 20% (cancellation_threshold) less than the current_market_price
+
+// cancellationMatrix[1]
+// when there are 10 days (days_till_eos) till end of sesaon.  we will cancel your rental when
+// your rental price is 40% (cancellation_threshold) less than the current_market_price
+
+// where:
+// cancellationMatrix[0]
+// when there is 15 days (days_till_eos) till end of sesaon.  we will cancel your rental when
+// your rental price is 20% (cancellation_threshold) less than the current_market_price
+
+// cancellationMatrix[1]
+// when there are 14 days (days_till_eos) till end of sesaon.  we will cancel your rental when
+// your rental price is 14% (cancellation_threshold) less than the current_market_price
+
+// and current_market_price is defined by median, else high depending on number of listings
