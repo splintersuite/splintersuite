@@ -96,14 +96,6 @@ const addPriceListInformationForEachCardByUid = ({
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
             });
-            if (listingPrice === null) {
-                listingPrice = priceWithoutMedian({
-                    card_detail_id,
-                    lowestListingPrice: parseFloat(currentPriceData.low_price),
-                    numListings: currentPriceData.qty,
-                    currentPriceStats: marketPrices[marketKey],
-                });
-            }
         } else {
             listingPrice = parseFloat(currentPriceData.low_price);
         }
@@ -168,7 +160,12 @@ const getListingPrice = ({
         }
     }
     // call priceWithoutMedian afterwards... basically chooses the low carefully
-    return null;
+    return priceWithoutMedian({
+        card_detail_id,
+        lowestListingPrice,
+        numListings,
+        currentPriceStats,
+    });
 };
 
 const priceWithoutMedian = ({
@@ -251,6 +248,5 @@ const getAvg = ({ currentPriceStats }) => {
 module.exports = {
     calculateRentalPriceToList,
     getListingPrice,
-    priceWithoutMedian,
     getAvg,
 };

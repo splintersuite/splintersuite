@@ -4,11 +4,7 @@ const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
 } = require('./rentalListInfo');
-const {
-    getListingPrice,
-    priceWithoutMedian,
-    getAvg,
-} = require('./calculateRentalPriceToList');
+const { getListingPrice, getAvg } = require('./calculateRentalPriceToList');
 
 const threeDaysTime = 1000 * 60 * 60 * 24 * 3;
 
@@ -16,6 +12,7 @@ const calculateCancelActiveRentalPrices = async ({
     collectionObj,
     marketPrices,
     nextBotLoopTime,
+    activeRentalsBySellTrxId,
 }) => {
     try {
         //   console.log('calculateCancelActiveRentalPrices start');
@@ -44,6 +41,7 @@ const calculateCancelActiveRentalPrices = async ({
                     marketPrices,
                     level,
                     nextBotLoopTime,
+                    rentalTransaction: activeRentalsBySellTrxId[card.market_id],
                 });
                 if (cancelPriceForMarketId[0] === 'N') {
                     unableToFindPriceFor.push(card);
@@ -71,6 +69,7 @@ const addMarketIdsForCancelling = ({
     marketPrices,
     level,
     nextBotLoopTime,
+    rentalTransaction,
 }) => {
     try {
         // console.log('addMarketIdsForCancelling start');
@@ -97,6 +96,7 @@ const addMarketIdsForCancelling = ({
         const threshold = 0.3;
 
         const cancelFloorPrice = (1 + threshold) * parseFloat(buy_price);
+
         const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
         let listingPrice;
         let avg;
@@ -112,14 +112,6 @@ const addMarketIdsForCancelling = ({
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
             });
-            if (listingPrice === null) {
-                listingPrice = priceWithoutMedian({
-                    card_detail_id,
-                    lowestListingPrice: parseFloat(currentPriceData.low_price),
-                    numListings: currentPriceData.qty,
-                    currentPriceStats: marketPrices[marketKey],
-                });
-            }
         } else {
             listingPrice = parseFloat(currentPriceData.low_price);
         }
@@ -128,20 +120,27 @@ const addMarketIdsForCancelling = ({
         // console.log('buy_price', buy_price);
         // console.log('listingPrice', listingPrice);
         // console.log('cancelFloorPrice', cancelFloorPrice);
-
+        const nextRentalTime = new Date(
+            rentalTransaction.next_rental_payment
+        ).getTime();
         if (currentPriceData == null || currentPriceData.low_price == null) {
             const priceNotFoundForCard = ['N', uid, market_id];
             return priceNotFoundForCard;
             // if i think i can make another 15% by relisting, cancel this
+            // make sure i don't have more time...
+            // make sure i don't cancel anything renting out above the average
+            // if the listing price is greater than buy price * threshold
+            // basically if i can fetch a much better price than i'm getting. i'll cancel
         } else if (
+            nextBotLoopTime > nextRentalTime &&
             cancelFloorPrice < listingPrice &&
             Number.isFinite(avg) &&
             cancelFloorPrice < avg
         ) {
-            const now = new Date();
             if (
-                now - new Date(market_created_date).getTime() > threeDaysTime &&
-                listingPrice * 0.7 < cancelFloorPrice
+                new Date().getTime() - new Date(market_created_date).getTime() >
+                    threeDaysTime &&
+                listingPrice * 0.7 > cancelFloorPrice
             ) {
                 const shouldNotCancelRental = [
                     'NC',
@@ -152,6 +151,7 @@ const addMarketIdsForCancelling = ({
 
                 return shouldNotCancelRental;
             }
+
             // this means that we should cancel this and relist it
             const rentalToCancel = ['C', market_id];
 

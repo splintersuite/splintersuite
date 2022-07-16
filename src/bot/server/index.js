@@ -44,9 +44,8 @@ const startRentalBot = async ({
         // grab the card_details endpoint
         await updateCardDetails(collection);
 
-        const activeRentalsByRentalId = await getActiveRentalsByRentalId(
-            username
-        );
+        const activeRentals = await getActiveRentalsByRentalId(username);
+
         const {
             cardsAvailableForRent,
             cardsListedButNotRentedOut,
@@ -55,7 +54,7 @@ const startRentalBot = async ({
         } = filterCollectionArraysForPotentialRentalCards({
             username,
             collection,
-            activeRentalsByRentalId,
+            activeRentalsByRentalId: activeRentals.activeRentalsByRentalTx,
         });
 
         // TNT TO DO -> save down the time until off rentalCooldown for each card in cardsOnRentalCooldown, then we will know when our bot should try and list them on the market.
@@ -94,6 +93,8 @@ const startRentalBot = async ({
             await calculateCancelActiveRentalPrices({
                 collectionObj: collectionByLevelObjBeingRentedOut,
                 marketPrices,
+                activeRentalsBySellTrxId:
+                    activeRentals.activeRentalsBySellTrxId,
                 nextBotLoopTime,
             });
 

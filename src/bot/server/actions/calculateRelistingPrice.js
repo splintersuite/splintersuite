@@ -4,10 +4,7 @@ const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
 } = require('./rentalListInfo');
-const {
-    getListingPrice,
-    priceWithoutMedian,
-} = require('./calculateRentalPriceToList');
+const { getListingPrice } = require('./calculateRentalPriceToList');
 
 const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
     try {
@@ -101,16 +98,6 @@ const addPriceRelistInformationForEachCardByMarketId = ({
                     numListings: currentPriceData.qty,
                     currentPriceStats: marketPrices[marketKey],
                 });
-                if (listingPrice === null) {
-                    listingPrice = priceWithoutMedian({
-                        card_detail_id,
-                        lowestListingPrice: parseFloat(
-                            currentPriceData.low_price
-                        ),
-                        numListings: currentPriceData.qty,
-                        currentPriceStats: marketPrices[marketKey],
-                    });
-                }
             } else {
                 listingPrice = parseFloat(currentPriceData.low_price);
             }

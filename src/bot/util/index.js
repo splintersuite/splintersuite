@@ -7,10 +7,12 @@ const periodToMs = (period) => {
 };
 
 // assuming we are running NOW
-const getNextRunTime = (period) => {
-    const msPerHour = 3600000;
-    const hours = Math.round(24 / period);
-    return new Date().getTime() + hours * msPerHour;
+const getNextRunTime = (durationInMS) => {
+    console.log(
+        'new Date().getTime() + durationInMS',
+        new Date().getTime() + durationInMS
+    );
+    return new Date().getTime() + durationInMS;
 };
 
 const getHours = (duration) => moment.duration(duration).asHours();

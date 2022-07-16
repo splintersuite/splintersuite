@@ -31,14 +31,21 @@ const activeRentalCardsInfoByRentalTx = ({ activeRentals }) => {
     try {
         console.log('activeRentalCardsInfoByRentalTx start');
 
-        const newActiveRentals = {};
+        const activeRentalsByRentalTx = {};
 
         activeRentals.forEach((rental) => {
             const { rental_tx } = rental;
-            newActiveRentals[rental_tx] = rental;
+            activeRentalsByRentalTx[rental_tx] = rental;
         });
 
-        return newActiveRentals;
+        const activeRentalsBySellTrxId = {};
+
+        activeRentals.forEach((rental) => {
+            const { sell_trx_id } = rental;
+            activeRentalsBySellTrxId[sell_trx_id] = rental;
+        });
+
+        return { activeRentalsByRentalTx, activeRentalsBySellTrxId };
     } catch (err) {
         console.error(`activeRentalCardsInfoByRentalTx error: ${err.message}`);
         throw err;
@@ -51,11 +58,12 @@ const getActiveRentalsByRentalId = async (username) => {
 
         const activeRentals = await activeRentalCardsInfo(username);
 
-        const newActiveRentals = activeRentalCardsInfoByRentalTx({
-            activeRentals,
-        });
+        const { activeRentalsByRentalTx, activeRentalsBySellTrxId } =
+            activeRentalCardsInfoByRentalTx({
+                activeRentals,
+            });
 
-        return newActiveRentals;
+        return { activeRentalsByRentalTx, activeRentalsBySellTrxId };
     } catch (err) {
         console.error(`getActiveRentalsByRentalId error: ${err.message}`);
         throw err;
