@@ -62,9 +62,6 @@ const addPriceRelistInformationForEachCardByMarketId = ({
         //   console.log(`addPriceRelistInformationForEachCardByUid start`);
         const { card_detail_id, gold, edition, market_id, buy_price, uid } =
             card;
-        if (uid === 'C7-450-A91LEMCHM8') {
-            console.log('card was found....');
-        }
 
         let _gold = 'F';
         if (gold) {

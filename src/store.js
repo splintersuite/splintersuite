@@ -126,23 +126,6 @@ const defaults = {
             rareCP: 40,
             epicCP: 100,
             legendaryCP: 500,
-            cancellationMatrix: [
-                { daysTillEOS: 15, cancellationThreshold: 2.0 }, // espressed as 20% on the frontend
-                { daysTillEOS: 14, cancellationThreshold: 1.4 },
-                { daysTillEOS: 13, cancellationThreshold: 1.0 },
-                { daysTillEOS: 12, cancellationThreshold: 0.9 },
-                { daysTillEOS: 11, cancellationThreshold: 0.8 },
-                { daysTillEOS: 10, cancellationThreshold: 0.7 },
-                { daysTillEOS: 9, cancellationThreshold: 0.6 },
-                { daysTillEOS: 8, cancellationThreshold: 0.5 },
-                { daysTillEOS: 7, cancellationThreshold: 0.4 },
-                { daysTillEOS: 6, cancellationThreshold: 0.3 },
-                { daysTillEOS: 5, cancellationThreshold: 0.2 },
-                { daysTillEOS: 4, cancellationThreshold: 0.01 },
-                { daysTillEOS: 3, cancellationThreshold: 0.01 },
-                { daysTillEOS: 2, cancellationThreshold: 0.001 },
-                { daysTillEOS: 1, cancellationThreshold: 0.001 },
-            ],
         },
         stats: {
             startedAt: '',

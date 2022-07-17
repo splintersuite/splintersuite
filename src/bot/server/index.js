@@ -4,6 +4,12 @@ const {
     filterCollectionArraysForPotentialRentalCards,
     filterCollectionArraysByGoldYN,
 } = require('./actions/collection');
+
+const {
+    getCurrentSeason,
+    getEndOfSeasonSettings,
+} = require('./actions/currentSeason');
+
 const {
     getRentalInfoObjectFromCollection,
 } = require('./actions/rentalListInfo');
@@ -38,6 +44,11 @@ const startRentalBot = async ({
 }) => {
     try {
         console.log(`startRentalsForAccount username: ${username}`);
+        const season = await getCurrentSeason();
+        console.log('settings', settings);
+        const endOfSeasonSettings = getEndOfSeasonSettings({
+            season,
+        });
 
         const collection = await getCollection(username);
         // if there is a card in the collection we don't need
@@ -96,7 +107,7 @@ const startRentalBot = async ({
                 activeRentalsBySellTrxId:
                     activeRentals.activeRentalsBySellTrxId,
                 nextBotLoopTime,
-                cancellationMatrix: settings.cancellationMatrix,
+                endOfSeasonSettings,
             });
 
         // console.log(rentalArrayWithPriceAndUid);
@@ -122,6 +133,7 @@ const startRentalBot = async ({
         };
     } catch (err) {
         console.error(`startRentalsForAccount error: ${err.message}`);
+        console.log(err.stack);
         throw err;
     }
 };

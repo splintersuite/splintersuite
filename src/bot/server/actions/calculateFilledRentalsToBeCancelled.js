@@ -13,7 +13,7 @@ const calculateCancelActiveRentalPrices = async ({
     marketPrices,
     nextBotLoopTime,
     activeRentalsBySellTrxId,
-    cancellationMatrix,
+    endOfSeasonSettings,
 }) => {
     try {
         //   console.log('calculateCancelActiveRentalPrices start');
@@ -43,7 +43,7 @@ const calculateCancelActiveRentalPrices = async ({
                     level,
                     nextBotLoopTime,
                     rentalTransaction: activeRentalsBySellTrxId[card.market_id],
-                    cancellationMatrix,
+                    endOfSeasonSettings,
                 });
                 if (cancelPriceForMarketId[0] === 'N') {
                     unableToFindPriceFor.push(card);
@@ -72,7 +72,7 @@ const addMarketIdsForCancelling = ({
     level,
     nextBotLoopTime,
     rentalTransaction,
-    cancellationMatrix,
+    endOfSeasonSettings,
 }) => {
     try {
         // console.log('addMarketIdsForCancelling start');
@@ -86,7 +86,6 @@ const addMarketIdsForCancelling = ({
             market_created_date,
         } = card;
 
-        console.log('card', card);
         let _gold = 'F';
         if (gold) {
             _gold = 'T';
@@ -96,9 +95,6 @@ const addMarketIdsForCancelling = ({
 
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
         const currentPriceData = searchableRentList[rentListKey];
-        const threshold = 0.3;
-
-        const cancelFloorPrice = (1 + threshold) * parseFloat(buy_price);
 
         const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
         let listingPrice;
@@ -126,6 +122,15 @@ const addMarketIdsForCancelling = ({
         const nextRentalTime = new Date(
             rentalTransaction.next_rental_payment
         ).getTime();
+        // console.log('card', card);
+        // console.log('listingPrice', listingPrice);
+        // console.log('buy_price', buy_price);
+        // console.log(
+        //     '(listingPrice - buy_price) / listingPrice',
+        //     (listingPrice - buy_price) / listingPrice
+        // );
+        // console.log('currentPriceData', currentPriceData);
+        // console.log('marketKey', marketKey);
         if (currentPriceData == null || currentPriceData.low_price == null) {
             const priceNotFoundForCard = ['N', uid, market_id];
             return priceNotFoundForCard;
@@ -136,14 +141,22 @@ const addMarketIdsForCancelling = ({
             // basically if i can fetch a much better price than i'm getting. i'll cancel
         } else if (
             nextBotLoopTime > nextRentalTime &&
-            cancelFloorPrice < listingPrice &&
-            Number.isFinite(avg) &&
-            cancelFloorPrice < avg
+            (listingPrice - buy_price) / listingPrice >
+                endOfSeasonSettings.cancellationThreshold
         ) {
+            // console.log('card to relist', card);
+            // console.log('listingPrice', listingPrice);
+            // console.log('buy_price', buy_price);
+            // console.log(
+            //     'endOfSeasonSettings.cancellationThreshold',
+            //     endOfSeasonSettings.cancellationThreshold
+            // );
+            // process.exit();
             if (
                 new Date().getTime() - new Date(market_created_date).getTime() >
                     threeDaysTime &&
-                listingPrice * 0.7 > cancelFloorPrice
+                endOfSeasonSettings.cancellationThreshold >
+                    (0.7 * (listingPrice - buy_price)) / listingPrice
             ) {
                 const shouldNotCancelRental = [
                     'NC',
