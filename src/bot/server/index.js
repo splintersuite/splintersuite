@@ -110,9 +110,6 @@ const startRentalBot = async ({
                 endOfSeasonSettings,
             });
 
-        // console.log(rentalArrayWithPriceAndUid);
-        // console.log(relistingPriceForEachMarketId);
-        // console.log(marketIdsForCancellation);
         // we would also want to make sure that cards already listed are seperated
         const listings = fmtToLimitCardsInEachHiveTx(
             rentalArrayWithPriceAndUid

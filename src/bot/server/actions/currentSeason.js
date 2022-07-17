@@ -60,7 +60,7 @@ const getEndOfSeasonSettings = ({ season }) => {
             day.timeStart = seasonEndTime - day.daysTillEOS * msInDay;
             day.timeEnd =
                 seasonEndTime -
-                ((day.daysTillEOS - 1) * msInDay - msInFourHours);
+                ((day.daysTillEOS - 1) * msInDay + msInFourHours);
         } else {
             day.timeStart = seasonEndTime - day.daysTillEOS * msInDay;
             day.timeEnd = seasonEndTime - (day.daysTillEOS - 1) * msInDay;
@@ -82,9 +82,10 @@ const getEndOfSeasonSettings = ({ season }) => {
                     ...day,
                 };
             }
-            return true;
+            // return true;
         }
     });
+    process.exit();
     return endOfSeasonSettings;
 };
 

@@ -23,6 +23,7 @@ const createRentals = async (cards) => {
                 cards,
                 type: 'rent',
                 fee: 500,
+                agent: 'splintersuite',
                 required_posting_auths: [username],
                 required_auths: [],
             }),
@@ -44,6 +45,7 @@ const updateRentals = async (cards) => {
             id: 'sm_update_rental_price',
             json: JSON.stringify({
                 items: cards,
+                agent: 'splintersuite',
                 required_posting_auths: [username],
                 required_auths: [],
             }),
@@ -65,6 +67,7 @@ const deleteRentals = async (cards) => {
             id: 'sm_market_cancel_rental',
             json: JSON.stringify({
                 items: cards,
+                agent: 'splintersuite',
                 required_posting_auths: [username],
                 required_auths: [],
             }),
