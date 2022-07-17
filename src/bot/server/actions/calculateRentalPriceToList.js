@@ -11,7 +11,6 @@ const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';
 // this requires the object that has key = level, value [ array of cards with level = key]
 const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
     try {
-        //  console.log("calculateRentalPriceToList start");
         const rentalPriceForEachCardUid = [];
         const cardsUnableToFindPriceFor = [];
 
@@ -59,8 +58,6 @@ const addPriceListInformationForEachCardByUid = ({
     marketPrices,
 }) => {
     try {
-        //  console.log(`addPriceListInformationForEachCardByUid start`);
-
         const { card_detail_id, gold, edition, uid } = card;
         let _gold = 'F';
         if (gold) {
@@ -87,8 +84,6 @@ const addPriceListInformationForEachCardByUid = ({
         // SOME MATH HERE
         // TNT TODO: make this more robust obviously
         let listingPrice;
-        // console.log('marketPrices[marketKey]', marketPrices[marketKey]);
-        // console.log('marketKey', marketKey);
         if (marketPrices[marketKey] != null) {
             listingPrice = getListingPrice({
                 card_detail_id,

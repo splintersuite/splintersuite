@@ -99,8 +99,7 @@ const addMarketIdsForCancelling = ({
         const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
         let listingPrice;
         let avg;
-        // console.log('marketPrices[marketKey]', marketPrices[marketKey]);
-        // console.log('marketKey', marketKey);
+
         if (marketPrices[marketKey] != null) {
             avg = getAvg({
                 currentPriceStats: marketPrices[marketKey],
