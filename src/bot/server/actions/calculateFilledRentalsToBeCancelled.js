@@ -114,23 +114,10 @@ const addMarketIdsForCancelling = ({
         } else {
             listingPrice = parseFloat(currentPriceData.low_price);
         }
-
-        // console.log('card', card);
-        // console.log('buy_price', buy_price);
-        // console.log('listingPrice', listingPrice);
-        // console.log('cancelFloorPrice', cancelFloorPrice);
-        const nextRentalTime = new Date(
+        const nextRentalPaymentTime = new Date(
             rentalTransaction.next_rental_payment
         ).getTime();
-        // console.log('card', card);
-        // console.log('listingPrice', listingPrice);
-        // console.log('buy_price', buy_price);
-        // console.log(
-        //     '(listingPrice - buy_price) / listingPrice',
-        //     (listingPrice - buy_price) / listingPrice
-        // );
-        // console.log('currentPriceData', currentPriceData);
-        // console.log('marketKey', marketKey);
+
         if (currentPriceData == null || currentPriceData.low_price == null) {
             const priceNotFoundForCard = ['N', uid, market_id];
             return priceNotFoundForCard;
@@ -140,18 +127,10 @@ const addMarketIdsForCancelling = ({
             // if the listing price is greater than buy price * threshold
             // basically if i can fetch a much better price than i'm getting. i'll cancel
         } else if (
-            nextBotLoopTime > nextRentalTime &&
+            nextBotLoopTime > nextRentalPaymentTime &&
             (listingPrice - buy_price) / listingPrice >
                 endOfSeasonSettings.cancellationThreshold
         ) {
-            // console.log('card to relist', card);
-            // console.log('listingPrice', listingPrice);
-            // console.log('buy_price', buy_price);
-            // console.log(
-            //     'endOfSeasonSettings.cancellationThreshold',
-            //     endOfSeasonSettings.cancellationThreshold
-            // );
-            // process.exit();
             if (
                 new Date().getTime() - new Date(market_created_date).getTime() >
                     threeDaysTime &&

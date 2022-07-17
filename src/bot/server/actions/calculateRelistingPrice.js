@@ -8,8 +8,6 @@ const { getListingPrice } = require('./calculateRentalPriceToList');
 
 const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
     try {
-        // console.log('calculateRelistingPrice start');
-
         const relistingPriceForEachMarketId = [];
         const cardsUnableToFindPriceFor = [];
         const cardsNotWorthRelisting = [];
@@ -59,7 +57,6 @@ const addPriceRelistInformationForEachCardByMarketId = ({
     marketPrices,
 }) => {
     try {
-        //   console.log(`addPriceRelistInformationForEachCardByUid start`);
         const { card_detail_id, gold, edition, market_id, buy_price, uid } =
             card;
 
@@ -90,13 +87,6 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             // we were listed at the median, we could relist a bit lower...
             const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
             let listingPrice;
-            // if (uid === 'C7-450-A91LEMCHM8') {
-            //     console.log('card', card);
-            //     console.log('marketPrices[marketKey]', marketPrices[marketKey]);
-            //     console.log('currentPriceData', currentPriceData);
-            // }
-            // console.log('marketPrices[marketKey]', marketPrices[marketKey]);
-            // console.log('marketKey', marketKey);
             if (marketPrices[marketKey] != null) {
                 listingPrice = getListingPrice({
                     card_detail_id,
@@ -108,8 +98,6 @@ const addPriceRelistInformationForEachCardByMarketId = ({
                 listingPrice = parseFloat(currentPriceData.low_price);
             }
 
-            // constlistingPrice= parseFloat(currentPriceData.low_price);
-
             if (listingPrice < 0.2) {
                 const doNotChangeThePrice = [
                     'C',
@@ -118,12 +106,7 @@ const addPriceRelistInformationForEachCardByMarketId = ({
                     buy_price,
                     currentPriceData.low_price,
                 ];
-                // if (uid === 'C7-450-A91LEMCHM8') {
-                //     console.log('here');
-                //     console.log('listingPrice', listingPrice);
-                //     console.log('doNotChangeThePrice', doNotChangeThePrice);
-                //     process.exit();
-                // }
+
                 return doNotChangeThePrice;
             }
 
@@ -134,15 +117,6 @@ const addPriceRelistInformationForEachCardByMarketId = ({
                     : `${listingPrice}`,
             ];
 
-            // if (uid === 'C7-450-A91LEMCHM8') {
-            //     console.log(
-            //         'rentalRelistingPriceForMarketId',
-            //         rentalRelistingPriceForMarketId
-            //     );
-            //     console.log('listingPrice', listingPrice);
-            //     process.exit();
-            // }
-            // const rentalRelistingPriceForMarketId = [uid, `${price}`];
             return rentalRelistingPriceForMarketId;
         }
     } catch (err) {

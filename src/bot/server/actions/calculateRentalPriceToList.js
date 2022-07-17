@@ -127,7 +127,8 @@ const getListingPrice = ({
     }
     const { avg, low, stdDev, volume, median } =
         currentPriceStats[ALL_OPEN_TRADES];
-    const { recentMedian, recentLow } = currentPriceStats[TRADES_DURING_PERIOD];
+    const { median: recentMedian, low: recentLow } =
+        currentPriceStats[TRADES_DURING_PERIOD];
 
     const bestLow =
         Number.isFinite(recentLow) && recentLow > low ? recentLow : low;
@@ -149,16 +150,17 @@ const getListingPrice = ({
         if (lowestListingPrice < _.min([median, recentMedian])) {
             // if the median is higher than the lowest listing
             // return the median
-            return recentMedian > median ? recentMedian : median;
+            return _.max([recentMedian, median]);
         } else if (Number.isFinite(avg) && Number.isFinite(stdDev)) {
             // if average and standard deviation are defined
             // and the lowestListing is higher than the medians
             return _.min([lowestListingPrice, avg + stdDev]);
         } else {
             // no average and no standard deviation
-            return recentMedian > median ? recentMedian : median;
+            return _.max([recentMedian, median]);
         }
     }
+
     // call priceWithoutMedian afterwards... basically chooses the low carefully
     return priceWithoutMedian({
         card_detail_id,
@@ -178,7 +180,7 @@ const priceWithoutMedian = ({
         return lowestListingPrice;
     }
     const { avg, low, stdDev, volume } = currentPriceStats[ALL_OPEN_TRADES];
-    const { recentLow } = currentPriceStats[TRADES_DURING_PERIOD];
+    const { low: recentLow } = currentPriceStats[TRADES_DURING_PERIOD];
 
     // handle for recent prices being higher than before
     const bestLow =
@@ -232,7 +234,7 @@ const priceWithoutMedian = ({
 
 const getAvg = ({ currentPriceStats }) => {
     const { avg } = currentPriceStats[ALL_OPEN_TRADES];
-    const { recentAvg } = currentPriceStats[TRADES_DURING_PERIOD];
+    const { avg: recentAvg } = currentPriceStats[TRADES_DURING_PERIOD];
 
     // handle for recent prices being higher than before
     if (Number.isFinite(avg) && Number.isFinite(recentAvg)) {
