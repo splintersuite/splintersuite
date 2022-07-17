@@ -47,7 +47,6 @@ window.api.bot.start(async (event) => {
                 marketPrices,
                 nextBotLoopTime,
             });
-        process.exit();
 
         // ---
         // List, relist, cancel
