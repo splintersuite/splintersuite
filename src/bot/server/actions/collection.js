@@ -146,6 +146,10 @@ const filterCollectionArraysForPotentialRentalCards = ({
                 // delegation_tx from here === rental_tx from active_rentals
                 const currentRental =
                     activeRentalsByRentalId[card.delegation_tx];
+                if (!currentRental) {
+                    // seems to be some sort of delay where this errors because the active rentals endpoint is not updated
+                    return;
+                }
                 if (currentRental.cancel_tx == null) {
                     cardsBeingRentedOut.push(cardToBeAdded);
                 } else {
@@ -165,6 +169,8 @@ const filterCollectionArraysForPotentialRentalCards = ({
         console.error(
             `filterCollectionArraysForPotentialRentalCards error: ${err.message}`
         );
+        console.log(err.stack);
+        console.log('err.stack');
         throw err;
     }
 };

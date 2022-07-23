@@ -45,7 +45,6 @@ const startRentalBot = async ({
     try {
         console.log(`startRentalsForAccount username: ${username}`);
         const season = await getCurrentSeason();
-        console.log('settings', settings);
         const endOfSeasonSettings = getEndOfSeasonSettings({
             season,
         });

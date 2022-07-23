@@ -59,6 +59,7 @@ window.api.bot.start(async (event) => {
                 await window.api.hive.createRentals({
                     cards: listingGroup,
                 });
+                console.log('listingGroup', listingGroup);
                 hiveTransactions = hiveTransactions + 1;
                 numListed += listingGroup.length;
             }
@@ -77,6 +78,7 @@ window.api.bot.start(async (event) => {
                 await window.api.hive.updateRentals({
                     cards: relistingGroup,
                 });
+                console.log('relistingGroup', relistingGroup);
                 hiveTransactions = hiveTransactions + 1;
                 numListed += relistingGroup.length;
             }

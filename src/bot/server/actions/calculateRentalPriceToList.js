@@ -129,8 +129,8 @@ const getListingPrice = ({
         Number.isFinite(recentLow) && recentLow > low ? recentLow : low;
 
     // handling for uncommon legies like Epona, id = 297
-    if (cardRarity[card_detail_id] === 4 && numListings < 4) {
-        // is legie and at max only 3 are listed
+    if (numListings < 4) {
+        // if max only 3 are listed
         // tames idea implemented below... find a reasonable price to list
         return _.max([avg - stdDev, lowestListingPrice, bestLow]);
     }

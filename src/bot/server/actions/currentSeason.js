@@ -23,16 +23,16 @@ const getCurrentSeason = async () => {
 
 const cancellationMatrix = [
     { daysTillEOS: 15, cancellationThreshold: 5.0 },
-    { daysTillEOS: 14, cancellationThreshold: 3.0 },
-    { daysTillEOS: 13, cancellationThreshold: 1.0 },
-    { daysTillEOS: 12, cancellationThreshold: 0.9 },
-    { daysTillEOS: 11, cancellationThreshold: 0.8 },
-    { daysTillEOS: 10, cancellationThreshold: 0.7 },
-    { daysTillEOS: 9, cancellationThreshold: 0.6 },
-    { daysTillEOS: 8, cancellationThreshold: 0.5 },
-    { daysTillEOS: 7, cancellationThreshold: 0.4 },
-    { daysTillEOS: 6, cancellationThreshold: 0.3 },
-    { daysTillEOS: 5, cancellationThreshold: 0.2 },
+    { daysTillEOS: 14, cancellationThreshold: 1.0 },
+    { daysTillEOS: 13, cancellationThreshold: 0.5 },
+    { daysTillEOS: 12, cancellationThreshold: 0.2 },
+    { daysTillEOS: 11, cancellationThreshold: 0.15 },
+    { daysTillEOS: 10, cancellationThreshold: 0.1 },
+    { daysTillEOS: 9, cancellationThreshold: 0.07 },
+    { daysTillEOS: 8, cancellationThreshold: 0.05 },
+    { daysTillEOS: 7, cancellationThreshold: 0.04 },
+    { daysTillEOS: 6, cancellationThreshold: 0.03 },
+    { daysTillEOS: 5, cancellationThreshold: 0.02 },
     { daysTillEOS: 4, cancellationThreshold: 0.01 },
     { daysTillEOS: 3, cancellationThreshold: 0.01 },
     { daysTillEOS: 2, cancellationThreshold: 0.001 },
@@ -44,7 +44,7 @@ const getEndOfSeasonSettings = ({ season }) => {
 
     const seasonEndTime = new Date(season.ends).getTime();
     const msInDay = 1000 * 60 * 60 * 24;
-    const msInFourHours = 1000 * 60 * 60 * 4;
+    const msInTwelveHours = 1000 * 60 * 60 * 12;
     const nowTime = new Date().getTime();
     const msTillSeasonEnd = seasonEndTime - nowTime;
     let endOfSeasonSettings = {
@@ -54,13 +54,13 @@ const getEndOfSeasonSettings = ({ season }) => {
     cancellationMatrix.some((day) => {
         if (day.daysTillEOS === 1) {
             day.timeStart =
-                seasonEndTime - (day.daysTillEOS * msInDay + msInFourHours);
+                seasonEndTime + (day.daysTillEOS * msInDay + msInTwelveHours);
             day.timeEnd = seasonEndTime - (day.daysTillEOS - 1) * msInDay;
         } else if (day.daysTillEOS === 2) {
             day.timeStart = seasonEndTime - day.daysTillEOS * msInDay;
             day.timeEnd =
-                seasonEndTime -
-                ((day.daysTillEOS - 1) * msInDay + msInFourHours);
+                seasonEndTime +
+                ((day.daysTillEOS - 1) * msInDay + msInTwelveHours);
         } else {
             day.timeStart = seasonEndTime - day.daysTillEOS * msInDay;
             day.timeEnd = seasonEndTime - (day.daysTillEOS - 1) * msInDay;
@@ -82,10 +82,9 @@ const getEndOfSeasonSettings = ({ season }) => {
                     ...day,
                 };
             }
-            // return true;
+            return true;
         }
     });
-    process.exit();
     return endOfSeasonSettings;
 };
 

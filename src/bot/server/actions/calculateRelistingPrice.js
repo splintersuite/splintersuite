@@ -69,35 +69,28 @@ const addPriceRelistInformationForEachCardByMarketId = ({
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
         const currentPriceData = searchableRentList[rentListKey];
 
+        const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
+        let listingPrice;
+        if (marketPrices[marketKey] != null) {
+            listingPrice = getListingPrice({
+                card_detail_id,
+                lowestListingPrice: parseFloat(currentPriceData.low_price),
+                numListings: currentPriceData.qty,
+                currentPriceStats: marketPrices[marketKey],
+            });
+        } else {
+            listingPrice = parseFloat(currentPriceData.low_price);
+        }
+
         if (currentPriceData == null || currentPriceData.low_price == null) {
             const rentalNotFoundForCard = ['N', uid, market_id];
             return rentalNotFoundForCard;
-            // 10% under median
-        } else if (currentPriceData.low_price >= buy_price) {
-            const doNotChangeThePrice = [
-                'C',
-                uid,
-                market_id,
-                buy_price,
-                currentPriceData.low_price,
-            ];
-            return doNotChangeThePrice;
-        } else {
-            // current lowest listings is less than than the buy price
-            // we were listed at the median, we could relist a bit lower...
-            const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
-            let listingPrice;
-            if (marketPrices[marketKey] != null) {
-                listingPrice = getListingPrice({
-                    card_detail_id,
-                    lowestListingPrice: parseFloat(currentPriceData.low_price),
-                    numListings: currentPriceData.qty,
-                    currentPriceStats: marketPrices[marketKey],
-                });
-            } else {
-                listingPrice = parseFloat(currentPriceData.low_price);
-            }
-
+        } else if (
+            listingPrice < buy_price &&
+            (buy_price - listingPrice) / buy_price > 0.3
+        ) {
+            // the current listing (buy_price) is 20% more than what we would list it as today
+            // relist lower
             if (listingPrice < 0.2) {
                 const doNotChangeThePrice = [
                     'C',
@@ -109,6 +102,15 @@ const addPriceRelistInformationForEachCardByMarketId = ({
 
                 return doNotChangeThePrice;
             }
+            // console.log('card', card);
+            // console.log('buy_price', buy_price);
+            // console.log('listingPrice', listingPrice);
+            // console.log(
+            //     'currentPriceData.low_price',
+            //     currentPriceData.low_price
+            // );
+            // console.log('marketKey', marketKey);
+            // console.log('marketPrices[marketKey]', marketPrices[marketKey]);
 
             const rentalRelistingPriceForMarketId = [
                 market_id,
@@ -118,6 +120,15 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             ];
 
             return rentalRelistingPriceForMarketId;
+        } else {
+            const doNotChangeThePrice = [
+                'C',
+                uid,
+                market_id,
+                buy_price,
+                currentPriceData.low_price,
+            ];
+            return doNotChangeThePrice;
         }
     } catch (err) {
         console.error(

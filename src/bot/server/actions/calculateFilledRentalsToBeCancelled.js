@@ -5,6 +5,7 @@ const {
     convertForRentGroupOutputToSearchableObject,
 } = require('./rentalListInfo');
 const { getListingPrice, getAvg } = require('./calculateRentalPriceToList');
+const _ = require('lodash');
 
 const threeDaysTime = 1000 * 60 * 60 * 24 * 3;
 
@@ -94,16 +95,19 @@ const addMarketIdsForCancelling = ({
         }
 
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
-        const currentPriceData = searchableRentList[rentListKey];
+        const currentPriceData =
+            searchableRentList[rentListKey] !== undefined
+                ? searchableRentList[rentListKey]
+                : {};
 
         const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
         let listingPrice;
-        let avg;
 
+        if (_.isEmpty(currentPriceData) && marketPrices[marketKey]) {
+            currentPriceData.qty = 0;
+            currentPriceData.low_price = buy_price;
+        }
         if (marketPrices[marketKey] != null) {
-            avg = getAvg({
-                currentPriceStats: marketPrices[marketKey],
-            });
             listingPrice = getListingPrice({
                 card_detail_id,
                 lowestListingPrice: parseFloat(currentPriceData.low_price),
@@ -116,7 +120,6 @@ const addMarketIdsForCancelling = ({
         const nextRentalPaymentTime = new Date(
             rentalTransaction.next_rental_payment
         ).getTime();
-
         if (currentPriceData == null || currentPriceData.low_price == null) {
             const priceNotFoundForCard = ['N', uid, market_id];
             return priceNotFoundForCard;
@@ -162,6 +165,7 @@ const addMarketIdsForCancelling = ({
         }
     } catch (err) {
         console.error(`addMarketIdsForCancelling error: ${err.message}`);
+        console.log('err.stack', err.stack);
         throw err;
     }
 };
