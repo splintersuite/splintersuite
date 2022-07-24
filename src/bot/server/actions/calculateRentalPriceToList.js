@@ -142,17 +142,17 @@ const getListingPrice = ({
         (Number.isFinite(median) || Number.isFinite(recentMedian)) &&
         Number.isFinite(lowestListingPrice)
     ) {
-        if (lowestListingPrice < _.min([median, recentMedian])) {
+        if (lowestListingPrice < _.max([median, recentMedian])) {
             // if the median is higher than the lowest listing
             // return the median
             return _.max([recentMedian, median]);
         } else if (Number.isFinite(avg) && Number.isFinite(stdDev)) {
             // if average and standard deviation are defined
             // and the lowestListing is higher than the medians
-            return _.min([lowestListingPrice, avg + stdDev]);
+            return _.max([lowestListingPrice, avg + stdDev]);
         } else {
             // no average and no standard deviation
-            return _.max([recentMedian, median]);
+            return _.max([lowestListingPrice, recentMedian, median]);
         }
     }
 
