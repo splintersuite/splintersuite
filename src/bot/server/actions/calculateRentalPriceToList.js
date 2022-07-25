@@ -122,8 +122,12 @@ const getListingPrice = ({
     }
     const { avg, low, stdDev, volume, median } =
         currentPriceStats[ALL_OPEN_TRADES];
-    const { median: recentMedian, low: recentLow } =
-        currentPriceStats[TRADES_DURING_PERIOD];
+    const {
+        avg: recentAvg,
+        stdDev: recentStdDev,
+        median: recentMedian,
+        low: recentLow,
+    } = currentPriceStats[TRADES_DURING_PERIOD];
 
     const bestLow =
         Number.isFinite(recentLow) && recentLow > low ? recentLow : low;
@@ -132,7 +136,11 @@ const getListingPrice = ({
     if (numListings < 4) {
         // if max only 3 are listed
         // tames idea implemented below... find a reasonable price to list
-        return _.max([avg - stdDev, lowestListingPrice, bestLow]);
+        return _.max([
+            _.max([avg + stdDev, recentAvg + recentStdDev]),
+            lowestListingPrice,
+            bestLow,
+        ]);
     }
 
     if (
