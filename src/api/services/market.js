@@ -1,33 +1,32 @@
 import store from '../../store';
 import axios from '../util/axios';
 
-const setMarketPrices = async (marketPrices) => {
+const setMarketPrices = async ({ marketPrices, timeOfLastFetch }) => {
     return store.set('market.prices', {
         marketPrices,
-        fetch_timestamp: new Date(),
+        fetchTime: timeOfLastFetch,
     });
 };
 
 const fetchMarketPrices = async () => {
-    const { data } = await axios.get(
-        `${process.env.API_URL}/api/market/current_prices`
-    );
-    return data;
+    const {
+        data: { currentPrices, timeOfLastFetch },
+    } = await axios.get(`${process.env.API_URL}/api/market/current_prices`);
+    return { currentPrices, timeOfLastFetch };
 };
 
 const getMarketPrices = async () => {
     let priceData = store.get('market.prices');
 
-    // is there data? is so is it data from more than 12 hours ago?
+    // is there data? if so is it data from more than 12 hours ago?
     if (
-        !priceData?.fetch_timestamp ||
-        new Date(priceData.fetch_timestamp).getTime() <
-            new Date().getTime() - 1000 * 60 * 60 * 12 ||
+        !priceData?.fetchTime ||
+        priceData.fetchTime < new Date().getTime() - 1000 * 60 * 60 * 12 ||
         Object.keys(priceData?.marketPrices).length < 75
     ) {
-        const marketPrices = await fetchMarketPrices();
-        setMarketPrices(marketPrices);
-        return marketPrices;
+        const { currentPrices, timeOfLastFetch } = await fetchMarketPrices();
+        setMarketPrices({ marketPrices: currentPrices, timeOfLastFetch });
+        return currentPrices; // used elsewhere as marketPrices
     } else {
         return priceData.marketPrices;
     }

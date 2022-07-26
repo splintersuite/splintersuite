@@ -102,15 +102,6 @@ const addPriceRelistInformationForEachCardByMarketId = ({
 
                 return doNotChangeThePrice;
             }
-            console.log('card', card);
-            console.log('buy_price', buy_price);
-            console.log('listingPrice', listingPrice);
-            console.log(
-                'currentPriceData.low_price',
-                currentPriceData.low_price
-            );
-            console.log('marketKey', marketKey);
-            console.log('marketPrices[marketKey]', marketPrices[marketKey]);
 
             const rentalRelistingPriceForMarketId = [
                 market_id,

@@ -24,7 +24,7 @@ const schema = {
                 type: 'object',
                 properties: {
                     marketPrices: { type: 'object' },
-                    fetch_timestamp: { type: 'object ' }, // date
+                    fetchTime: { type: 'number ' }, // date in ms
                 },
             },
         },
