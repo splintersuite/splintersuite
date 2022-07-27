@@ -120,20 +120,21 @@ const getListingPrice = ({
     if (currentPriceStats === undefined) {
         return null;
     }
-    const { avg, low, stdDev, volume, median } =
+    const { avg, low, stdDev, volume, median, high } =
         currentPriceStats[ALL_OPEN_TRADES];
     const {
         avg: recentAvg,
         stdDev: recentStdDev,
         median: recentMedian,
         low: recentLow,
+        high: recentHigh,
     } = currentPriceStats[TRADES_DURING_PERIOD];
 
     const bestLow =
         Number.isFinite(recentLow) && recentLow > low ? recentLow : low;
 
     // handling for uncommon legies like Epona, id = 297
-    if (numListings < 4) {
+    if (numListings < 5) {
         // if max only 3 are listed
         // tames idea implemented below... find a reasonable price to list
         return _.max([
@@ -141,6 +142,24 @@ const getListingPrice = ({
             lowestListingPrice,
             bestLow,
         ]);
+    }
+
+    // handling for super high listings that are HIGHER than the max high
+    // no point in listing here...
+    const maxHigh = _.max([recentHigh, high]);
+    if (Number.isFinite(maxHigh) && lowestListingPrice > maxHigh) {
+        const twoStdAboveMean =
+            Number.isFinite(avg) && Number.isFinite(stdDev)
+                ? avg + stdDev * 2
+                : NaN;
+        if (
+            Number.isFinite(twoStdAboveMean) &&
+            lowestListingPrice > twoStdAboveMean
+        ) {
+            return _.max([twoStdAboveMean, recentAvg + recentStdDev * 2]);
+        } else {
+            return maxHigh;
+        }
     }
 
     if (
