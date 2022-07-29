@@ -37,6 +37,9 @@ const transformCollectionIntoCollectionByLevelObj = ({
 
         return collectionByLevelObj;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(
             `transformCollectionIntoCollectionByLevelObj error: ${err.message}`
         );

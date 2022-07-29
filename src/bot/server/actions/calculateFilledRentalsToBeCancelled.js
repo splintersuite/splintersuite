@@ -4,7 +4,11 @@ const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
 } = require('./rentalListInfo');
-const { getListingPrice, getAvg } = require('./calculateRentalPriceToList');
+const {
+    getListingPrice,
+    getAvg,
+    handleListingsTooHigh,
+} = require('./calculateRentalPriceToList');
 const _ = require('lodash');
 
 const threeDaysTime = 1000 * 60 * 60 * 24 * 3;
@@ -61,6 +65,9 @@ const calculateCancelActiveRentalPrices = async ({
         // TNT TODO: find new price data for the cards in cardsUnableToFindPriceFor
         return { marketIdsForCancellation, cardsNotWorthCancelling };
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`calculateCancelActiveRentalPrices ${err.message}`);
         throw err;
     }
@@ -114,6 +121,20 @@ const addMarketIdsForCancelling = ({
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
             });
+            window.api.bot.log({
+                message: `listingPrice after getListingPrice is : ${JSON.stringify(
+                    listingPrice
+                )}`,
+            });
+            listingPrice = handleListingsTooHigh({
+                currentPriceStats: marketPrices[marketKey],
+                listingPrice,
+            });
+            window.api.bot.log({
+                message: `listingPrice after handleListingsTooHigh is: ${JSON.stringify(
+                    listingPrice
+                )}`,
+            });
         } else {
             listingPrice = parseFloat(currentPriceData.low_price);
         }
@@ -164,6 +185,9 @@ const addMarketIdsForCancelling = ({
             return shouldNotCancelRental;
         }
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`addMarketIdsForCancelling error: ${err.message}`);
         console.log('err.stack', err.stack);
         throw err;

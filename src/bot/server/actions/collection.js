@@ -15,6 +15,9 @@ const getCollection = async (username) => {
         const collection = data.cards;
         return collection;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`getCollection error: ${err.message}`);
         throw err;
     }
@@ -27,6 +30,9 @@ const sortCollectionArrayByLevel = ({ collection }) => {
         const sortedArray = collection.sort((a, b) => a.level - b.level);
         return sortedArray;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`sortArrayByLevel error: ${err.message}`);
         throw err;
     }
@@ -77,6 +83,9 @@ const filterCollectionArrayByLevel = ({ collection }) => {
 
         return allCardsForLevel;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`filterCollectionArrayByLevel error: ${err.message}`);
         throw err;
     }
@@ -166,6 +175,9 @@ const filterCollectionArraysForPotentialRentalCards = ({
             cardsListedButNotRentedOut,
         };
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(
             `filterCollectionArraysForPotentialRentalCards error: ${err.message}`
         );
@@ -243,6 +255,9 @@ const filterCollectionArraysByLevelLimitThresholds = ({
         });
         return newArray;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(
             `filterCollectionArraysByLevelLimitThresholds, error: ${err.message}`
         );
@@ -269,6 +284,9 @@ const filterCollectionArraysByGoldYN = ({ collection }) => {
 
         return { normCollection, goldCollection };
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`filterCollectionArraysByGoldYN error: ${err.message}`);
         throw err;
     }
@@ -295,6 +313,9 @@ const sortCollectionArrayByDetailId = ({ collection }) => {
 
         return sortedArray;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`sortCollectionArrayByDetailId error: ${err.message}`);
         throw err;
     }
@@ -338,6 +359,9 @@ const filterCollectionArraysByRarity = ({ collection }) => {
             legendaries,
         };
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`filterCollectionArraysByRarity error: ${err.message}`);
         throw err;
     }
@@ -354,6 +378,9 @@ const filterCollectionArrayByUid = ({ collection }) => {
 
         return newCollection;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`filterCollectionArrayToObject`);
         throw err;
     }
@@ -377,6 +404,9 @@ const filterCollectionRarityArraysByGold = ({ collection }) => {
 
         return { normalCards, goldCards };
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(
             `filterCollectionRarityArraysByGold error: ${err.message}`
         );

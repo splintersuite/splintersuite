@@ -4,7 +4,10 @@ const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
 } = require('./rentalListInfo');
-const { getListingPrice } = require('./calculateRentalPriceToList');
+const {
+    getListingPrice,
+    handleListingsTooHigh,
+} = require('./calculateRentalPriceToList');
 
 const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
     try {
@@ -45,6 +48,9 @@ const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
         // TNT TODO: find new price data for the cards in cardsUnableToFindPriceFor
         return { relistingPriceForEachMarketId, cardsNotWorthRelisting };
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`calculateRelistingPrice error: ${err.message}`);
         throw err;
     }
@@ -77,6 +83,20 @@ const addPriceRelistInformationForEachCardByMarketId = ({
                 lowestListingPrice: parseFloat(currentPriceData.low_price),
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
+            });
+            window.api.bot.log({
+                message: `listingPrice after getListingPrice is : ${JSON.stringify(
+                    listingPrice
+                )}`,
+            });
+            listingPrice = handleListingsTooHigh({
+                currentPriceStats: marketPrices[marketKey],
+                listingPrice,
+            });
+            window.api.bot.log({
+                message: `listingPrice after handleListingsTooHigh is: ${JSON.stringify(
+                    listingPrice
+                )}`,
             });
         } else {
             listingPrice = parseFloat(currentPriceData.low_price);
@@ -122,6 +142,9 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             return doNotChangeThePrice;
         }
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(
             `addPriceRelistInformationForEachCardByUid error: ${err.message}`
         );

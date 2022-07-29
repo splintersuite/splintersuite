@@ -131,6 +131,9 @@ const findCardPower = ({ id, rarity, _xp, alpha_xp, _tier, edition, gold }) => {
 
         return total_dec;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(err.message);
         throw err;
     }

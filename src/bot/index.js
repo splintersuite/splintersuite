@@ -29,17 +29,30 @@ window.api.bot.start(async (event) => {
     while (active && user.username === username && !user.locked) {
         let nextBotLoopTime = util.getNextRunTime(duration);
         await window.api.bot.updateLoading({ isLoading: true });
-        let marketRes = await window.api.market.getMarketPrices();
+        let marketRes = await window.api.market
+            .getMarketPrices()
+            .catch((err) => {
+                window.api.bot.log({
+                    message: `getMarketPrices error: ${err.message}`,
+                });
+                throw err;
+            });
+        console.log(
+            `we got marketPrices, marketRes: ${JSON.stringify(marketRes)}`
+        );
         let marketPrices = {};
-        if (
-            marketRes.code === 1 &&
-            Object.keys(marketRes.data?.marketPrices).length > 0
-        ) {
+        if (marketRes.code === 1 && marketRes?.data?.marketPrices) {
+            console.log(`marketRes.code === 1 if statement called`);
             marketPrices = marketRes.data.marketPrices;
         }
         // ---
         // Get cards
         // ------------------------------------
+        console.log(
+            `about to call rentals.startRentalBot with marketPrices: ${JSON.stringify(
+                marketPrices
+            )}`
+        );
         const { listings, relistings, cancellations } =
             await rentals.startRentalBot({
                 username,

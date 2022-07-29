@@ -108,7 +108,7 @@ const startRentalBot = async ({
                 nextBotLoopTime,
                 endOfSeasonSettings,
             });
-
+        throw new Error('checking the listingPrice handleListingsTooHigh');
         // we would also want to make sure that cards already listed are seperated
         const listings = fmtToLimitCardsInEachHiveTx(
             rentalArrayWithPriceAndUid
@@ -128,6 +128,9 @@ const startRentalBot = async ({
             cancellations,
         };
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`startRentalsForAccount error: ${err.message}`);
         console.log(err.stack);
         throw err;
@@ -151,6 +154,9 @@ const fmtToLimitCardsInEachHiveTx = (input) => {
         }
         return outputArray;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`fmtToLimitCardsInEachHiveTx error: ${err.message}`);
         throw err;
     }
@@ -173,6 +179,9 @@ const getPreciseRentalPrices = ({ cardsFilteredByUserLevelLimits }) => {
             collection: goldCollection,
         });
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`getPreciseRentalPrices error: ${err.message}`);
         throw err;
     }

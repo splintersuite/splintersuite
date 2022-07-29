@@ -58,6 +58,9 @@ const filterCollectionArraysByCPLimitThresholds = ({
         });
         return newArray;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(
             `filterCollectionArraysByCPLimitThresholds error: ${err.message}`
         );

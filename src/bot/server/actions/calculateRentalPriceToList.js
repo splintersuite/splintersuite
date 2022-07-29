@@ -46,6 +46,9 @@ const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
         // TNT TODO: find new price data for the cards in cardsUnableToFindPriceFor
         return rentalPriceForEachCardUid;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`calculateRentalPriceToList error: ${err.message}`);
         throw err;
     }
@@ -74,15 +77,10 @@ const addPriceListInformationForEachCardByUid = ({
 
             return rentalNotFoundForCard;
         }
-
-        // TNT TODO: make this more robust obviously
         const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
-
-        // TNT TODO: make this more robust obviously
 
         // JBOXXX NOTE: this is where TNT gets the low price
         // SOME MATH HERE
-        // TNT TODO: make this more robust obviously
         let listingPrice;
         if (marketPrices[marketKey] != null) {
             listingPrice = getListingPrice({
@@ -90,6 +88,20 @@ const addPriceListInformationForEachCardByUid = ({
                 lowestListingPrice: parseFloat(currentPriceData.low_price),
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
+            });
+            window.api.bot.log({
+                message: `listingPrice after getListingPrice is : ${JSON.stringify(
+                    listingPrice
+                )}`,
+            });
+            listingPrice = handleListingsTooHigh({
+                currentPriceStats: marketPrices[marketKey],
+                listingPrice,
+            });
+            window.api.bot.log({
+                message: `listingPrice after handleListingsTooHigh is: ${JSON.stringify(
+                    listingPrice
+                )}`,
             });
         } else {
             listingPrice = parseFloat(currentPriceData.low_price);
@@ -104,10 +116,45 @@ const addPriceListInformationForEachCardByUid = ({
 
         return rentalPriceForUid;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(
             `addPriceListInformationForEachCardByUid error: ${err.message}`
         );
         throw err;
+    }
+};
+
+const handleListingsTooHigh = ({ currentPriceStats, listingPrice }) => {
+    console.log(`'handleListingsTooHigh start`);
+    if (currentPriceStats === undefined) {
+        return null;
+    }
+
+    const { avg, stdDev, high } = currentPriceStats[ALL_OPEN_TRADES];
+    const {
+        avg: recentAvg,
+        stdDev: recentStdDev,
+        high: recentHigh,
+    } = currentPriceStats[TRADES_DURING_PERIOD];
+
+    const maxHigh = _.max([recentHigh, high]);
+    if (Number.isFinite(maxHigh) && listingPrice > maxHigh) {
+        const twoStdAboveMean =
+            Number.isFinite(avg) && Number.isFinite(stdDev)
+                ? avg + stdDev * 2
+                : NaN;
+        if (
+            Number.isFinite(twoStdAboveMean) &&
+            listingPrice > twoStdAboveMean
+        ) {
+            return _.max([twoStdAboveMean, recentAvg + recentStdDev * 2]);
+        } else {
+            return maxHigh;
+        }
+    } else {
+        return listingPrice;
     }
 };
 
@@ -273,4 +320,5 @@ module.exports = {
     calculateRentalPriceToList,
     getListingPrice,
     getAvg,
+    handleListingsTooHigh,
 };

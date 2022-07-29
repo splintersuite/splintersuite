@@ -14,6 +14,9 @@ const findCardDetails = (id) => {
 
         return { name, rarity, editions, is_promo, tier };
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`findCardDetails error: ${err.message}`);
         throw err;
     }
@@ -61,6 +64,9 @@ const isOnCooldown = (date) => {
             return true;
         }
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.error(`isOnCooldown error: ${err.message}`);
         throw err;
     }

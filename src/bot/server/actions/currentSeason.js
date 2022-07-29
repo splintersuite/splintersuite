@@ -14,6 +14,9 @@ const getCurrentSeason = async () => {
         }
         return null;
     } catch (err) {
+        window.api.bot.log({
+            message: err.message,
+        });
         console.log(
             `/bot/server/actions/currentSeason/getCurrentSeason: ${err.message}`
         );
