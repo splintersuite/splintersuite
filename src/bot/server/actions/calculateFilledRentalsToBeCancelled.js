@@ -92,7 +92,7 @@ const addMarketIdsForCancelling = ({
             market_id,
             buy_price,
             uid,
-            market_created_date,
+            rental_date,
         } = card;
 
         let _gold = 'F';
@@ -102,7 +102,7 @@ const addMarketIdsForCancelling = ({
             _gold = 'F';
         }
         const now = new Date().getTime();
-        if (new Date(market_created_date).getTime() + oneDayTime > now) {
+        if (new Date(rental_date).getTime() + oneDayTime > now) {
             console.log(
                 `we aren't going to try and cancel this card because it hasn't been listed for even a day yet`
             );
@@ -112,7 +112,7 @@ const addMarketIdsForCancelling = ({
                 buy_price,
                 'this shouldnt be neccessary jd lol, can only break something',
             ];
-
+            throw new Error('checking this');
             return shouldNotCancelRental;
         }
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
@@ -159,7 +159,7 @@ const addMarketIdsForCancelling = ({
                 endOfSeasonSettings.cancellationThreshold
         ) {
             if (
-                new Date().getTime() - new Date(market_created_date).getTime() >
+                new Date().getTime() - new Date(rental_date).getTime() >
                     threeDaysTime &&
                 endOfSeasonSettings.cancellationThreshold >
                     (0.7 * (listingPrice - buy_price)) / listingPrice

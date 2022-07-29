@@ -160,6 +160,7 @@ const filterCollectionArraysForPotentialRentalCards = ({
                     return;
                 }
                 if (currentRental.cancel_tx == null) {
+                    cardToBeAdded.rental_date = currentRental.rental_date;
                     cardsBeingRentedOut.push(cardToBeAdded);
                 } else {
                     // this would mean the cancel_tx has a value, and therefore the rental was cancelled.  We don't want to do anything with this right now, could change
