@@ -112,7 +112,6 @@ const addMarketIdsForCancelling = ({
                 buy_price,
                 'this shouldnt be neccessary jd lol, can only break something',
             ];
-            throw new Error('checking this');
             return shouldNotCancelRental;
         }
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
