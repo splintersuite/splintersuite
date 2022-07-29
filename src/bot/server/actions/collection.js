@@ -16,9 +16,8 @@ const getCollection = async (username) => {
         return collection;
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/collection/getCollection error: ${err.message}`,
         });
-        console.error(`getCollection error: ${err.message}`);
         throw err;
     }
 };
@@ -31,9 +30,8 @@ const sortCollectionArrayByLevel = ({ collection }) => {
         return sortedArray;
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/collection/sortArrayByLevel error: ${err.message}`,
         });
-        console.error(`sortArrayByLevel error: ${err.message}`);
         throw err;
     }
 };
@@ -65,17 +63,14 @@ const filterCollectionArrayByLevel = ({ collection }) => {
             } else if ((lastLevel = level)) {
                 tempArray.push(card);
             } else {
-                console.error(
-                    `somehow the level: ${level} is not > or = to the lastLevel: ${lastLevel}`
-                );
+                window.api.bot.log({
+                    message: `somehow the level: ${level} is not > or = to the lastLevel: ${lastLevel}`,
+                });
                 throw new Error(
                     `the sorting for this collection by level must not be working`
                 );
             }
             if (lengthOfCollection - 1 <= numberOfRuns) {
-                console.log(
-                    'we have iterated through the entire collection array at this point'
-                );
                 allCardsForLevel[level] = tempArray;
             }
             numberOfRuns = numberOfRuns + 1;
@@ -84,9 +79,8 @@ const filterCollectionArrayByLevel = ({ collection }) => {
         return allCardsForLevel;
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/collection/filterCollectionArrayByLevel error: ${err.message}`,
         });
-        console.error(`filterCollectionArrayByLevel error: ${err.message}`);
         throw err;
     }
 };
@@ -142,9 +136,6 @@ const filterCollectionArraysForPotentialRentalCards = ({
                 ) {
                     cardsListedButNotRentedOut.push(cardToBeAdded);
                 } else {
-                    /*console.log(
-            "card is not on cooldown, listed for rent, or delegated to anyone, and owned by the player. Can rent it out"
-          );*/
                     cardsAvailableForRent.push(cardToBeAdded);
                 }
             } else if (
@@ -177,13 +168,8 @@ const filterCollectionArraysForPotentialRentalCards = ({
         };
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/collection/filterCollectionArraysForPotentialRentalCards error: ${err.message}`,
         });
-        console.error(
-            `filterCollectionArraysForPotentialRentalCards error: ${err.message}`
-        );
-        console.log(err.stack);
-        console.log('err.stack');
         throw err;
     }
 };
@@ -208,7 +194,6 @@ const filterCollectionArraysByLevelLimitThresholds = ({
         // console.log(
         //     `filterCollectionArraysByLevelLimitThresholds with settings: ${settings}`
         // );
-        // console.log(`settings`);
         const newArray = [];
         collection.forEach((card) => {
             const { level, rarity, gold } = card;
@@ -243,25 +228,19 @@ const filterCollectionArraysByLevelLimitThresholds = ({
                     }
                     break;
                 default:
-                    throw new Error(`this should not happen`);
-                    console.error(
-                        `card does not have a rarity that either exists or is outside of the integer range 1-4.  Card_detail_id is ${card.card_detail_id}, cardUid is: ${card.uid}, Value of rarity is ${rarity}`
+                    throw new Error(
+                        `rarity of the card does not make sense, rarity: ${rarity}`
                     );
             }
             if (parseInt(level) >= parseInt(limitLevel)) {
                 newArray.push(card);
-            } else {
-                //  console.log(`this card is being excluded`);
             }
         });
         return newArray;
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/collection/filterCollectionArraysByLevelLimitThresholds, error: ${err.message}`,
         });
-        console.error(
-            `filterCollectionArraysByLevelLimitThresholds, error: ${err.message}`
-        );
         throw err;
     }
 };
@@ -286,9 +265,8 @@ const filterCollectionArraysByGoldYN = ({ collection }) => {
         return { normCollection, goldCollection };
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/collection/filterCollectionArraysByGoldYN error: ${err.message}`,
         });
-        console.error(`filterCollectionArraysByGoldYN error: ${err.message}`);
         throw err;
     }
 };

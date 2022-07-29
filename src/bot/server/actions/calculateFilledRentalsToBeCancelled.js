@@ -67,9 +67,8 @@ const calculateCancelActiveRentalPrices = async ({
         return { marketIdsForCancellation, cardsNotWorthCancelling };
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/calculateFilledRentalsToBeCancelled/calculateCancelActiveRentalPrices error: ${err.message}`,
         });
-        console.error(`calculateCancelActiveRentalPrices ${err.message}`);
         throw err;
     }
 };
@@ -193,10 +192,8 @@ const addMarketIdsForCancelling = ({
         }
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/calculateFilledRentalsToBeCancelled/addMarketIdsForCancelling error: ${err.message}`,
         });
-        console.error(`addMarketIdsForCancelling error: ${err.message}`);
-        console.log('err.stack', err.stack);
         throw err;
     }
 };

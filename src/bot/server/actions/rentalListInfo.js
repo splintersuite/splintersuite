@@ -10,9 +10,9 @@ const { sortCollectionArrayByDetailId } = require('./collection');
 
 const getAllRentalsForCard = async ({ card_detail_id, gold, edition }) => {
     try {
-        console.log(
-            `getAllRentalsForCard start with card_detail_id ${card_detail_id}, gold: ${gold}, edition: ${edition}`
-        );
+        // console.log(
+        //     `getAllRentalsForCard start with card_detail_id ${card_detail_id}, gold: ${gold}, edition: ${edition}`
+        // );
         const url = 'https://api2.splinterlands.com/market/for_rent_by_card';
         const res = await axiosInstance(url, {
             params: {
@@ -31,16 +31,15 @@ const getAllRentalsForCard = async ({ card_detail_id, gold, edition }) => {
         }
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/rentalListInfo/getAllRentalsForCard error: ${err.message}`,
         });
-        console.error(`getAllRentalsForCard error: ${err.message}`);
         throw err;
     }
 };
 
 const getGroupedRentalsForLevel = async ({ level }) => {
     try {
-        console.log(`getGroupedRentalsForLevel start`);
+        // console.log(`getGroupedRentalsForLevel start`);
 
         const url = 'https://api2.splinterlands.com/market/for_rent_grouped';
 
@@ -55,9 +54,8 @@ const getGroupedRentalsForLevel = async ({ level }) => {
         return groupedRentalsList;
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/rentalListInfo/getGroupedRentalsForLevel error: ${err.message}`,
         });
-        console.error(`getGroupedRentalsForLevel error: ${err.message}`);
         throw err;
     }
 };
@@ -70,7 +68,7 @@ const getGroupedRentalsForLevel = async ({ level }) => {
 // the collection input needs to be sorted by card_detail_id or it does not work
 const getRentalInfoObjectFromCollection = ({ collection }) => {
     try {
-        console.log(`getRentalInfoObjectFromCollection start`);
+        //  console.log(`getRentalInfoObjectFromCollection start`);
 
         const sortedCollectionByDetailId = sortCollectionArrayByDetailId({
             collection,
@@ -83,18 +81,15 @@ const getRentalInfoObjectFromCollection = ({ collection }) => {
         return rentalInfo;
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/rentalListInfo/getRentalInfoObjectFromCollection error: ${err.message}`,
         });
-        console.error(
-            `getRentalInfoObjectFromCollection error: ${err.message}`
-        );
         throw err;
     }
 };
 
 const filterRentalInfoObjectFromCollectionbyDetailId = ({ collection }) => {
     try {
-        console.log(`filterRentalInfoObjectFromCollectionbyDetailId start`);
+        // console.log(`filterRentalInfoObjectFromCollectionbyDetailId start`);
         const allCardsForDetailId = {};
         const lengthOfCollection = collection.length;
         let numberOfRuns = 0;
@@ -117,17 +112,14 @@ const filterRentalInfoObjectFromCollectionbyDetailId = ({ collection }) => {
             } else if ((card_detail_id = lastDetailId)) {
                 tempArray.push(card);
             } else {
-                console.error(
-                    `somehow the card_detail_id is not > or = to the lastDetailId: ${lastDetailId}`
-                );
+                window.api.bot.log({
+                    message: `somehow the card_detail_id is not > or = to the lastDetailId: ${lastDetailId}`,
+                });
                 throw new Error(
                     `the sorting for this collection must not be working`
                 );
             }
             if (lengthOfCollection < numberOfRuns) {
-                console.log(
-                    'we have iterated through the entire collection array at this point'
-                );
                 allCardsForDetailId[level] = tempArray;
             }
             numberOfRuns = numberOfRuns + 1;
@@ -136,11 +128,8 @@ const filterRentalInfoObjectFromCollectionbyDetailId = ({ collection }) => {
         return allCardsForDetailId;
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/rentalListInfo/filterRentalInfoObjectFromCollectionbyDetailId error: ${err.message}`,
         });
-        console.error(
-            `filterRentalInfoObjectFromCollectionbyDetailId error: ${err.message}`
-        );
         throw err;
     }
 };
@@ -150,7 +139,7 @@ const convertForRentGroupOutputToSearchableObject = ({
     groupedRentalsList,
 }) => {
     try {
-        console.log(`convertForRentGroupOutputToSearchableObject start`);
+        //     console.log(`convertForRentGroupOutputToSearchableObject start`);
 
         const newSearchableRentList = {};
         groupedRentalsList.forEach((cardData) => {
@@ -170,11 +159,8 @@ const convertForRentGroupOutputToSearchableObject = ({
         return newSearchableRentList;
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/rentalListInfo/convertForRentGroupOutputToSearchableObject error: ${err.message}`,
         });
-        console.error(
-            `convertForRentGroupOutputToSearchableObject error: ${err.message}`
-        );
         throw err;
     }
 };

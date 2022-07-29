@@ -43,7 +43,7 @@ const startRentalBot = async ({
     nextBotLoopTime,
 }) => {
     try {
-        console.log(`startRentalsForAccount username: ${username}`);
+        //  console.log(`/bot/server/index/startRentalBot username: ${username}`);
         const season = await getCurrentSeason();
         const endOfSeasonSettings = getEndOfSeasonSettings({
             season,
@@ -108,7 +108,6 @@ const startRentalBot = async ({
                 nextBotLoopTime,
                 endOfSeasonSettings,
             });
-        //   throw new Error('checking the listingPrice handleListingsTooHigh');
         // we would also want to make sure that cards already listed are seperated
         const listings = fmtToLimitCardsInEachHiveTx(
             rentalArrayWithPriceAndUid
@@ -129,10 +128,8 @@ const startRentalBot = async ({
         };
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/index/startRentalBot error: ${err.message}`,
         });
-        console.error(`startRentalsForAccount error: ${err.message}`);
-        console.log(err.stack);
         throw err;
     }
 };
@@ -155,9 +152,8 @@ const fmtToLimitCardsInEachHiveTx = (input) => {
         return outputArray;
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/index/fmtToLimitCardsInEachHiveTx error: ${err.message}`,
         });
-        console.error(`fmtToLimitCardsInEachHiveTx error: ${err.message}`);
         throw err;
     }
 };
@@ -180,9 +176,8 @@ const getPreciseRentalPrices = ({ cardsFilteredByUserLevelLimits }) => {
         });
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/index/getPreciseRentalPrices error: ${err.message}`,
         });
-        console.error(`getPreciseRentalPrices error: ${err.message}`);
         throw err;
     }
 };

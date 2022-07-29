@@ -15,31 +15,44 @@ const findCardDetails = (id) => {
         return { name, rarity, editions, is_promo, tier };
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/_helpers/findCardDetails error: ${err.message}`,
         });
-        console.error(`findCardDetails error: ${err.message}`);
         throw err;
     }
 };
 
 // https://stackoverflow.com/questions/17648395/which-is-faster-for-loop-or-hasownproperty
 const updateCardDetails = async (collection) => {
-    const seen = {};
-    for (const card of collection) {
-        if (seen[card.card_detail_id] === undefined) {
-            seen[card.card_detail_id] = 'dummy';
-            if (findCardDetails(card.card_detail_id) === null) {
-                cardDetails = await getCardDetails();
+    try {
+        const seen = {};
+        for (const card of collection) {
+            if (seen[card.card_detail_id] === undefined) {
+                seen[card.card_detail_id] = 'dummy';
+                if (findCardDetails(card.card_detail_id) === null) {
+                    cardDetails = await getCardDetails();
+                }
             }
         }
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/actions/_helpers/updateCardDetails error: ${err.message}`,
+        });
+        throw err;
     }
 };
 
 const getCardDetails = async () => {
-    const res = await axiosInstance(
-        `https://api2.splinterlands.com/cards/get_details`
-    );
-    return res.data;
+    try {
+        const res = await axiosInstance(
+            `https://api2.splinterlands.com/cards/get_details`
+        );
+        return res.data;
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/actions/_helpers/getCardDetails error: ${err.message}`,
+        });
+        throw err;
+    }
 };
 
 const isOnCooldown = (date) => {
@@ -54,20 +67,17 @@ const isOnCooldown = (date) => {
 
         if (difference > 0) {
             // cooldown period lasts for 24 hours so no longer on cooldown
-            // console.log(
-            //     'the date occured more than 24 hours behind the present time, return false'
-            // );
             return false;
         } else if (difference < 0) {
             // the date occured less than 24 hours ago
-            // console.log('isOnCooldown is returning true');
+            return true;
+        } else {
             return true;
         }
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/_helpers/isOnCooldown error: ${err.message}`,
         });
-        console.error(`isOnCooldown error: ${err.message}`);
         throw err;
     }
 };

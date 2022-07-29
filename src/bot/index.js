@@ -31,12 +31,8 @@ window.api.bot.start(async (event) => {
         await window.api.bot.updateLoading({ isLoading: true });
         let marketRes = await window.api.market.getMarketPrices();
 
-        console.log(
-            `we got marketPrices, marketRes: ${JSON.stringify(marketRes)}`
-        );
         let marketPrices = {};
         if (marketRes.code === 1 && marketRes?.data?.marketPrices) {
-            console.log(`marketRes.code === 1 if statement called`);
             marketPrices = marketRes.data.marketPrices;
         }
         // ---
@@ -66,7 +62,6 @@ window.api.bot.start(async (event) => {
                 await window.api.hive.createRentals({
                     cards: listingGroup,
                 });
-                console.log('listingGroup', listingGroup);
                 hiveTransactions = hiveTransactions + 1;
                 numListed += listingGroup.length;
             }
@@ -85,7 +80,6 @@ window.api.bot.start(async (event) => {
                 await window.api.hive.updateRentals({
                     cards: relistingGroup,
                 });
-                console.log('relistingGroup', relistingGroup);
                 hiveTransactions = hiveTransactions + 1;
                 numListed += relistingGroup.length;
             }

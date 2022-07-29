@@ -49,9 +49,8 @@ const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
         return { relistingPriceForEachMarketId, cardsNotWorthRelisting };
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/calculateRelistingPrice/calculateRelistingPrice error: ${err.message}`,
         });
-        console.error(`calculateRelistingPrice error: ${err.message}`);
         throw err;
     }
 };
@@ -145,11 +144,8 @@ const addPriceRelistInformationForEachCardByMarketId = ({
         }
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/calculateRelistingPrice/addPriceRelistInformationForEachCardByUid error: ${err.message}`,
         });
-        console.error(
-            `addPriceRelistInformationForEachCardByUid error: ${err.message}`
-        );
         throw err;
     }
 };
