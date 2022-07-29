@@ -108,7 +108,7 @@ const startRentalBot = async ({
                 nextBotLoopTime,
                 endOfSeasonSettings,
             });
-        throw new Error('checking the listingPrice handleListingsTooHigh');
+        //   throw new Error('checking the listingPrice handleListingsTooHigh');
         // we would also want to make sure that cards already listed are seperated
         const listings = fmtToLimitCardsInEachHiveTx(
             rentalArrayWithPriceAndUid

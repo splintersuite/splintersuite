@@ -12,6 +12,7 @@ const {
 const _ = require('lodash');
 
 const threeDaysTime = 1000 * 60 * 60 * 24 * 3;
+const oneDayTime = 1000 * 60 * 60 * 24 * 1;
 
 const calculateCancelActiveRentalPrices = async ({
     collectionObj,
@@ -100,7 +101,20 @@ const addMarketIdsForCancelling = ({
         } else {
             _gold = 'F';
         }
+        const now = new Date().getTime();
+        if (new Date(market_created_date).getTime() + oneDayTime > now) {
+            console.log(
+                `we aren't going to try and cancel this card because it hasn't been listed for even a day yet`
+            );
+            const shouldNotCancelRental = [
+                'NC',
+                market_id,
+                buy_price,
+                'this shouldnt be neccessary jd lol, can only break something',
+            ];
 
+            return shouldNotCancelRental;
+        }
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
         const currentPriceData =
             searchableRentList[rentListKey] !== undefined
