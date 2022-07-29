@@ -29,14 +29,8 @@ window.api.bot.start(async (event) => {
     while (active && user.username === username && !user.locked) {
         let nextBotLoopTime = util.getNextRunTime(duration);
         await window.api.bot.updateLoading({ isLoading: true });
-        let marketRes = await window.api.market
-            .getMarketPrices()
-            .catch((err) => {
-                window.api.bot.log({
-                    message: `getMarketPrices error: ${err.message}`,
-                });
-                throw err;
-            });
+        let marketRes = await window.api.market.getMarketPrices();
+
         console.log(
             `we got marketPrices, marketRes: ${JSON.stringify(marketRes)}`
         );
