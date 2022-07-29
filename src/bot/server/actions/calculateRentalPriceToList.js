@@ -89,19 +89,9 @@ const addPriceListInformationForEachCardByUid = ({
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
             });
-            window.api.bot.log({
-                message: `listingPrice after getListingPrice is : ${JSON.stringify(
-                    listingPrice
-                )}`,
-            });
             listingPrice = handleListingsTooHigh({
                 currentPriceStats: marketPrices[marketKey],
                 listingPrice,
-            });
-            window.api.bot.log({
-                message: `listingPrice after handleListingsTooHigh is: ${JSON.stringify(
-                    listingPrice
-                )}`,
             });
         } else {
             listingPrice = parseFloat(currentPriceData.low_price);
