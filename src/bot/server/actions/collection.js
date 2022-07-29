@@ -116,9 +116,6 @@ const filterCollectionArraysForPotentialRentalCards = ({
                     card.last_used_date != null &&
                     isOnCooldown(card.last_used_date)
                 ) {
-                    console.log(
-                        'card is on cooldown, can rent once its off CD'
-                    );
                     cardsOnRentalCooldown.push(cardToBeAdded);
                 } else if (
                     card.last_used_date != null &&
@@ -126,9 +123,6 @@ const filterCollectionArraysForPotentialRentalCards = ({
                     card.last_transferred_date != null &&
                     isOnCooldown(card.last_transferred_date)
                 ) {
-                    console.log(
-                        'card was on cooldown before, was then transferred to this account with the cooldown active, and is still on cooldown'
-                    );
                     cardsOnRentalCooldown.push(cardToBeAdded);
                 } else if (
                     card.market_listing_type === 'RENT' &&

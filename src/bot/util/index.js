@@ -8,10 +8,6 @@ const periodToMs = (period) => {
 
 // assuming we are running NOW
 const getNextRunTime = (durationInMS) => {
-    console.log(
-        'new Date().getTime() + durationInMS',
-        new Date().getTime() + durationInMS
-    );
     return new Date().getTime() + durationInMS;
 };
 

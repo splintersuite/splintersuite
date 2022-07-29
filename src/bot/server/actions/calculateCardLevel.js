@@ -117,9 +117,6 @@ const bcxToLevel = ({ bcx, rarity, gold, edition, id, tier }) => {
             if (bcx >= bcxForNextHighestLevel) {
                 // this means that we have enough bcx to be at this level or higher
                 // since we are going from the highest first, this should automatically give us our answer and we are good
-                console.log(
-                    `we found a match for the level of the card! i is: ${i} and combinationRates length is ${combinationRates}`
-                );
                 level = combinationRates.length - i;
                 break;
             }

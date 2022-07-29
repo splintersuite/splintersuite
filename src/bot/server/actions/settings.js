@@ -39,7 +39,6 @@ const filterCollectionArraysByCPLimitThresholds = ({
                     );
             }
 
-            // const findCardPower = ({ id, rarity, _xp, alpha_xp, _tier, edition, gold }) =>
             const cardPower = findCardPower({
                 id: card_detail_id,
                 rarity,

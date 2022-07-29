@@ -102,9 +102,6 @@ const addMarketIdsForCancelling = ({
         }
         const now = new Date().getTime();
         if (new Date(rental_date).getTime() + oneDayTime > now) {
-            console.log(
-                `we aren't going to try and cancel this card because it hasn't been listed for even a day yet`
-            );
             const shouldNotCancelRental = [
                 'NC',
                 market_id,
