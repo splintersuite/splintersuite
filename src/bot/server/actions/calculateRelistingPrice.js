@@ -62,8 +62,15 @@ const addPriceRelistInformationForEachCardByMarketId = ({
     marketPrices,
 }) => {
     try {
-        const { card_detail_id, gold, edition, market_id, buy_price, uid } =
-            card;
+        const {
+            card_detail_id,
+            gold,
+            edition,
+            market_id,
+            buy_price,
+            rarity,
+            uid,
+        } = card;
 
         let _gold = 'F';
         if (gold) {
@@ -79,6 +86,7 @@ const addPriceRelistInformationForEachCardByMarketId = ({
         if (marketPrices[marketKey] != null) {
             listingPrice = getListingPrice({
                 card_detail_id,
+                rarity,
                 lowestListingPrice: parseFloat(currentPriceData.low_price),
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],

@@ -1,6 +1,5 @@
 'use strict';
 const _ = require('lodash');
-const { cardRarity } = require('./cardRarity');
 const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
@@ -60,7 +59,7 @@ const addPriceListInformationForEachCardByUid = ({
     marketPrices,
 }) => {
     try {
-        const { card_detail_id, gold, edition, uid } = card;
+        const { card_detail_id, gold, edition, rarity, uid } = card;
         let _gold = 'F';
         if (gold) {
             _gold = 'T';
@@ -95,6 +94,7 @@ const addPriceListInformationForEachCardByUid = ({
         if (marketPrices[marketKey] != null) {
             listingPrice = getListingPrice({
                 card_detail_id,
+                rarity,
                 lowestListingPrice: parseFloat(currentPriceData.low_price),
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
@@ -164,6 +164,7 @@ const handleListingsTooHigh = ({ currentPriceStats, listingPrice }) => {
 
 const getListingPrice = ({
     card_detail_id,
+    rarity,
     lowestListingPrice,
     numListings,
     currentPriceStats,
@@ -237,7 +238,7 @@ const getListingPrice = ({
 
         // call priceWithoutMedian afterwards... basically chooses the low carefully
         return priceWithoutMedian({
-            card_detail_id,
+            rarity,
             lowestListingPrice,
             numListings,
             currentPriceStats,
@@ -251,7 +252,7 @@ const getListingPrice = ({
 };
 
 const priceWithoutMedian = ({
-    card_detail_id,
+    rarity,
     lowestListingPrice,
     numListings,
     currentPriceStats,
@@ -268,7 +269,7 @@ const priceWithoutMedian = ({
             Number.isFinite(recentLow) && recentLow > low ? recentLow : low;
 
         // handling for uncommon legies like Epona, id = 297
-        if (cardRarity[card_detail_id] === 4 && numListings < 4) {
+        if (rarity === 4 && numListings < 4) {
             // is legie and at max only 3 are listed
             // tames idea implemented below... find a reasonable price to list
             return _.max([avg - stdDev, lowestListingPrice, bestLow]);

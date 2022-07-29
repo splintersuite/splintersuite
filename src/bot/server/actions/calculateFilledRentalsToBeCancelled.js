@@ -92,6 +92,7 @@ const addMarketIdsForCancelling = ({
             buy_price,
             uid,
             rental_date,
+            rarity,
         } = card;
 
         let _gold = 'F';
@@ -130,6 +131,7 @@ const addMarketIdsForCancelling = ({
         if (marketPrices[marketKey] != null) {
             listingPrice = getListingPrice({
                 card_detail_id,
+                rarity,
                 lowestListingPrice: parseFloat(currentPriceData.low_price),
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
