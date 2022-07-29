@@ -72,10 +72,21 @@ const addPriceListInformationForEachCardByUid = ({
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
         const currentPriceData = searchableRentList[rentListKey];
 
-        if (currentPriceData == null || currentPriceData.low_price == null) {
-            const rentalNotFoundForCard = [uid, 'N'];
-
-            return rentalNotFoundForCard;
+        if (
+            currentPriceData == null ||
+            currentPriceData.low_price == null ||
+            _.isEmpty(currentPriceData)
+        ) {
+            if (marketPrices[marketKey] != null) {
+                const openTrades = marketPrices[marketKey][ALL_OPEN_TRADES];
+                const allTrades = marketPrices[marketKey][TRADES_DURING_PERIOD];
+                const maxHigh = _.max([openTrades.high, allTrades.high]);
+                const rentalPrice = [uid, parseFloat(maxHigh)];
+                return rentalPrice;
+            } else {
+                const rentalNotFoundForCard = [uid, 'N'];
+                return rentalNotFoundForCard;
+            }
         }
         const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
 

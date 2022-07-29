@@ -123,9 +123,13 @@ const addMarketIdsForCancelling = ({
         const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
         let listingPrice;
 
-        if (_.isEmpty(currentPriceData) && marketPrices[marketKey]) {
-            currentPriceData.qty = 0;
-            currentPriceData.low_price = buy_price;
+        if (
+            (_.isEmpty(currentPriceData) && marketPrices[marketKey]) ||
+            currentPriceData == null
+        ) {
+            // if there aren't any listings currently, then we should cancel the rental
+            const cancelRental = ['C', market_id];
+            return cancelRental;
         }
         if (marketPrices[marketKey] != null) {
             listingPrice = getListingPrice({

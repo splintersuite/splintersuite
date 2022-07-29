@@ -1,5 +1,5 @@
 'use strict';
-
+const _ = require('lodash');
 const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
@@ -92,9 +92,21 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             listingPrice = parseFloat(currentPriceData.low_price);
         }
 
-        if (currentPriceData == null || currentPriceData.low_price == null) {
-            const rentalNotFoundForCard = ['N', uid, market_id];
-            return rentalNotFoundForCard;
+        if (
+            currentPriceData == null ||
+            currentPriceData.low_price == null ||
+            _.isEmpty(currentPriceData)
+        ) {
+            if (marketPrices[marketKey] != null) {
+                const openTrades = marketPrices[marketKey][ALL_OPEN_TRADES];
+                const allTrades = marketPrices[marketKey][TRADES_DURING_PERIOD];
+                const maxHigh = _.max([openTrades.high, allTrades.high]);
+                const relistingPrice = [market_id, parseFloat(maxHigh)];
+                return relistingPrice;
+            } else {
+                const rentalNotFoundForCard = ['N', uid, market_id];
+                return rentalNotFoundForCard;
+            }
         } else if (
             listingPrice < buy_price &&
             (buy_price - listingPrice) / buy_price > 0.3
