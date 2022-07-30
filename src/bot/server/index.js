@@ -30,7 +30,6 @@ const {
     calculateCancelActiveRentalPrices,
 } = require('./actions/calculateFilledRentalsToBeCancelled');
 
-// const { updateCardDetails } = require('./actions/_helpers');
 const { getCardDetailObj } = require('./actions/_helpers');
 const { getActiveRentalsByRentalId } = require('./actions/currentRentals');
 

@@ -1,7 +1,7 @@
 'use strict';
 
 const { axiosInstance } = require('../requests/axiosGetInstance');
-const { findCardDetails, isOnCooldown } = require('./_helpers.js');
+const { isOnCooldown } = require('./_helpers.js');
 const { getActiveRentalsByRentalId } = require('./currentRentals');
 
 const getCollection = async (username) => {
@@ -11,7 +11,6 @@ const getCollection = async (username) => {
         const res = await axiosInstance(`${url}/${username}`);
 
         const data = res.data;
-
         const collection = data.cards;
         return collection;
     } catch (err) {

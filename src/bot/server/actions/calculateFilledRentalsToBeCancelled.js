@@ -177,7 +177,6 @@ const addMarketIdsForCancelling = ({
 
             // this means that we should cancel this and relist it
             const rentalToCancel = ['C', market_id];
-
             return rentalToCancel;
         } else {
             const shouldNotCancelRental = [
