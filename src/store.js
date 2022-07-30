@@ -17,7 +17,18 @@ const schema = {
             },
         },
     },
-
+    market: {
+        type: 'object',
+        properties: {
+            prices: {
+                type: 'object',
+                properties: {
+                    marketPrices: { type: 'object' },
+                    fetchTime: { type: 'number ' }, // date in ms
+                },
+            },
+        },
+    },
     bot: {
         type: 'object',
         properties: {

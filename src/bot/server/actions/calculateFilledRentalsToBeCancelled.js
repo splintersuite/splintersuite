@@ -4,8 +4,23 @@ const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
 } = require('./rentalListInfo');
+const {
+    getListingPrice,
+    getAvg,
+    handleListingsTooHigh,
+} = require('./calculateRentalPriceToList');
+const _ = require('lodash');
 
-const calculateCancelActiveRentalPrices = async ({ collectionObj }) => {
+const threeDaysTime = 1000 * 60 * 60 * 24 * 3;
+const oneDayTime = 1000 * 60 * 60 * 24 * 1;
+
+const calculateCancelActiveRentalPrices = async ({
+    collectionObj,
+    marketPrices,
+    nextBotLoopTime,
+    activeRentalsBySellTrxId,
+    endOfSeasonSettings,
+}) => {
     try {
         //   console.log('calculateCancelActiveRentalPrices start');
 
@@ -30,6 +45,11 @@ const calculateCancelActiveRentalPrices = async ({ collectionObj }) => {
                 const cancelPriceForMarketId = addMarketIdsForCancelling({
                     card,
                     searchableRentList,
+                    marketPrices,
+                    level,
+                    nextBotLoopTime,
+                    rentalTransaction: activeRentalsBySellTrxId[card.market_id],
+                    endOfSeasonSettings,
                 });
                 if (cancelPriceForMarketId[0] === 'N') {
                     unableToFindPriceFor.push(card);
@@ -47,35 +67,114 @@ const calculateCancelActiveRentalPrices = async ({ collectionObj }) => {
         return { marketIdsForCancellation, cardsNotWorthCancelling };
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/calculateFilledRentalsToBeCancelled/calculateCancelActiveRentalPrices error: ${err.message}`,
         });
-        console.error(`calculateCancelActiveRentalPrices ${err.message}`);
         throw err;
     }
 };
 
-const addMarketIdsForCancelling = ({ card, searchableRentList }) => {
+const addMarketIdsForCancelling = ({
+    card,
+    searchableRentList,
+    marketPrices,
+    level,
+    nextBotLoopTime,
+    rentalTransaction,
+    endOfSeasonSettings,
+}) => {
     try {
         // console.log('addMarketIdsForCancelling start');
-        const { card_detail_id, gold, edition, market_id, buy_price, uid } =
-            card;
+        const {
+            card_detail_id,
+            gold,
+            edition,
+            market_id,
+            buy_price,
+            uid,
+            rental_date,
+            rarity,
+        } = card;
+
         let _gold = 'F';
         if (gold) {
             _gold = 'T';
         } else {
             _gold = 'F';
         }
-
+        const now = new Date().getTime();
+        if (new Date(rental_date).getTime() + oneDayTime > now) {
+            const shouldNotCancelRental = [
+                'NC',
+                market_id,
+                buy_price,
+                'this shouldnt be neccessary jd lol, can only break something',
+            ];
+            return shouldNotCancelRental;
+        }
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
-        const priceData = searchableRentList[rentListKey];
-        const threshold = 0.3;
+        const currentPriceData =
+            searchableRentList[rentListKey] !== undefined
+                ? searchableRentList[rentListKey]
+                : {};
 
-        const cancelFloorPrice = (1 + threshold) * buy_price;
+        const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
+        let listingPrice;
 
-        if (priceData == null || priceData.low_price == null) {
+        if (
+            (_.isEmpty(currentPriceData) && marketPrices[marketKey]) ||
+            currentPriceData == null
+        ) {
+            // if there aren't any listings currently, then we should cancel the rental
+            const cancelRental = ['C', market_id];
+            return cancelRental;
+        }
+        if (marketPrices[marketKey] != null) {
+            listingPrice = getListingPrice({
+                card_detail_id,
+                rarity,
+                lowestListingPrice: parseFloat(currentPriceData.low_price),
+                numListings: currentPriceData.qty,
+                currentPriceStats: marketPrices[marketKey],
+            });
+            listingPrice = handleListingsTooHigh({
+                currentPriceStats: marketPrices[marketKey],
+                listingPrice,
+            });
+        } else {
+            listingPrice = parseFloat(currentPriceData.low_price);
+        }
+        const nextRentalPaymentTime = new Date(
+            rentalTransaction.next_rental_payment
+        ).getTime();
+        if (currentPriceData == null || currentPriceData.low_price == null) {
             const priceNotFoundForCard = ['N', uid, market_id];
             return priceNotFoundForCard;
-        } else if (priceData.low_price > cancelFloorPrice) {
+            // if i think i can make another 15% by relisting, cancel this
+            // make sure i don't have more time...
+            // make sure i don't cancel anything renting out above the average
+            // if the listing price is greater than buy price * threshold
+            // basically if i can fetch a much better price than i'm getting. i'll cancel
+        } else if (
+            nextBotLoopTime > nextRentalPaymentTime &&
+            (listingPrice - buy_price) / listingPrice >
+                endOfSeasonSettings.cancellationThreshold
+        ) {
+            if (
+                new Date().getTime() - new Date(rental_date).getTime() >
+                    threeDaysTime &&
+                endOfSeasonSettings.cancellationThreshold >
+                    (0.7 * (listingPrice - buy_price)) / listingPrice
+            ) {
+                const shouldNotCancelRental = [
+                    'NC',
+                    market_id,
+                    buy_price,
+                    currentPriceData.low_price,
+                ];
+
+                return shouldNotCancelRental;
+            }
+
             // this means that we should cancel this and relist it
             const rentalToCancel = ['C', market_id];
             return rentalToCancel;
@@ -84,16 +183,15 @@ const addMarketIdsForCancelling = ({ card, searchableRentList }) => {
                 'NC',
                 market_id,
                 buy_price,
-                priceData.low_price,
+                currentPriceData.low_price,
             ];
 
             return shouldNotCancelRental;
         }
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/calculateFilledRentalsToBeCancelled/addMarketIdsForCancelling error: ${err.message}`,
         });
-        console.error(`addMarketIdsForCancelling error: ${err.message}`);
         throw err;
     }
 };

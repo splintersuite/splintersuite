@@ -92,9 +92,8 @@ const findCardLevel = ({ id, rarity, _xp, gold, edition, tier, alpha_xp }) => {
         return level;
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/calculateCardLevel/findCardLevel error: ${err.message}`,
         });
-        console.error(`findCardLevel error: ${err.message}`);
         throw err;
     }
 };
@@ -118,9 +117,6 @@ const bcxToLevel = ({ bcx, rarity, gold, edition, id, tier }) => {
             if (bcx >= bcxForNextHighestLevel) {
                 // this means that we have enough bcx to be at this level or higher
                 // since we are going from the highest first, this should automatically give us our answer and we are good
-                console.log(
-                    `we found a match for the level of the card! i is: ${i} and combinationRates length is ${combinationRates}`
-                );
                 level = combinationRates.length - i;
                 break;
             }
@@ -129,9 +125,8 @@ const bcxToLevel = ({ bcx, rarity, gold, edition, id, tier }) => {
         return level;
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/calculateCardLevel/bcxToLevel error: ${err.message}`,
         });
-        console.error(`bcxToLevel error: ${err.message}`);
         throw err;
     }
 };
@@ -160,9 +155,8 @@ const getBcxLevelComboForEdition = ({ rarity, gold, edition, id, tier }) => {
         return combinationRates;
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/calculateCardLevel/getBcxLevelComboForEdition error: ${err.message}`,
         });
-        console.error(`getBcxLevelComboForEdition error: ${err.message}`);
         throw err;
     }
 };

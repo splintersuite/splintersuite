@@ -22,20 +22,35 @@ window.api.bot.start(async (event) => {
     // ------------------------------------
     let numListed = 0;
     const startedAt = moment().format();
-    const duration = util.periodToMs(settings.dailyRelistings);
+    const duration = !Number.isFinite(util.periodToMs(settings.dailyRelistings))
+        ? util.periodToMs(1)
+        : util.periodToMs(settings.dailyRelistings);
 
     while (active && user.username === username && !user.locked) {
+        let nextBotLoopTime = util.getNextRunTime(duration);
         await window.api.bot.updateLoading({ isLoading: true });
+        let marketRes = await window.api.market.getMarketPrices();
 
+        let marketPrices = {};
+        if (marketRes.code === 1 && marketRes?.data?.marketPrices) {
+            marketPrices = marketRes.data.marketPrices;
+        }
         // ---
         // Get cards
         // ------------------------------------
+        console.log(
+            `about to call rentals.startRentalBot with marketPrices: ${JSON.stringify(
+                marketPrices
+            )}`
+        );
         const { listings, relistings, cancellations } =
             await rentals.startRentalBot({
                 username,
                 settings,
+                marketPrices,
+                nextBotLoopTime,
             });
-
+        // process.exit();
         // ---
         // List, relist, cancel
         // ------------------------------------

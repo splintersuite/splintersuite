@@ -1,14 +1,15 @@
 'use strict';
-
+const _ = require('lodash');
 const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
 } = require('./rentalListInfo');
+const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
+const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';
 
 // this requires the object that has key = level, value [ array of cards with level = key]
-const calculateRentalPriceToList = async ({ collectionObj }) => {
+const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
     try {
-        //  console.log("calculateRentalPriceToList start");
         const rentalPriceForEachCardUid = [];
         const cardsUnableToFindPriceFor = [];
 
@@ -31,6 +32,8 @@ const calculateRentalPriceToList = async ({ collectionObj }) => {
                     addPriceListInformationForEachCardByUid({
                         card,
                         searchableRentList,
+                        level,
+                        marketPrices,
                     });
                 if (rentalPriceForUid[1] === 'N') {
                     cardsUnableToFindPriceFor.push(rentalPriceForUid);
@@ -43,9 +46,8 @@ const calculateRentalPriceToList = async ({ collectionObj }) => {
         return rentalPriceForEachCardUid;
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/calculateRentalPriceToList/calculateRentalPriceToList error: ${err.message}`,
         });
-        console.error(`calculateRentalPriceToList error: ${err.message}`);
         throw err;
     }
 };
@@ -53,11 +55,11 @@ const calculateRentalPriceToList = async ({ collectionObj }) => {
 const addPriceListInformationForEachCardByUid = ({
     card,
     searchableRentList,
+    level,
+    marketPrices,
 }) => {
     try {
-        //  console.log(`addPriceListInformationForEachCardByUid start`);
-
-        const { card_detail_id, gold, edition, uid } = card;
+        const { card_detail_id, gold, edition, rarity, uid } = card;
         let _gold = 'F';
         if (gold) {
             _gold = 'T';
@@ -66,38 +68,283 @@ const addPriceListInformationForEachCardByUid = ({
         }
 
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
-        const priceData = searchableRentList[rentListKey];
+        const currentPriceData = searchableRentList[rentListKey];
 
-        if (priceData == null || priceData.low_price == null) {
-            const rentalNotFoundForCard = [uid, 'N'];
+        if (
+            currentPriceData == null ||
+            currentPriceData.low_price == null ||
+            _.isEmpty(currentPriceData)
+        ) {
+            if (marketPrices[marketKey] != null) {
+                const openTrades = marketPrices[marketKey][ALL_OPEN_TRADES];
+                const allTrades = marketPrices[marketKey][TRADES_DURING_PERIOD];
+                const maxHigh = _.max([openTrades.high, allTrades.high]);
+                const rentalPrice = [uid, parseFloat(maxHigh)];
+                return rentalPrice;
+            } else {
+                const rentalNotFoundForCard = [uid, 'N'];
+                return rentalNotFoundForCard;
+            }
+        }
+        const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
 
-            return rentalNotFoundForCard;
+        // JBOXXX NOTE: this is where TNT gets the low price
+        // SOME MATH HERE
+        let listingPrice;
+        if (marketPrices[marketKey] != null) {
+            listingPrice = getListingPrice({
+                card_detail_id,
+                rarity,
+                lowestListingPrice: parseFloat(currentPriceData.low_price),
+                numListings: currentPriceData.qty,
+                currentPriceStats: marketPrices[marketKey],
+            });
+            listingPrice = handleListingsTooHigh({
+                currentPriceStats: marketPrices[marketKey],
+                listingPrice,
+            });
+        } else {
+            listingPrice = parseFloat(currentPriceData.low_price);
         }
 
-        // TNT TODO: make this more robust obviously
-        let price;
-        price = parseFloat(priceData.low_price);
-
-        if (price < 1) {
-            const rentalNotFoundForCard = [uid, 'N'];
-
-            return rentalNotFoundForCard;
-        }
-
-        const rentalPriceForUid = [uid, price];
+        const rentalPriceForUid = [
+            uid,
+            parseFloat(currentPriceData.low_price) > listingPrice
+                ? currentPriceData.low_price
+                : `${listingPrice}`,
+        ];
 
         return rentalPriceForUid;
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/calculateRentalPriceToList/addPriceListInformationForEachCardByUid error: ${err.message}`,
         });
-        console.error(
-            `addPriceListInformationForEachCardByUid error: ${err.message}`
-        );
+        throw err;
+    }
+};
+
+const handleListingsTooHigh = ({ currentPriceStats, listingPrice }) => {
+    try {
+        //    console.log(`'handleListingsTooHigh start`);
+        if (currentPriceStats === undefined) {
+            return null;
+        }
+
+        const { avg, stdDev, high } = currentPriceStats[ALL_OPEN_TRADES];
+        const {
+            avg: recentAvg,
+            stdDev: recentStdDev,
+            high: recentHigh,
+        } = currentPriceStats[TRADES_DURING_PERIOD];
+
+        const maxHigh = _.max([recentHigh, high]);
+        if (Number.isFinite(maxHigh) && listingPrice > maxHigh) {
+            const twoStdAboveMean =
+                Number.isFinite(avg) && Number.isFinite(stdDev)
+                    ? avg + stdDev * 2
+                    : NaN;
+            if (
+                Number.isFinite(twoStdAboveMean) &&
+                listingPrice > twoStdAboveMean
+            ) {
+                return _.max([twoStdAboveMean, recentAvg + recentStdDev * 2]);
+            } else {
+                return maxHigh;
+            }
+        } else {
+            return listingPrice;
+        }
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/actions/calculateRentalPriceToList/handleListingsTooHigh error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
+const getListingPrice = ({
+    card_detail_id,
+    rarity,
+    lowestListingPrice,
+    numListings,
+    currentPriceStats,
+}) => {
+    try {
+        if (currentPriceStats === undefined) {
+            return null;
+        }
+        const { avg, low, stdDev, volume, median, high } =
+            currentPriceStats[ALL_OPEN_TRADES];
+        const {
+            avg: recentAvg,
+            stdDev: recentStdDev,
+            median: recentMedian,
+            low: recentLow,
+            high: recentHigh,
+        } = currentPriceStats[TRADES_DURING_PERIOD];
+
+        const bestLow =
+            Number.isFinite(recentLow) && recentLow > low ? recentLow : low;
+
+        // handling for uncommon legies like Epona, id = 297
+        if (numListings < 5) {
+            // if max only 3 are listed
+            // tames idea implemented below... find a reasonable price to list
+            return _.max([
+                _.max([avg + stdDev, recentAvg + recentStdDev]),
+                lowestListingPrice,
+                bestLow,
+            ]);
+        }
+
+        // handling for super high listings that are HIGHER than the max high
+        // no point in listing here...
+        const maxHigh = _.max([recentHigh, high]);
+        if (Number.isFinite(maxHigh) && lowestListingPrice > maxHigh) {
+            const twoStdAboveMean =
+                Number.isFinite(avg) && Number.isFinite(stdDev)
+                    ? avg + stdDev * 2
+                    : NaN;
+            if (
+                Number.isFinite(twoStdAboveMean) &&
+                lowestListingPrice > twoStdAboveMean
+            ) {
+                return _.max([twoStdAboveMean, recentAvg + recentStdDev * 2]);
+            } else {
+                return maxHigh;
+            }
+        }
+
+        if (
+            Number.isFinite(volume) &&
+            volume > 3 &&
+            numListings > 5 &&
+            (Number.isFinite(median) || Number.isFinite(recentMedian)) &&
+            Number.isFinite(lowestListingPrice)
+        ) {
+            if (lowestListingPrice < _.max([median, recentMedian])) {
+                // if the median is higher than the lowest listing
+                // return the median
+                return _.max([recentMedian, median]);
+            } else if (Number.isFinite(avg) && Number.isFinite(stdDev)) {
+                // if average and standard deviation are defined
+                // and the lowestListing is higher than the medians
+                return _.max([lowestListingPrice, avg + stdDev]);
+            } else {
+                // no average and no standard deviation
+                return _.max([lowestListingPrice, recentMedian, median]);
+            }
+        }
+
+        // call priceWithoutMedian afterwards... basically chooses the low carefully
+        return priceWithoutMedian({
+            rarity,
+            lowestListingPrice,
+            numListings,
+            currentPriceStats,
+        });
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/actions/calculateRentalPriceToList/getListingPrice error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
+const priceWithoutMedian = ({
+    rarity,
+    lowestListingPrice,
+    numListings,
+    currentPriceStats,
+}) => {
+    try {
+        if (currentPriceStats === undefined) {
+            return lowestListingPrice;
+        }
+        const { avg, low, stdDev, volume } = currentPriceStats[ALL_OPEN_TRADES];
+        const { low: recentLow } = currentPriceStats[TRADES_DURING_PERIOD];
+
+        // handle for recent prices being higher than before
+        const bestLow =
+            Number.isFinite(recentLow) && recentLow > low ? recentLow : low;
+
+        // handling for uncommon legies like Epona, id = 297
+        if (rarity === 4 && numListings < 4) {
+            // is legie and at max only 3 are listed
+            // tames idea implemented below... find a reasonable price to list
+            return _.max([avg - stdDev, lowestListingPrice, bestLow]);
+        }
+
+        // general logic
+        // this is bare bones logic that should ideally not hinder returns and fetch better prices
+        if (
+            Number.isFinite(avg) &&
+            Number.isFinite(stdDev) &&
+            Number.isFinite(bestLow) &&
+            Number.isFinite(lowestListingPrice) &&
+            stdDev > 0 &&
+            volume >= 10 // should really be using 25 here to assume normal distribution
+        ) {
+            const zScoreOfListing = Math.abs(lowestListingPrice - avg) / stdDev;
+            const zScoreOfLowestTrade = Math.abs(bestLow - avg) / stdDev;
+
+            if (zScoreOfLowestTrade > 1.5 && lowestListingPrice > bestLow) {
+                // scenario #1.
+                // The lowest trade is actually very far away from the average
+                // we probably want to list closer to the average
+                // but we should probably be hitting the api for that card's listings for more clarity
+                return lowestListingPrice;
+            }
+
+            // scenario #2 (the most likely)
+            // the lowest offer is 2 standard deviations away from the avg
+            // and the low is greater than the lowestlisting
+            // handle for listings at like 0.1
+            if (zScoreOfListing > 1.5 && bestLow >= lowestListingPrice) {
+                // we probably want to wait before listing
+                // alternatively we can list at the recent lowest trade
+                return bestLow;
+            }
+        }
+        // final catch all
+        if (lowestListingPrice > bestLow) {
+            return lowestListingPrice;
+        } else {
+            return bestLow;
+        }
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/actions/calculateRentalPriceToList/priceWithoutMedian error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
+const getAvg = ({ currentPriceStats }) => {
+    try {
+        const { avg } = currentPriceStats[ALL_OPEN_TRADES];
+        const { avg: recentAvg } = currentPriceStats[TRADES_DURING_PERIOD];
+
+        // handle for recent prices being higher than before
+        if (Number.isFinite(avg) && Number.isFinite(recentAvg)) {
+            return avg > recentAvg ? avg : recentAvg;
+        } else if (Number.isFinite(avg)) {
+            return avg;
+        } else if (Number.isFinite(recentAvg)) {
+            return recentAvg;
+        }
+        return null;
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/actions/calculateRentalPriceToList/getAvg error: ${err.message}`,
+        });
         throw err;
     }
 };
 
 module.exports = {
     calculateRentalPriceToList,
+    getListingPrice,
+    getAvg,
+    handleListingsTooHigh,
 };

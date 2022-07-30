@@ -7,7 +7,7 @@ const filterCollectionArraysByCPLimitThresholds = ({
     settings,
 }) => {
     try {
-        console.log(`filterCollectionArraysByCPLimitThresholds start`);
+        //  console.log(`filterCollectionArraysByCPLimitThresholds start`);
         const newArray = [];
         collection.forEach((card) => {
             const {
@@ -34,13 +34,11 @@ const filterCollectionArraysByCPLimitThresholds = ({
                     limitPower = settings.legendaryCP;
                     break;
                 default:
-                    throw new Error('this should not happen');
-                    console.error(
-                        `card does not have a rarity their either exists or is outside of the integer range 1-4.  Card_detail_id is ${card.card_detail_id}, cardUid is: ${card.uid}, Value of rarity is ${rarity}`
+                    throw new Error(
+                        `this rarity number shouldnt be possible, rarity: ${rarity}`
                     );
             }
 
-            // const findCardPower = ({ id, rarity, _xp, alpha_xp, _tier, edition, gold }) =>
             const cardPower = findCardPower({
                 id: card_detail_id,
                 rarity,
@@ -59,11 +57,8 @@ const filterCollectionArraysByCPLimitThresholds = ({
         return newArray;
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/settings/filterCollectionArraysByCPLimitThresholds error: ${err.message}`,
         });
-        console.error(
-            `filterCollectionArraysByCPLimitThresholds error: ${err.message}`
-        );
         throw err;
     }
 };

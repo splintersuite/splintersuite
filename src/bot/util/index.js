@@ -6,9 +6,15 @@ const periodToMs = (period) => {
     return hours * msPerHour;
 };
 
+// assuming we are running NOW
+const getNextRunTime = (durationInMS) => {
+    return new Date().getTime() + durationInMS;
+};
+
 const getHours = (duration) => moment.duration(duration).asHours();
 
 export default {
     periodToMs,
     getHours,
+    getNextRunTime,
 };

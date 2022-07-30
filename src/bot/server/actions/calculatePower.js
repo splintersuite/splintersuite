@@ -132,9 +132,8 @@ const findCardPower = ({ id, rarity, _xp, alpha_xp, _tier, edition, gold }) => {
         return total_dec;
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/calculatePower/findCardPower error: ${err.message}`,
         });
-        console.error(err.message);
         throw err;
     }
 };

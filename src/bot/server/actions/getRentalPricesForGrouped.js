@@ -13,7 +13,7 @@ const transformCollectionIntoCollectionByLevelObj = ({
     collection,
 }) => {
     try {
-        console.log(`transformCollectionIntoCollectionByLevelObj start`);
+        // console.log(`transformCollectionIntoCollectionByLevelObj start`);
 
         const cardsFilteredByUserLevelLimits =
             filterCollectionArraysByLevelLimitThresholds({
@@ -38,11 +38,8 @@ const transformCollectionIntoCollectionByLevelObj = ({
         return collectionByLevelObj;
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/getRentalPricesForGrouped/transformCollectionIntoCollectionByLevelObj error: ${err.message}`,
         });
-        console.error(
-            `transformCollectionIntoCollectionByLevelObj error: ${err.message}`
-        );
         throw err;
     }
 };

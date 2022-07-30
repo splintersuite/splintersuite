@@ -1,14 +1,16 @@
 'use strict';
-
+const _ = require('lodash');
 const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
 } = require('./rentalListInfo');
+const {
+    getListingPrice,
+    handleListingsTooHigh,
+} = require('./calculateRentalPriceToList');
 
-const calculateRelistingPrice = async ({ collectionObj }) => {
+const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
     try {
-        // console.log('calculateRelistingPrice start');
-
         const relistingPriceForEachMarketId = [];
         const cardsUnableToFindPriceFor = [];
         const cardsNotWorthRelisting = [];
@@ -31,6 +33,8 @@ const calculateRelistingPrice = async ({ collectionObj }) => {
                     addPriceRelistInformationForEachCardByMarketId({
                         card,
                         searchableRentList,
+                        level,
+                        marketPrices,
                     });
                 if (rentalPriceForMarketId[0] === 'N') {
                     cardsUnableToFindPriceFor.push(rentalPriceForMarketId);
@@ -45,9 +49,8 @@ const calculateRelistingPrice = async ({ collectionObj }) => {
         return { relistingPriceForEachMarketId, cardsNotWorthRelisting };
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/calculateRelistingPrice/calculateRelistingPrice error: ${err.message}`,
         });
-        console.error(`calculateRelistingPrice error: ${err.message}`);
         throw err;
     }
 };
@@ -55,11 +58,20 @@ const calculateRelistingPrice = async ({ collectionObj }) => {
 const addPriceRelistInformationForEachCardByMarketId = ({
     card,
     searchableRentList,
+    level,
+    marketPrices,
 }) => {
     try {
-        //   console.log(`addPriceRelistInformationForEachCardByUid start`);
-        const { card_detail_id, gold, edition, market_id, buy_price, uid } =
-            card;
+        const {
+            card_detail_id,
+            gold,
+            edition,
+            market_id,
+            buy_price,
+            rarity,
+            uid,
+        } = card;
+
         let _gold = 'F';
         if (gold) {
             _gold = 'T';
@@ -67,46 +79,81 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             _gold = 'F';
         }
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
-        const priceData = searchableRentList[rentListKey];
+        const currentPriceData = searchableRentList[rentListKey];
 
-        if (priceData == null || priceData.low_price == null) {
-            const rentalNotFoundForCard = ['N', uid, market_id];
-            return rentalNotFoundForCard;
-        } else if (priceData.low_price >= buy_price) {
-            // this means that the card should NOT be relisted
-            const doNotChangeThePrice = [
-                'C',
-                uid,
-                market_id,
-                buy_price,
-                priceData.low_price,
-            ];
-            return doNotChangeThePrice;
+        const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
+        let listingPrice;
+        if (marketPrices[marketKey] != null) {
+            listingPrice = getListingPrice({
+                card_detail_id,
+                rarity,
+                lowestListingPrice: parseFloat(currentPriceData.low_price),
+                numListings: currentPriceData.qty,
+                currentPriceStats: marketPrices[marketKey],
+            });
+            listingPrice = handleListingsTooHigh({
+                currentPriceStats: marketPrices[marketKey],
+                listingPrice,
+            });
         } else {
-            const price = parseFloat(priceData.low_price);
+            listingPrice = parseFloat(currentPriceData.low_price);
+        }
 
-            if (price < 1) {
+        if (
+            currentPriceData == null ||
+            currentPriceData.low_price == null ||
+            _.isEmpty(currentPriceData)
+        ) {
+            if (marketPrices[marketKey] != null) {
+                const openTrades = marketPrices[marketKey][ALL_OPEN_TRADES];
+                const allTrades = marketPrices[marketKey][TRADES_DURING_PERIOD];
+                const maxHigh = _.max([openTrades.high, allTrades.high]);
+                const relistingPrice = [market_id, parseFloat(maxHigh)];
+                return relistingPrice;
+            } else {
+                const rentalNotFoundForCard = ['N', uid, market_id];
+                return rentalNotFoundForCard;
+            }
+        } else if (
+            listingPrice < buy_price &&
+            (buy_price - listingPrice) / buy_price > 0.3
+        ) {
+            // the current listing (buy_price) is 20% more than what we would list it as today
+            // relist lower
+            if (listingPrice < 0.2) {
                 const doNotChangeThePrice = [
                     'C',
                     uid,
                     market_id,
                     buy_price,
-                    priceData.low_price,
+                    currentPriceData.low_price,
                 ];
+
                 return doNotChangeThePrice;
             }
 
-            const rentalRelistingPriceForMarketId = [market_id, `${price}`];
-            // const rentalRelistingPriceForMarketId = [uid, `${price}`];
+            const rentalRelistingPriceForMarketId = [
+                market_id,
+                parseFloat(currentPriceData.low_price) > listingPrice
+                    ? currentPriceData.low_price
+                    : `${listingPrice}`,
+            ];
+
             return rentalRelistingPriceForMarketId;
+        } else {
+            const doNotChangeThePrice = [
+                'C',
+                uid,
+                market_id,
+                buy_price,
+                currentPriceData.low_price,
+            ];
+            return doNotChangeThePrice;
         }
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/actions/calculateRelistingPrice/addPriceRelistInformationForEachCardByUid error: ${err.message}`,
         });
-        console.error(
-            `addPriceRelistInformationForEachCardByUid error: ${err.message}`
-        );
         throw err;
     }
 };

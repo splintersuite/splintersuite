@@ -4,6 +4,12 @@ const {
     filterCollectionArraysForPotentialRentalCards,
     filterCollectionArraysByGoldYN,
 } = require('./actions/collection');
+
+const {
+    getCurrentSeason,
+    getEndOfSeasonSettings,
+} = require('./actions/currentSeason');
+
 const {
     getRentalInfoObjectFromCollection,
 } = require('./actions/rentalListInfo');
@@ -24,18 +30,30 @@ const {
     calculateCancelActiveRentalPrices,
 } = require('./actions/calculateFilledRentalsToBeCancelled');
 
+const { getCardDetailObj } = require('./actions/_helpers');
 const { getActiveRentalsByRentalId } = require('./actions/currentRentals');
 
 const _ = require('lodash');
 
-const startRentalBot = async ({ username, settings }) => {
+const startRentalBot = async ({
+    username,
+    settings,
+    marketPrices,
+    nextBotLoopTime,
+}) => {
     try {
-        console.log(`startRentalsForAccount username: ${username}`);
+        //  console.log(`/bot/server/index/startRentalBot username: ${username}`);
+        const season = await getCurrentSeason();
+        const endOfSeasonSettings = getEndOfSeasonSettings({
+            season,
+        });
 
         const collection = await getCollection(username);
-        const activeRentalsByRentalId = await getActiveRentalsByRentalId(
-            username
-        );
+        // if there is a card in the collection we don't need
+        // grab the card_details endpoint
+        const cardDetailObj = await getCardDetailObj();
+        const activeRentals = await getActiveRentalsByRentalId(username);
+
         const {
             cardsAvailableForRent,
             cardsListedButNotRentedOut,
@@ -44,7 +62,8 @@ const startRentalBot = async ({ username, settings }) => {
         } = filterCollectionArraysForPotentialRentalCards({
             username,
             collection,
-            activeRentalsByRentalId,
+            activeRentalsByRentalId: activeRentals.activeRentalsByRentalTx,
+            cardDetailObj,
         });
 
         // TNT TO DO -> save down the time until off rentalCooldown for each card in cardsOnRentalCooldown, then we will know when our bot should try and list them on the market.
@@ -55,7 +74,7 @@ const startRentalBot = async ({ username, settings }) => {
                 collection: cardsAvailableForRent,
             });
 
-        const collectionByLevelObjLstedButNotRentedOut =
+        const collectionByLevelObjListedButNotRentedOut =
             transformCollectionIntoCollectionByLevelObj({
                 settings,
                 collection: cardsListedButNotRentedOut,
@@ -70,20 +89,24 @@ const startRentalBot = async ({ username, settings }) => {
         // this gives us the output of [uid, rentalPriceInDec] which is needed for initial market listings.
         const rentalArrayWithPriceAndUid = await calculateRentalPriceToList({
             collectionObj: collectionByLevelObjAvailableForRent,
+            marketPrices,
         });
 
         const { relistingPriceForEachMarketId, cardsNotWorthRelisting } =
             await calculateRelistingPrice({
-                collectionObj: collectionByLevelObjLstedButNotRentedOut,
+                collectionObj: collectionByLevelObjListedButNotRentedOut,
+                marketPrices,
             });
 
         const { marketIdsForCancellation, cardsNotWorthCancelling } =
             await calculateCancelActiveRentalPrices({
                 collectionObj: collectionByLevelObjBeingRentedOut,
+                marketPrices,
+                activeRentalsBySellTrxId:
+                    activeRentals.activeRentalsBySellTrxId,
+                nextBotLoopTime,
+                endOfSeasonSettings,
             });
-        // console.log(rentalArrayWithPriceAndUid);
-        // console.log(relistingPriceForEachMarketId);
-        // console.log(marketIdsForCancellation);
         // we would also want to make sure that cards already listed are seperated
         const listings = fmtToLimitCardsInEachHiveTx(
             rentalArrayWithPriceAndUid
@@ -104,9 +127,8 @@ const startRentalBot = async ({ username, settings }) => {
         };
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/index/startRentalBot error: ${err.message}`,
         });
-        console.error(`startRentalsForAccount error: ${err.message}`);
         throw err;
     }
 };
@@ -129,9 +151,8 @@ const fmtToLimitCardsInEachHiveTx = (input) => {
         return outputArray;
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/index/fmtToLimitCardsInEachHiveTx error: ${err.message}`,
         });
-        console.error(`fmtToLimitCardsInEachHiveTx error: ${err.message}`);
         throw err;
     }
 };
@@ -154,9 +175,8 @@ const getPreciseRentalPrices = ({ cardsFilteredByUserLevelLimits }) => {
         });
     } catch (err) {
         window.api.bot.log({
-            message: err.message,
+            message: `/bot/server/index/getPreciseRentalPrices error: ${err.message}`,
         });
-        console.error(`getPreciseRentalPrices error: ${err.message}`);
         throw err;
     }
 };
