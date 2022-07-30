@@ -52,7 +52,6 @@ const startRentalBot = async ({
         const collection = await getCollection(username);
         // if there is a card in the collection we don't need
         // grab the card_details endpoint
-        // await updateCardDetails(collection);
         const cardDetailObj = await getCardDetailObj();
         const activeRentals = await getActiveRentalsByRentalId(username);
 
