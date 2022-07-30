@@ -89,6 +89,7 @@ const filterCollectionArraysForPotentialRentalCards = ({
     username,
     collection,
     activeRentalsByRentalId,
+    cardDetailObj,
 }) => {
     try {
         //  console.log('filterCollectionArraysForPotentialRentalCards start');
@@ -106,7 +107,7 @@ const filterCollectionArraysForPotentialRentalCards = ({
         // need to convert from array of cards into object where key = rental_tx (aka delegation_tx)
         collection.forEach((card) => {
             const cardToBeAdded = card;
-            const { rarity, tier } = findCardDetails(card.card_detail_id);
+            const { rarity, tier } = cardDetailObj[card.card_detail_id];
             cardToBeAdded.rarity = rarity;
             cardToBeAdded.tier = tier;
             if (card.player === username && card.delegated_to == null) {

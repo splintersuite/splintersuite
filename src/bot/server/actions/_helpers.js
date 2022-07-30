@@ -1,41 +1,22 @@
 'use strict';
-let cardDetails = require('../cardDetails.json');
 const { setTimeout_safe } = require('../axios_retry/general');
 const { axiosInstance } = require('../requests/axiosGetInstance');
 
-const findCardDetails = (id) => {
+const getCardDetailObj = async () => {
     try {
-        //  console.log(`findCardDetails start`);
-        let card = cardDetails.find((o) => parseInt(o.id) === parseInt(id));
-        if (!card) {
-            return null;
-        }
-        const { name, rarity, editions, is_promo, tier } = card;
+        //     console.log(`/bot/server/actions/_helpers/getCardDetailObj`);
 
-        return { name, rarity, editions, is_promo, tier };
-    } catch (err) {
-        window.api.bot.log({
-            message: `/bot/server/actions/_helpers/findCardDetails error: ${err.message}`,
+        const cardDetails = await getCardDetails();
+        const cardDetailObj = {};
+        cardDetails.forEach((card) => {
+            cardDetailObj[card.id] = card;
         });
-        throw err;
-    }
-};
 
-// https://stackoverflow.com/questions/17648395/which-is-faster-for-loop-or-hasownproperty
-const updateCardDetails = async (collection) => {
-    try {
-        const seen = {};
-        for (const card of collection) {
-            if (seen[card.card_detail_id] === undefined) {
-                seen[card.card_detail_id] = 'dummy';
-                if (findCardDetails(card.card_detail_id) === null) {
-                    cardDetails = await getCardDetails();
-                }
-            }
-        }
+        // console.log(`/bot/server/actions/_helpers/getCardDetailObj done`);
+        return cardDetailObj;
     } catch (err) {
         window.api.bot.log({
-            message: `/bot/server/actions/_helpers/updateCardDetails error: ${err.message}`,
+            message: `/bot/server/actions/_helpers/getCardDetailObj error: ${err.message}`,
         });
         throw err;
     }
@@ -87,11 +68,10 @@ const sleep = (ms) => {
 };
 
 module.exports = {
-    findCardDetails,
     isOnCooldown,
     sleep,
     getCardDetails,
-    updateCardDetails,
+    getCardDetailObj,
 };
 
 // cancellationMatrix[0]

@@ -30,8 +30,8 @@ const {
     calculateCancelActiveRentalPrices,
 } = require('./actions/calculateFilledRentalsToBeCancelled');
 
-const { updateCardDetails } = require('./actions/_helpers');
-
+// const { updateCardDetails } = require('./actions/_helpers');
+const { getCardDetailObj } = require('./actions/_helpers');
 const { getActiveRentalsByRentalId } = require('./actions/currentRentals');
 
 const _ = require('lodash');
@@ -52,8 +52,8 @@ const startRentalBot = async ({
         const collection = await getCollection(username);
         // if there is a card in the collection we don't need
         // grab the card_details endpoint
-        await updateCardDetails(collection);
-
+        // await updateCardDetails(collection);
+        const cardDetailObj = await getCardDetailObj();
         const activeRentals = await getActiveRentalsByRentalId(username);
 
         const {
@@ -65,6 +65,7 @@ const startRentalBot = async ({
             username,
             collection,
             activeRentalsByRentalId: activeRentals.activeRentalsByRentalTx,
+            cardDetailObj,
         });
 
         // TNT TO DO -> save down the time until off rentalCooldown for each card in cardsOnRentalCooldown, then we will know when our bot should try and list them on the market.
