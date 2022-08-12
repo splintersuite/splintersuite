@@ -227,24 +227,6 @@ const getListingPrice = ({
             ]);
         }
 
-        // handling for super high listings that are HIGHER than the max high
-        // no point in listing here...
-        const maxHigh = _.max([recentHigh, high]);
-        if (Number.isFinite(maxHigh) && lowestListingPrice > maxHigh) {
-            const twoStdAboveMean =
-                Number.isFinite(avg) && Number.isFinite(stdDev)
-                    ? avg + stdDev * 2
-                    : NaN;
-            if (
-                Number.isFinite(twoStdAboveMean) &&
-                lowestListingPrice > twoStdAboveMean
-            ) {
-                return _.max([twoStdAboveMean, recentAvg + recentStdDev * 2]);
-            } else {
-                return maxHigh;
-            }
-        }
-
         if (
             Number.isFinite(volume) &&
             volume > 3 &&
