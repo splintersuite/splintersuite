@@ -102,7 +102,8 @@ const addMarketIdsForCancelling = ({
             _gold = 'F';
         }
         const now = new Date().getTime();
-        if (new Date(rental_date).getTime() + oneDayTime > now) {
+        const rentalDateInMs = new Date(rental_date).getTime();
+        if (rentalDateInMs + oneDayTime > now) {
             const shouldNotCancelRental = [
                 'NC',
                 market_id,

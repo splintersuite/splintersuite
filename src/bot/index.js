@@ -35,14 +35,14 @@ window.api.bot.start(async (event) => {
         if (marketRes.code === 1 && marketRes?.data?.marketPrices) {
             marketPrices = marketRes.data.marketPrices;
         }
+
         // ---
         // Get cards
         // ------------------------------------
-        console.log(
-            `about to call rentals.startRentalBot with marketPrices: ${JSON.stringify(
-                marketPrices
-            )}`
-        );
+
+        window.api.bot.log({
+            message: `marketPrices.length: ${marketPrices?.length}`,
+        });
         const { listings, relistings, cancellations } =
             await rentals.startRentalBot({
                 username,
