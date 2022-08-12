@@ -9,6 +9,7 @@ const {
     getAvg,
     handleListingsTooHigh,
 } = require('./calculateRentalPriceToList');
+const { getLowBCXCLCardsByUid } = require('../services/collection');
 const _ = require('lodash');
 
 const threeDaysTime = 1000 * 60 * 60 * 24 * 3;
@@ -31,6 +32,12 @@ const calculateCancelActiveRentalPrices = async ({
         for (const level in collectionObj) {
             // should be a max of 10 possible times we can go through this because max lvl is 10
 
+            let clBcxCommons = {};
+            if (level === 1) {
+                clBcxCommons = getLowBCXCLCardsByUid({
+                    collection: collectionObj[level],
+                });
+            }
             // aggregate rental price data for cards of the level
             const groupedRentalsList = await getGroupedRentalsForLevel({
                 level,
@@ -50,6 +57,7 @@ const calculateCancelActiveRentalPrices = async ({
                     nextBotLoopTime,
                     rentalTransaction: activeRentalsBySellTrxId[card.market_id],
                     endOfSeasonSettings,
+                    isClBcxCommon: clBcxCommons[card.uid] !== undefined,
                 });
                 if (cancelPriceForMarketId[0] === 'N') {
                     unableToFindPriceFor.push(card);
@@ -81,6 +89,7 @@ const addMarketIdsForCancelling = ({
     nextBotLoopTime,
     rentalTransaction,
     endOfSeasonSettings,
+    isClBcxCommon,
 }) => {
     try {
         // console.log('addMarketIdsForCancelling start');
@@ -136,10 +145,12 @@ const addMarketIdsForCancelling = ({
                 lowestListingPrice: parseFloat(currentPriceData.low_price),
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
+                isClBcxCommon,
             });
             listingPrice = handleListingsTooHigh({
                 currentPriceStats: marketPrices[marketKey],
                 listingPrice,
+                isClBcxCommon,
             });
         } else {
             listingPrice = parseFloat(currentPriceData.low_price);

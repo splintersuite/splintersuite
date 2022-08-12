@@ -4,6 +4,7 @@ const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
 } = require('./rentalListInfo');
+const { getLowBCXCLCardsByUid } = require('../services/collection');
 const {
     getListingPrice,
     handleListingsTooHigh,
@@ -17,7 +18,12 @@ const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
 
         for (const level in collectionObj) {
             // should be a max of 10 possible times we can go through this because max lvl is 10
-
+            let clBcxCommons = {};
+            if (level === 1) {
+                clBcxCommons = getLowBCXCLCardsByUid({
+                    collection: collectionObj[level],
+                });
+            }
             // aggregate rental price data for cards of the level
             const groupedRentalsList = await getGroupedRentalsForLevel({
                 level,
@@ -35,6 +41,7 @@ const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
                         searchableRentList,
                         level,
                         marketPrices,
+                        isClBcxCommon: clBcxCommons[card.uid] !== undefined,
                     });
                 if (rentalPriceForMarketId[0] === 'N') {
                     cardsUnableToFindPriceFor.push(rentalPriceForMarketId);
@@ -60,6 +67,7 @@ const addPriceRelistInformationForEachCardByMarketId = ({
     searchableRentList,
     level,
     marketPrices,
+    isClBcxCommon,
 }) => {
     try {
         const {
@@ -90,10 +98,12 @@ const addPriceRelistInformationForEachCardByMarketId = ({
                 lowestListingPrice: parseFloat(currentPriceData.low_price),
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
+                isClBcxCommon,
             });
             listingPrice = handleListingsTooHigh({
                 currentPriceStats: marketPrices[marketKey],
                 listingPrice,
+                isClBcxCommon,
             });
         } else {
             listingPrice = parseFloat(currentPriceData.low_price);

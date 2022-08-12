@@ -67,7 +67,7 @@ const filterCollectionByEdition = ({ collection }) => {
     }
 };
 
-const getLowBCXCLCards = ({ collection }) => {
+const getLowBCXCLCardsByUid = ({ collection }) => {
     try {
         const { chaosLegion } = filterCollectionByEdition({ collection });
 
@@ -75,11 +75,21 @@ const getLowBCXCLCards = ({ collection }) => {
             collection: chaosLegion,
         });
 
-        return cardsByLevel[1];
+        const cardObjByUid = {};
+        cardsByLevel[1].forEach((card) => {
+            if (cardObjByUid[card.uid] === undefined) {
+                cardObjByUid[card.uid] = { ...card };
+            }
+        });
+        return cardObjByUid;
     } catch (err) {
         window.api.bot.log({
-            message: `/bot/server/services/collection/getLowBCXCLCards error: ${err.message}`,
+            message: `/bot/server/services/collection/getLowBCXCLCardsByUid error: ${err.message}`,
         });
         throw err;
     }
+};
+
+module.exports = {
+    getLowBCXCLCardsByUid,
 };

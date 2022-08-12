@@ -4,6 +4,7 @@ const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
 } = require('./rentalListInfo');
+const { getLowBCXCLCardsByUid } = require('../services/collection');
 const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
 const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';
 
@@ -16,6 +17,12 @@ const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
         // sorts through the collectionObj that has key = level, value = [array of cards that's level = key]
         for (const level in collectionObj) {
             // should be a max of 10 possible times we can go through this because max lvl is 10
+            let clBcxCommons = {};
+            if (level === 1) {
+                clBcxCommons = getLowBCXCLCardsByUid({
+                    collection: collectionObj[level],
+                });
+            }
 
             // aggregate rental price data for cards of the level
             const groupedRentalsList = await getGroupedRentalsForLevel({
@@ -34,6 +41,7 @@ const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
                         searchableRentList,
                         level,
                         marketPrices,
+                        isClBcxCommon: clBcxCommons[card.uid] !== undefined,
                     });
                 if (rentalPriceForUid[1] === 'N') {
                     cardsUnableToFindPriceFor.push(rentalPriceForUid);
@@ -57,6 +65,7 @@ const addPriceListInformationForEachCardByUid = ({
     searchableRentList,
     level,
     marketPrices,
+    isClBcxCommon,
 }) => {
     try {
         const { card_detail_id, gold, edition, rarity, uid } = card;
@@ -69,6 +78,7 @@ const addPriceListInformationForEachCardByUid = ({
 
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
         const currentPriceData = searchableRentList[rentListKey];
+        const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
 
         if (
             currentPriceData == null ||
@@ -86,7 +96,6 @@ const addPriceListInformationForEachCardByUid = ({
                 return rentalNotFoundForCard;
             }
         }
-        const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
 
         // JBOXXX NOTE: this is where TNT gets the low price
         // SOME MATH HERE
@@ -98,10 +107,12 @@ const addPriceListInformationForEachCardByUid = ({
                 lowestListingPrice: parseFloat(currentPriceData.low_price),
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
+                isClBcxCommon,
             });
             listingPrice = handleListingsTooHigh({
                 currentPriceStats: marketPrices[marketKey],
                 listingPrice,
+                isClBcxCommon,
             });
         } else {
             listingPrice = parseFloat(currentPriceData.low_price);
@@ -123,10 +134,17 @@ const addPriceListInformationForEachCardByUid = ({
     }
 };
 
-const handleListingsTooHigh = ({ currentPriceStats, listingPrice }) => {
+const handleListingsTooHigh = ({
+    currentPriceStats,
+    listingPrice,
+    isClBcxCommon,
+}) => {
     try {
-        //    console.log(`'handleListingsTooHigh start`);
+        if (isClBcxCommon) {
+            return listingPrice;
+        }
         if (currentPriceStats === undefined) {
+            //    console.log(`'handleListingsTooHigh start`);
             return null;
         }
 
@@ -168,6 +186,7 @@ const getListingPrice = ({
     lowestListingPrice,
     numListings,
     currentPriceStats,
+    isClBcxCommon,
 }) => {
     try {
         if (currentPriceStats === undefined) {
@@ -182,6 +201,17 @@ const getListingPrice = ({
             low: recentLow,
             high: recentHigh,
         } = currentPriceStats[TRADES_DURING_PERIOD];
+
+        if (
+            (isClBcxCommon &&
+                Number.isFinite(avg) &&
+                Number.isFinite(stdDev)) ||
+            (isClBcxCommon &&
+                Number.isFinite(recentAvg) &&
+                Number.isFinite(recentStdDev))
+        ) {
+            return _.max([avg + 2 * stdDev, recentAvg + 2 * recentStdDev]);
+        }
 
         const bestLow =
             Number.isFinite(recentLow) && recentLow > low ? recentLow : low;
