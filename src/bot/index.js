@@ -41,7 +41,11 @@ window.api.bot.start(async (event) => {
         // ------------------------------------
 
         window.api.bot.log({
-            message: `marketPrices.length: ${marketPrices?.length}`,
+            message: `marketPrices.length: ${
+                Array.isArray(Object.keys(marketPrices))
+                    ? Object.keys(marketPrices).length
+                    : 'bad data'
+            }`,
         });
         const { listings, relistings, cancellations } =
             await rentals.startRentalBot({

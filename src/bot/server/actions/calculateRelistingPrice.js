@@ -4,7 +4,7 @@ const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
 } = require('./rentalListInfo');
-const { getLowBCXCLCardsByUid } = require('../services/collection');
+const { getLowBCXModernCardsByUid } = require('../services/collection');
 const {
     getListingPrice,
     handleListingsTooHigh,
@@ -18,9 +18,9 @@ const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
 
         for (const level in collectionObj) {
             // should be a max of 10 possible times we can go through this because max lvl is 10
-            let clBcxCommons = {};
+            let clBcxModerns = {};
             if (level === 1) {
-                clBcxCommons = getLowBCXCLCardsByUid({
+                clBcxModerns = getLowBCXModernCardsByUid({
                     collection: collectionObj[level],
                 });
             }
@@ -41,7 +41,7 @@ const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
                         searchableRentList,
                         level,
                         marketPrices,
-                        isClBcxCommon: clBcxCommons[card.uid] !== undefined,
+                        isClBcxModern: clBcxModerns[card.uid] !== undefined,
                     });
                 if (rentalPriceForMarketId[0] === 'N') {
                     cardsUnableToFindPriceFor.push(rentalPriceForMarketId);
@@ -67,7 +67,7 @@ const addPriceRelistInformationForEachCardByMarketId = ({
     searchableRentList,
     level,
     marketPrices,
-    isClBcxCommon,
+    isClBcxModern,
 }) => {
     try {
         const {
@@ -98,17 +98,18 @@ const addPriceRelistInformationForEachCardByMarketId = ({
                 lowestListingPrice: parseFloat(currentPriceData.low_price),
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
-                isClBcxCommon,
+                isClBcxModern,
             });
             listingPrice = handleListingsTooHigh({
                 currentPriceStats: marketPrices[marketKey],
                 listingPrice,
-                isClBcxCommon,
+                isClBcxModern,
             });
         } else {
             listingPrice = parseFloat(currentPriceData.low_price);
         }
 
+        const lowBcxModernFactor = isClBcxModern ? 2.0 : 1.0;
         if (
             currentPriceData == null ||
             currentPriceData.low_price == null ||
@@ -126,7 +127,7 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             }
         } else if (
             listingPrice < buy_price &&
-            (buy_price - listingPrice) / buy_price > 0.3
+            (buy_price - listingPrice) / buy_price > 0.3 * lowBcxModernFactor
         ) {
             // the current listing (buy_price) is 20% more than what we would list it as today
             // relist lower

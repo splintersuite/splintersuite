@@ -4,7 +4,7 @@ const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
 } = require('./rentalListInfo');
-const { getLowBCXCLCardsByUid } = require('../services/collection');
+const { getLowBCXModernCardsByUid } = require('../services/collection');
 const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
 const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';
 
@@ -17,9 +17,9 @@ const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
         // sorts through the collectionObj that has key = level, value = [array of cards that's level = key]
         for (const level in collectionObj) {
             // should be a max of 10 possible times we can go through this because max lvl is 10
-            let clBcxCommons = {};
+            let clBcxModerns = {};
             if (level === 1) {
-                clBcxCommons = getLowBCXCLCardsByUid({
+                clBcxModerns = getLowBCXModernCardsByUid({
                     collection: collectionObj[level],
                 });
             }
@@ -41,7 +41,7 @@ const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
                         searchableRentList,
                         level,
                         marketPrices,
-                        isClBcxCommon: clBcxCommons[card.uid] !== undefined,
+                        isClBcxModern: clBcxModerns[card.uid] !== undefined,
                     });
                 if (rentalPriceForUid[1] === 'N') {
                     cardsUnableToFindPriceFor.push(rentalPriceForUid);
@@ -65,7 +65,7 @@ const addPriceListInformationForEachCardByUid = ({
     searchableRentList,
     level,
     marketPrices,
-    isClBcxCommon,
+    isClBcxModern,
 }) => {
     try {
         const { card_detail_id, gold, edition, rarity, uid } = card;
@@ -107,12 +107,12 @@ const addPriceListInformationForEachCardByUid = ({
                 lowestListingPrice: parseFloat(currentPriceData.low_price),
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
-                isClBcxCommon,
+                isClBcxModern,
             });
             listingPrice = handleListingsTooHigh({
                 currentPriceStats: marketPrices[marketKey],
                 listingPrice,
-                isClBcxCommon,
+                isClBcxModern,
             });
         } else {
             listingPrice = parseFloat(currentPriceData.low_price);
@@ -137,10 +137,10 @@ const addPriceListInformationForEachCardByUid = ({
 const handleListingsTooHigh = ({
     currentPriceStats,
     listingPrice,
-    isClBcxCommon,
+    isClBcxModern,
 }) => {
     try {
-        if (isClBcxCommon) {
+        if (isClBcxModern) {
             return listingPrice;
         }
         if (currentPriceStats === undefined) {
@@ -186,7 +186,7 @@ const getListingPrice = ({
     lowestListingPrice,
     numListings,
     currentPriceStats,
-    isClBcxCommon,
+    isClBcxModern,
 }) => {
     try {
         if (currentPriceStats === undefined) {
@@ -203,14 +203,17 @@ const getListingPrice = ({
         } = currentPriceStats[TRADES_DURING_PERIOD];
 
         if (
-            (isClBcxCommon &&
+            (isClBcxModern &&
                 Number.isFinite(avg) &&
                 Number.isFinite(stdDev)) ||
-            (isClBcxCommon &&
+            (isClBcxModern &&
                 Number.isFinite(recentAvg) &&
                 Number.isFinite(recentStdDev))
         ) {
-            return _.max([avg + 2 * stdDev, recentAvg + 2 * recentStdDev]);
+            return _.min([
+                _.max([high, recentHigh]),
+                _.max([avg + 2 * stdDev, recentAvg + 2 * recentStdDev]),
+            ]);
         }
 
         const bestLow =

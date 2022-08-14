@@ -9,7 +9,7 @@ const {
     getAvg,
     handleListingsTooHigh,
 } = require('./calculateRentalPriceToList');
-const { getLowBCXCLCardsByUid } = require('../services/collection');
+const { getLowBCXModernCardsByUid } = require('../services/collection');
 const _ = require('lodash');
 
 const threeDaysTime = 1000 * 60 * 60 * 24 * 3;
@@ -32,9 +32,9 @@ const calculateCancelActiveRentalPrices = async ({
         for (const level in collectionObj) {
             // should be a max of 10 possible times we can go through this because max lvl is 10
 
-            let clBcxCommons = {};
+            let clBcxModerns = {};
             if (level === 1) {
-                clBcxCommons = getLowBCXCLCardsByUid({
+                clBcxModerns = getLowBCXModernCardsByUid({
                     collection: collectionObj[level],
                 });
             }
@@ -57,7 +57,7 @@ const calculateCancelActiveRentalPrices = async ({
                     nextBotLoopTime,
                     rentalTransaction: activeRentalsBySellTrxId[card.market_id],
                     endOfSeasonSettings,
-                    isClBcxCommon: clBcxCommons[card.uid] !== undefined,
+                    isClBcxModern: clBcxModerns[card.uid] !== undefined,
                 });
                 if (cancelPriceForMarketId[0] === 'N') {
                     unableToFindPriceFor.push(card);
@@ -89,7 +89,7 @@ const addMarketIdsForCancelling = ({
     nextBotLoopTime,
     rentalTransaction,
     endOfSeasonSettings,
-    isClBcxCommon,
+    isClBcxModern,
 }) => {
     try {
         // console.log('addMarketIdsForCancelling start');
@@ -110,6 +110,7 @@ const addMarketIdsForCancelling = ({
         } else {
             _gold = 'F';
         }
+
         const now = new Date().getTime();
         const rentalDateInMs = new Date(rental_date).getTime();
         if (rentalDateInMs + oneDayTime > now) {
@@ -138,6 +139,7 @@ const addMarketIdsForCancelling = ({
             const cancelRental = ['C', market_id];
             return cancelRental;
         }
+
         if (marketPrices[marketKey] != null) {
             listingPrice = getListingPrice({
                 card_detail_id,
@@ -145,19 +147,22 @@ const addMarketIdsForCancelling = ({
                 lowestListingPrice: parseFloat(currentPriceData.low_price),
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
-                isClBcxCommon,
+                isClBcxModern,
             });
             listingPrice = handleListingsTooHigh({
                 currentPriceStats: marketPrices[marketKey],
                 listingPrice,
-                isClBcxCommon,
+                isClBcxModern,
             });
         } else {
             listingPrice = parseFloat(currentPriceData.low_price);
         }
+
         const nextRentalPaymentTime = new Date(
             rentalTransaction.next_rental_payment
         ).getTime();
+        const lowBcxModernFactor = isClBcxModern ? 5.0 : 1.0;
+
         if (currentPriceData == null || currentPriceData.low_price == null) {
             const priceNotFoundForCard = ['N', uid, market_id];
             return priceNotFoundForCard;
@@ -169,7 +174,7 @@ const addMarketIdsForCancelling = ({
         } else if (
             nextBotLoopTime > nextRentalPaymentTime &&
             (listingPrice - buy_price) / listingPrice >
-                endOfSeasonSettings.cancellationThreshold
+                endOfSeasonSettings.cancellationThreshold * lowBcxModernFactor
         ) {
             if (
                 new Date().getTime() - new Date(rental_date).getTime() >

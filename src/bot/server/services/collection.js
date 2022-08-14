@@ -67,16 +67,68 @@ const filterCollectionByEdition = ({ collection }) => {
     }
 };
 
-const getLowBCXCLCardsByUid = ({ collection }) => {
+const filterByRarity = ({ collection }) => {
     try {
-        const { chaosLegion } = filterCollectionByEdition({ collection });
+        const commons = [];
+        const rares = [];
+        const epics = [];
+        const legendaries = [];
+        collection.forEach((card) => {
+            const { rarity } = card;
 
-        const cardsByLevel = filterCollectionArrayByLevel({
-            collection: chaosLegion,
+            switch (rarity) {
+                case 1:
+                    commons.push(card);
+                    break;
+                case 2:
+                    rares.push(card);
+                    break;
+                case 3:
+                    epics.push(card);
+                    break;
+                case 4:
+                    legendaries.push(card);
+                    break;
+                default:
+                    throw new Error(
+                        `this rarity number shouldnt be possible, rarity: ${rarity}`
+                    );
+            }
         });
 
+        return { commons, rares, epics, legendaries };
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/services/collection/filterByRarity error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
+const getLowBCXModernCardsByUid = ({ collection }) => {
+    try {
+        const { chaosLegion, untamed } = filterCollectionByEdition({
+            collection,
+        });
+
+        const modernCards = [];
+        modernCards.push(...chaosLegion);
+        modernCards.push(...untamed);
+
+        const cardsByLevel = filterCollectionArrayByLevel({
+            collection: modernCards,
+        });
+
+        const { commons, rares } = filterByRarity({
+            collection: cardsByLevel[1],
+        });
+
+        const modernGhostCards = [];
+        modernGhostCards.push(...commons);
+        modernGhostCards.push(...rares);
+
         const cardObjByUid = {};
-        cardsByLevel[1].forEach((card) => {
+        modernGhostCards.forEach((card) => {
             if (cardObjByUid[card.uid] === undefined) {
                 cardObjByUid[card.uid] = { ...card };
             }
@@ -84,12 +136,12 @@ const getLowBCXCLCardsByUid = ({ collection }) => {
         return cardObjByUid;
     } catch (err) {
         window.api.bot.log({
-            message: `/bot/server/services/collection/getLowBCXCLCardsByUid error: ${err.message}`,
+            message: `/bot/server/services/collection/getLowBCXModernCardsByUid error: ${err.message}`,
         });
         throw err;
     }
 };
 
 module.exports = {
-    getLowBCXCLCardsByUid,
+    getLowBCXModernCardsByUid,
 };
