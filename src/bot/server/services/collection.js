@@ -200,7 +200,13 @@ const getLowCLBCXRewardCards = ({ collection }) => {
         lowBCXRewardCards.push(...commons);
         lowBCXRewardCards.push(...rares);
 
-        return lowBCXRewardCards;
+        const cardObjByUid = {};
+        lowBCXRewardCards.forEach((card) => {
+            if (cardObjByUid[card.uid] === undefined) {
+                cardObjByUid[card.uid] = { ...card };
+            }
+        });
+        return cardObjByUid;
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/collection/getLowCLBCXRewardCards error: ${err.message}`,
