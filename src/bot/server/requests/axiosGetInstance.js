@@ -16,6 +16,9 @@ axiosRetry(axiosInstance, {
         console.error(`retryCount: ${retryCount}`);
         console.error('retryDelay called with error: ', error);
         console.error(`error message is: ${error.message}`);
+        if (error.response.status === 502) {
+            return 5000;
+        }
         return 500000;
     },
     retryCondition: (error) => {
