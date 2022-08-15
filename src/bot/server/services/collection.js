@@ -105,6 +105,45 @@ const filterByRarity = ({ collection }) => {
     }
 };
 
+const filterCollectionByRewardCards = ({ collection }) => {
+    try {
+        const alphaBetaRewards = [];
+        const untamedRewards = [];
+        const chaosLegionRewards = [];
+
+        collection.forEach((card) => {
+            const { edition, tier } = card;
+            if (edition !== 3) {
+                return;
+            }
+            if (!tier) {
+                alphaBetaRewards.push(card);
+            }
+
+            switch (tier) {
+                case 4:
+                    untamedRewards.push(card);
+                    break;
+                case 7:
+                    chaosLegionRewards.push(card);
+                    break;
+                default:
+                    throw new Error(
+                        `tier: ${tier} that we don't support from card: ${card}`
+                    );
+                    break;
+            }
+        });
+
+        return { alphaBetaRewards, untamedRewards, chaosLegionRewards };
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/services/collection/filterCollectionByRewardCards error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
 const getLowBCXModernCardsByUid = ({ collection }) => {
     try {
         const { chaosLegion, untamed } = filterCollectionByEdition({
@@ -142,6 +181,35 @@ const getLowBCXModernCardsByUid = ({ collection }) => {
     }
 };
 
+const getLowCLBCXRewardCards = ({ collection }) => {
+    try {
+        const { rewardCards } = filterCollectionByEdition({ collection });
+
+        const { chaosLegionRewards } = filterCollectionByRewardCards({
+            collection: rewardCards,
+        });
+        const cardsByLevel = filterCollectionArrayByLevel({
+            collection: chaosLegionRewards,
+        });
+
+        const { commons, rares } = filterByRarity({
+            collection: cardsByLevel[1],
+        });
+
+        const lowBCXRewardCards = [];
+        lowBCXRewardCards.push(...commons);
+        lowBCXRewardCards.push(...rares);
+
+        return lowBCXRewardCards;
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/services/collection/getLowCLBCXRewardCards error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
 module.exports = {
     getLowBCXModernCardsByUid,
+    getLowCLBCXRewardCards,
 };
