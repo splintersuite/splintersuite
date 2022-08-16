@@ -33,7 +33,7 @@ const calculateCancelActiveRentalPrices = async ({
             // should be a max of 10 possible times we can go through this because max lvl is 10
 
             let clBcxModerns = {};
-            if (level === 1) {
+            if (level === '1') {
                 clBcxModerns = getLowBCXModernCardsByUid({
                     collection: collectionObj[level],
                 });

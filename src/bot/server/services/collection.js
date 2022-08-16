@@ -146,6 +146,9 @@ const filterCollectionByRewardCards = ({ collection }) => {
 
 const getLowBCXModernCardsByUid = ({ collection }) => {
     try {
+        if (!Array.isArray(collection) || collection.length < 1) {
+            return {};
+        }
         const { chaosLegion, untamed } = filterCollectionByEdition({
             collection,
         });
@@ -158,6 +161,9 @@ const getLowBCXModernCardsByUid = ({ collection }) => {
             collection: modernCards,
         });
 
+        if (!Array.isArray(cardsByLevel[1]) || cardsByLevel[1].length < 1) {
+            return {};
+        }
         const { commons, rares } = filterByRarity({
             collection: cardsByLevel[1],
         });
@@ -166,12 +172,26 @@ const getLowBCXModernCardsByUid = ({ collection }) => {
         modernGhostCards.push(...commons);
         modernGhostCards.push(...rares);
 
+        const rewardCardsNotWorthRenting = getLowCLBCXRewardCards({
+            collection,
+        });
+
         const cardObjByUid = {};
         modernGhostCards.forEach((card) => {
-            if (cardObjByUid[card.uid] === undefined) {
+            if (
+                cardObjByUid[card.uid] === undefined &&
+                rewardCardsNotWorthRenting[card.uid] === undefined
+            ) {
                 cardObjByUid[card.uid] = { ...card };
             }
         });
+
+        console.log(
+            `/bot/server/services/collection/getLowBCXModernCardsByUid length: ${
+                Object.keys(cardObjByUid).length
+            }`
+        );
+
         return cardObjByUid;
     } catch (err) {
         window.api.bot.log({
@@ -183,15 +203,30 @@ const getLowBCXModernCardsByUid = ({ collection }) => {
 
 const getLowCLBCXRewardCards = ({ collection }) => {
     try {
+        if (!Array.isArray(collection) || collection.length < 1) {
+            return {};
+        }
         const { rewardCards } = filterCollectionByEdition({ collection });
 
+        if (!Array.isArray(rewardCards) || rewardCards.length < 1) {
+            return {};
+        }
         const { chaosLegionRewards } = filterCollectionByRewardCards({
             collection: rewardCards,
         });
+        if (
+            !Array.isArray(chaosLegionRewards) ||
+            chaosLegionRewards.length < 1
+        ) {
+            return {};
+        }
         const cardsByLevel = filterCollectionArrayByLevel({
             collection: chaosLegionRewards,
         });
 
+        if (!Array.isArray(cardsByLevel[1]) || cardsByLevel[1].length < 1) {
+            return {};
+        }
         const { commons, rares } = filterByRarity({
             collection: cardsByLevel[1],
         });
