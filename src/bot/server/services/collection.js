@@ -116,8 +116,9 @@ const filterCollectionByRewardCards = ({ collection }) => {
             if (edition !== 3) {
                 return;
             }
-            if (!tier) {
+            if (tier == null) {
                 alphaBetaRewards.push(card);
+                return;
             }
 
             switch (tier) {
