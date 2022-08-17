@@ -129,6 +129,8 @@ const filterCollectionByRewardCards = ({ collection }) => {
                     chaosLegionRewards.push(card);
                     break;
                 default:
+                    console.log('card error');
+                    console.log(card);
                     throw new Error(
                         `tier: ${tier} that we don't support from card: ${card}`
                     );
