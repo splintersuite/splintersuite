@@ -129,8 +129,6 @@ const filterCollectionByRewardCards = ({ collection }) => {
                     chaosLegionRewards.push(card);
                     break;
                 default:
-                    console.log('card error');
-                    console.log(card);
                     throw new Error(
                         `tier: ${tier} that we don't support from card: ${card}`
                     );
@@ -189,11 +187,11 @@ const getLowBCXModernCardsByUid = ({ collection }) => {
             }
         });
 
-        console.log(
-            `/bot/server/services/collection/getLowBCXModernCardsByUid length: ${
+        window.api.bot.log({
+            message: `/bot/server/services/collection/getLowBCXModernCardsByUid length: ${
                 Object.keys(cardObjByUid).length
-            }`
-        );
+            }`,
+        });
 
         return cardObjByUid;
     } catch (err) {
