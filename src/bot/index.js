@@ -47,7 +47,7 @@ window.api.bot.start(async (event) => {
                     : 'bad data'
             }`,
         });
-        const { listings, relistings, cancellations } =
+        const { listings, relistings, relistActive } =
             await rentals.startRentalBot({
                 username,
                 settings,
@@ -93,18 +93,35 @@ window.api.bot.start(async (event) => {
         window.api.bot.log({
             message: `Number of relistings: ${listingsNum}`,
         });
-
-        for (const cancelGroup of cancellations) {
+        numListed = 0;
+        for (const relistActiveGroup of relistActive) {
             if (hiveTransactions % 4 === 0) {
                 await sleep(4000);
             }
-            if (cancelGroup.length > 0) {
-                await window.api.hive.deleteRentals({
-                    cards: cancelGroup,
+            if (relistActiveGroup.length > 0) {
+                await window.api.hive.updateRentals({
+                    cards: relistActiveGroup,
                 });
                 hiveTransactions = hiveTransactions + 1;
+                numListed += relistingGroup.length;
             }
         }
+        listingsNum = numListed - listingsNum;
+        window.api.bot.log({
+            // message: `we relisted active rentals of ${listingsNum}`,
+            message: `we relisted active rentals of ${numListed}`,
+        });
+        // for (const cancelGroup of cancellations) {
+        //     if (hiveTransactions % 4 === 0) {
+        //         await sleep(4000);
+        //     }
+        //     if (cancelGroup.length > 0) {
+        //         await window.api.hive.deleteRentals({
+        //             cards: cancelGroup,
+        //         });
+        //         hiveTransactions = hiveTransactions + 1;
+        //     }
+        // }
 
         listingsNum = 0;
         hiveTransactions = 0;

@@ -30,6 +30,9 @@ const {
     calculateCancelActiveRentalPrices,
 } = require('./actions/calculateFilledRentalsToBeCancelled');
 
+const {
+    calculateRelistActiveRentalPrices,
+} = require('./actions/relistRentedOutCards');
 const { getCardDetailObj } = require('./actions/_helpers');
 const { getActiveRentalsByRentalId } = require('./actions/currentRentals');
 
@@ -92,21 +95,31 @@ const startRentalBot = async ({
             marketPrices,
         });
 
-        const { relistingPriceForEachMarketId, cardsNotWorthRelisting } =
-            await calculateRelistingPrice({
+        const { relistingPriceForEachMarketId } = await calculateRelistingPrice(
+            {
                 collectionObj: collectionByLevelObjListedButNotRentedOut,
                 marketPrices,
-            });
-
-        const { marketIdsForCancellation, cardsNotWorthCancelling } =
-            await calculateCancelActiveRentalPrices({
+            }
+        );
+        const { relistingPriceForActiveMarketId } =
+            await calculateRelistActiveRentalPrices({
                 collectionObj: collectionByLevelObjBeingRentedOut,
                 marketPrices,
+                nextBotLoopTime,
                 activeRentalsBySellTrxId:
                     activeRentals.activeRentalsBySellTrxId,
-                nextBotLoopTime,
                 endOfSeasonSettings,
             });
+        // const { marketIdsForCancellation } =
+        //     await calculateCancelActiveRentalPrices({
+        //         collectionObj: collectionByLevelObjBeingRentedOut,
+        //         marketPrices,
+        //         activeRentalsBySellTrxId:
+        //             activeRentals.activeRentalsBySellTrxId,
+        //         nextBotLoopTime,
+        //         endOfSeasonSettings,
+        //     });
+
         // we would also want to make sure that cards already listed are seperated
         const listings = fmtToLimitCardsInEachHiveTx(
             rentalArrayWithPriceAndUid
@@ -116,14 +129,19 @@ const startRentalBot = async ({
             relistingPriceForEachMarketId
         );
 
-        const cancellations = fmtToLimitCardsInEachHiveTx(
-            marketIdsForCancellation
+        // const cancellations = fmtToLimitCardsInEachHiveTx(
+        //     marketIdsForCancellation
+        // );
+
+        const relistActive = fmtToLimitCardsInEachHiveTx(
+            relistingPriceForActiveMarketId
         );
 
         return {
             listings, // array of arrays that are formated by :[uid, rentalPriceInDec]
             relistings, // [uid, rentalPriceInDec]
-            cancellations,
+            relistActive,
+            // cancellations,
         };
     } catch (err) {
         window.api.bot.log({

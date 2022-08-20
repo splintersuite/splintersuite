@@ -9,6 +9,8 @@ const {
     getListingPrice,
     handleListingsTooHigh,
 } = require('./calculateRentalPriceToList');
+const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
+const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';
 
 const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
     try {
@@ -90,6 +92,15 @@ const addPriceRelistInformationForEachCardByMarketId = ({
         const currentPriceData = searchableRentList[rentListKey];
 
         const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
+
+        if (
+            marketPrices[marketKey] == null ||
+            _.isEmpty(marketPrices[marketKey])
+        ) {
+            // we should not cancel because we don't have any accurate information due to missing data to reprice this rental right now
+            const shouldNotRelistRental = ['N'];
+            return shouldNotRelistRental;
+        }
         let listingPrice;
         if (marketPrices[marketKey] != null) {
             listingPrice = getListingPrice({
@@ -129,7 +140,7 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             listingPrice < buy_price &&
             (buy_price - listingPrice) / buy_price > 0.3 * lowBcxModernFactor
         ) {
-            // the current listing (buy_price) is 20% more than what we would list it as today
+            // the current listing (buy_price) is 30% more than what we would list it as today
             // relist lower
             if (listingPrice < 0.2) {
                 const doNotChangeThePrice = [
