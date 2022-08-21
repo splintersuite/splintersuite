@@ -94,7 +94,15 @@ window.api.bot.start(async (event) => {
             message: `Number of relistings: ${listingsNum}`,
         });
         numListed = 0;
+        window.api.bot.log({
+            message: `relistActive: ${JSON.stringify(relistActive)}`,
+        });
         for (const relistActiveGroup of relistActive) {
+            window.api.bot.log({
+                message: `relistActiveGroup: ${JSON.stringify(
+                    relistActiveGroup
+                )}`,
+            });
             if (hiveTransactions % 4 === 0) {
                 await sleep(4000);
             }
@@ -103,7 +111,7 @@ window.api.bot.start(async (event) => {
                     cards: relistActiveGroup,
                 });
                 hiveTransactions = hiveTransactions + 1;
-                numListed += relistingGroup.length;
+                numListed += relistActiveGroup.length;
             }
         }
         listingsNum = numListed - listingsNum;

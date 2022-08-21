@@ -68,12 +68,14 @@ const calculateRelistActiveRentalPrices = async ({
                     cardsUnableToFindPriceFor.push(card);
                 } else {
                     relistingPriceForActiveMarketId.push(
-                        relistingPriceForMarketId
+                        relistPriceForMarketId
                     );
                 }
             }
         }
-
+        // window.api.bot.log({
+        //     message: `calculateRelistActiveRentalPrices returning with relistingPriceForActiveMarketId: ${}`
+        // })
         return { relistingPriceForActiveMarketId, cardsNotWorthChangingPrice };
     } catch (err) {
         window.api.bot.log({
