@@ -54,7 +54,6 @@ const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
                 }
             }
         }
-        // TNT TODO: find new price data for the cards in cardsUnableToFindPriceFor
         return { relistingPriceForEachMarketId, cardsNotWorthRelisting };
     } catch (err) {
         window.api.bot.log({

@@ -101,7 +101,6 @@ const addActiveMarketIdsForRelisting = ({
             edition,
             market_id,
             buy_price,
-            uid,
             rental_date,
             rarity,
         } = card;

@@ -2,17 +2,12 @@
 const {
     getCollection,
     filterCollectionArraysForPotentialRentalCards,
-    filterCollectionArraysByGoldYN,
 } = require('./actions/collection');
 
 const {
     getCurrentSeason,
     getEndOfSeasonSettings,
 } = require('./actions/currentSeason');
-
-const {
-    getRentalInfoObjectFromCollection,
-} = require('./actions/rentalListInfo');
 
 const {
     calculateRentalPriceToList,
@@ -56,7 +51,6 @@ const startRentalBot = async ({
         const {
             cardsAvailableForRent,
             cardsListedButNotRentedOut,
-            cardsOnRentalCooldown,
             cardsBeingRentedOut,
         } = filterCollectionArraysForPotentialRentalCards({
             username,
@@ -152,17 +146,6 @@ const fmtToLimitCardsInEachHiveTx = (input) => {
         });
         throw err;
     }
-};
-
-const settings = {
-    commonNorm: 9,
-    commonGold: 9,
-    rareNorm: 7,
-    rareGold: 7,
-    epicNorm: 2,
-    epicGold: 2,
-    legendaryNorm: 2,
-    legendaryGold: 2,
 };
 
 export default {

@@ -50,7 +50,6 @@ const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
                 }
             }
         }
-        // TNT TODO: find new price data for the cards in cardsUnableToFindPriceFor
         return rentalPriceForEachCardUid;
     } catch (err) {
         window.api.bot.log({

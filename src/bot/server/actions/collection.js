@@ -2,7 +2,6 @@
 
 const { axiosInstance } = require('../requests/axiosGetInstance');
 const { isOnCooldown } = require('./_helpers.js');
-const { getActiveRentalsByRentalId } = require('./currentRentals');
 
 const getCollection = async (username) => {
     try {
@@ -239,36 +238,10 @@ const filterCollectionArraysByLevelLimitThresholds = ({
     }
 };
 
-const filterCollectionArraysByGoldYN = ({ collection }) => {
-    try {
-        //   console.log(`filterCollectionArraysByGoldYN start`);
-
-        const normCollection = [];
-        const goldCollection = [];
-
-        collection.forEach((card) => {
-            const { gold } = card;
-            if (gold) {
-                goldCollection.push(card);
-            } else {
-                normCollection.push(card);
-            }
-        });
-
-        return { normCollection, goldCollection };
-    } catch (err) {
-        window.api.bot.log({
-            message: `/bot/server/actions/collection/filterCollectionArraysByGoldYN error: ${err.message}`,
-        });
-        throw err;
-    }
-};
-
 module.exports = {
     getCollection,
     filterCollectionArraysForPotentialRentalCards,
     sortCollectionArrayByLevel,
     filterCollectionArraysByLevelLimitThresholds,
-    filterCollectionArraysByGoldYN,
     filterCollectionArrayByLevel,
 };
