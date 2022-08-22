@@ -239,7 +239,6 @@ const filterCollectionArraysByLevelLimitThresholds = ({
     }
 };
 
-// TNT NOTE; actually using this in the more precise data function (which is very much under development rn)
 const filterCollectionArraysByGoldYN = ({ collection }) => {
     try {
         //   console.log(`filterCollectionArraysByGoldYN start`);

@@ -8,7 +8,7 @@ const {
 } = require('../axios_retry/axios_retry');
 
 const axiosInstance = axios.create({
-    timeout: 60000,
+    timeout: 40000,
 });
 
 axiosRetry(axiosInstance, {
@@ -16,13 +16,15 @@ axiosRetry(axiosInstance, {
         console.error(`retryCount: ${retryCount}`);
         console.error('retryDelay called with error: ', error);
         console.error(`error message is: ${error.message}`);
-        if (error.response.status === 502) {
+        if (error?.response?.status === 502) {
             return 5000;
         }
         return 500000;
     },
     retryCondition: (error) => {
-        return isNetworkOrIdempotentRequestError || gotRateLimited(error);
+        return (
+            isNetworkOrIdempotentRequestError(error) || gotRateLimited(error)
+        );
     },
     shouldResetTimeout: true,
 });

@@ -27,10 +27,6 @@ const {
 } = require('./actions/calculateRelistingPrice');
 
 const {
-    calculateCancelActiveRentalPrices,
-} = require('./actions/calculateFilledRentalsToBeCancelled');
-
-const {
     calculateRelistActiveRentalPrices,
 } = require('./actions/relistRentedOutCards');
 const { getCardDetailObj } = require('./actions/_helpers');
@@ -69,8 +65,6 @@ const startRentalBot = async ({
             cardDetailObj,
         });
 
-        // TNT TO DO -> save down the time until off rentalCooldown for each card in cardsOnRentalCooldown, then we will know when our bot should try and list them on the market.
-        // WE SHOULD ALSO INCLUDE cardsBeingRentedOut in going through everything imo, cuz we will want to see if they ultimately are worth renting out
         const collectionByLevelObjAvailableForRent =
             transformCollectionIntoCollectionByLevelObj({
                 settings,
@@ -110,17 +104,7 @@ const startRentalBot = async ({
                     activeRentals.activeRentalsBySellTrxId,
                 endOfSeasonSettings,
             });
-        // const { marketIdsForCancellation } =
-        //     await calculateCancelActiveRentalPrices({
-        //         collectionObj: collectionByLevelObjBeingRentedOut,
-        //         marketPrices,
-        //         activeRentalsBySellTrxId:
-        //             activeRentals.activeRentalsBySellTrxId,
-        //         nextBotLoopTime,
-        //         endOfSeasonSettings,
-        //     });
 
-        // we would also want to make sure that cards already listed are seperated
         const listings = fmtToLimitCardsInEachHiveTx(
             rentalArrayWithPriceAndUid
         );
@@ -129,10 +113,6 @@ const startRentalBot = async ({
             relistingPriceForEachMarketId
         );
 
-        // const cancellations = fmtToLimitCardsInEachHiveTx(
-        //     marketIdsForCancellation
-        // );
-
         const relistActive = fmtToLimitCardsInEachHiveTx(
             relistingPriceForActiveMarketId
         );
@@ -140,8 +120,7 @@ const startRentalBot = async ({
         return {
             listings, // array of arrays that are formated by :[uid, rentalPriceInDec]
             relistings, // [uid, rentalPriceInDec]
-            relistActive,
-            // cancellations,
+            relistActive, // [uid, rentalPriceInDec]
         };
     } catch (err) {
         window.api.bot.log({
@@ -175,30 +154,6 @@ const fmtToLimitCardsInEachHiveTx = (input) => {
     }
 };
 
-// tnt note: this was what I was doing to find the most precise data before I learned about grouped_by endpoint.
-// need to sort them by filteredUserLevelLimits, before going back in more depth. TNT TODO: finisht he more precise algorithmn later
-const getPreciseRentalPrices = ({ cardsFilteredByUserLevelLimits }) => {
-    try {
-        const { normCollection, goldCollection } =
-            filterCollectionArraysByGoldYN({
-                collection: cardsFilteredByUserLevelLimits,
-            });
-
-        const normCardsByDetailId = getRentalInfoObjectFromCollection({
-            collection: normCollection,
-        });
-
-        const goldCardsByDetailId = getRentalInfoObjectFromCollection({
-            collection: goldCollection,
-        });
-    } catch (err) {
-        window.api.bot.log({
-            message: `/bot/server/index/getPreciseRentalPrices error: ${err.message}`,
-        });
-        throw err;
-    }
-};
-
 const settings = {
     commonNorm: 9,
     commonGold: 9,
@@ -210,7 +165,6 @@ const settings = {
     legendaryGold: 2,
 };
 
-// startRentalBot({ username: "hackinhukk", settings });
 export default {
     startRentalBot,
 };

@@ -13,7 +13,6 @@ const _ = require('lodash');
 const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
 const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';
 
-const threeDaysTime = 1000 * 60 * 60 * 24 * 3;
 const oneDayTime = 1000 * 60 * 60 * 24 * 1;
 
 const calculateRelistActiveRentalPrices = async ({
@@ -73,9 +72,7 @@ const calculateRelistActiveRentalPrices = async ({
                 }
             }
         }
-        // window.api.bot.log({
-        //     message: `calculateRelistActiveRentalPrices returning with relistingPriceForActiveMarketId: ${}`
-        // })
+
         return { relistingPriceForActiveMarketId, cardsNotWorthChangingPrice };
     } catch (err) {
         window.api.bot.log({
@@ -123,6 +120,7 @@ const addActiveMarketIdsForRelisting = ({
             const shouldNotRelistRental = ['N'];
             return shouldNotRelistRental;
         }
+
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
         const currentPriceData =
             searchableRentList[rentListKey] !== undefined
@@ -136,7 +134,7 @@ const addActiveMarketIdsForRelisting = ({
             _.isEmpty(marketPrices[marketKey])
         ) {
             // we should not cancel because we don't have any accurate information due to missing data to reprice this rental right now
-            const shouldNotRelistRental = ['MD'];
+            const shouldNotRelistRental = ['MD']; // MD = missing data
             return shouldNotRelistRental;
         }
         if (

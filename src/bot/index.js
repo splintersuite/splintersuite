@@ -94,15 +94,8 @@ window.api.bot.start(async (event) => {
             message: `Number of relistings: ${listingsNum}`,
         });
         numListed = 0;
-        window.api.bot.log({
-            message: `relistActive: ${JSON.stringify(relistActive)}`,
-        });
+
         for (const relistActiveGroup of relistActive) {
-            window.api.bot.log({
-                message: `relistActiveGroup: ${JSON.stringify(
-                    relistActiveGroup
-                )}`,
-            });
             if (hiveTransactions % 4 === 0) {
                 await sleep(4000);
             }
@@ -116,20 +109,8 @@ window.api.bot.start(async (event) => {
         }
         listingsNum = numListed - listingsNum;
         window.api.bot.log({
-            // message: `we relisted active rentals of ${listingsNum}`,
-            message: `we relisted active rentals of ${numListed}`,
+            message: `Number of relisted active rentals: ${numListed}`,
         });
-        // for (const cancelGroup of cancellations) {
-        //     if (hiveTransactions % 4 === 0) {
-        //         await sleep(4000);
-        //     }
-        //     if (cancelGroup.length > 0) {
-        //         await window.api.hive.deleteRentals({
-        //             cards: cancelGroup,
-        //         });
-        //         hiveTransactions = hiveTransactions + 1;
-        //     }
-        // }
 
         listingsNum = 0;
         hiveTransactions = 0;

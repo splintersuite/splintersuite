@@ -97,8 +97,6 @@ const addPriceListInformationForEachCardByUid = ({
             }
         }
 
-        // JBOXXX NOTE: this is where TNT gets the low price
-        // SOME MATH HERE
         let listingPrice;
         if (marketPrices[marketKey] != null) {
             listingPrice = getListingPrice({
@@ -144,7 +142,6 @@ const handleListingsTooHigh = ({
             return listingPrice;
         }
         if (currentPriceStats === undefined) {
-            //    console.log(`'handleListingsTooHigh start`);
             return null;
         }
 
