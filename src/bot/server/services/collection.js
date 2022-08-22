@@ -187,12 +187,6 @@ const getLowBCXModernCardsByUid = ({ collection }) => {
             }
         });
 
-        window.api.bot.log({
-            message: `/bot/server/services/collection/getLowBCXModernCardsByUid length: ${
-                Object.keys(cardObjByUid)?.length
-            }`,
-        });
-
         return cardObjByUid;
     } catch (err) {
         window.api.bot.log({
