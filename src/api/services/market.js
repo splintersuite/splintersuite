@@ -1,6 +1,9 @@
 import store from '../../store';
 import axios from '../util/axios';
 
+import moment from 'moment';
+import logger from 'electron-log';
+
 const setMarketPrices = async ({ marketPrices, timeOfLastFetch }) => {
     return store.set('market.prices', {
         marketPrices,
@@ -9,9 +12,19 @@ const setMarketPrices = async ({ marketPrices, timeOfLastFetch }) => {
 };
 
 const fetchMarketPrices = async () => {
-    const {
-        data: { currentPrices, timeOfLastFetch },
-    } = await axios.get(`${process.env.API_URL}/api/market/current_prices`);
+    const res = await axios.get(
+        `${process.env.API_URL}/api/market/current_prices`
+    );
+
+    const currentPrices = res?.data?.currentPrices;
+    const timeOfLastFetch = res?.data?.timeOfLastFetch;
+
+    const message = `fetchMarketPrices got currentPrices for ${JSON.stringify(
+        Object.keys(res?.data?.currentPrices)?.length
+    )} number of cards`;
+
+    const now = moment().format('DD/MM/YYYY HH:mm:ss Z');
+    logger.info(`[${now}] ${message}`);
     return { currentPrices, timeOfLastFetch };
 };
 
@@ -25,9 +38,15 @@ const getMarketPrices = async () => {
         Object.keys(priceData?.marketPrices).length < 75
     ) {
         const { currentPrices, timeOfLastFetch } = await fetchMarketPrices();
+
         setMarketPrices({ marketPrices: currentPrices, timeOfLastFetch });
         return currentPrices; // used elsewhere as marketPrices
     } else {
+        const message = `getMarketPrices got currentPrices from the store, number of prices:  ${JSON.stringify(
+            Object.keys(priceData?.marketPrices)?.length
+        )}`;
+        const now = moment().format('DD/MM/YYYY HH:mm:ss Z');
+        logger.info(`[${now}] ${message}`);
         return priceData.marketPrices;
     }
 };

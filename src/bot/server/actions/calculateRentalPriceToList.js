@@ -4,6 +4,7 @@ const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
 } = require('./rentalListInfo');
+const { getLowBCXModernCardsByUid } = require('../services/collection');
 const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
 const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';
 
@@ -16,6 +17,12 @@ const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
         // sorts through the collectionObj that has key = level, value = [array of cards that's level = key]
         for (const level in collectionObj) {
             // should be a max of 10 possible times we can go through this because max lvl is 10
+            let clBcxModerns = {};
+            if (level === '1') {
+                clBcxModerns = getLowBCXModernCardsByUid({
+                    collection: collectionObj[level],
+                });
+            }
 
             // aggregate rental price data for cards of the level
             const groupedRentalsList = await getGroupedRentalsForLevel({
@@ -34,6 +41,7 @@ const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
                         searchableRentList,
                         level,
                         marketPrices,
+                        isClBcxModern: clBcxModerns[card.uid] !== undefined,
                     });
                 if (rentalPriceForUid[1] === 'N') {
                     cardsUnableToFindPriceFor.push(rentalPriceForUid);
@@ -42,7 +50,6 @@ const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
                 }
             }
         }
-        // TNT TODO: find new price data for the cards in cardsUnableToFindPriceFor
         return rentalPriceForEachCardUid;
     } catch (err) {
         window.api.bot.log({
@@ -57,6 +64,7 @@ const addPriceListInformationForEachCardByUid = ({
     searchableRentList,
     level,
     marketPrices,
+    isClBcxModern,
 }) => {
     try {
         const { card_detail_id, gold, edition, rarity, uid } = card;
@@ -69,6 +77,7 @@ const addPriceListInformationForEachCardByUid = ({
 
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
         const currentPriceData = searchableRentList[rentListKey];
+        const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
 
         if (
             currentPriceData == null ||
@@ -86,10 +95,7 @@ const addPriceListInformationForEachCardByUid = ({
                 return rentalNotFoundForCard;
             }
         }
-        const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
 
-        // JBOXXX NOTE: this is where TNT gets the low price
-        // SOME MATH HERE
         let listingPrice;
         if (marketPrices[marketKey] != null) {
             listingPrice = getListingPrice({
@@ -98,10 +104,12 @@ const addPriceListInformationForEachCardByUid = ({
                 lowestListingPrice: parseFloat(currentPriceData.low_price),
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
+                isClBcxModern,
             });
             listingPrice = handleListingsTooHigh({
                 currentPriceStats: marketPrices[marketKey],
                 listingPrice,
+                isClBcxModern,
             });
         } else {
             listingPrice = parseFloat(currentPriceData.low_price);
@@ -123,9 +131,15 @@ const addPriceListInformationForEachCardByUid = ({
     }
 };
 
-const handleListingsTooHigh = ({ currentPriceStats, listingPrice }) => {
+const handleListingsTooHigh = ({
+    currentPriceStats,
+    listingPrice,
+    isClBcxModern,
+}) => {
     try {
-        //    console.log(`'handleListingsTooHigh start`);
+        if (isClBcxModern) {
+            return listingPrice;
+        }
         if (currentPriceStats === undefined) {
             return null;
         }
@@ -168,6 +182,7 @@ const getListingPrice = ({
     lowestListingPrice,
     numListings,
     currentPriceStats,
+    isClBcxModern,
 }) => {
     try {
         if (currentPriceStats === undefined) {
@@ -183,6 +198,20 @@ const getListingPrice = ({
             high: recentHigh,
         } = currentPriceStats[TRADES_DURING_PERIOD];
 
+        if (
+            (isClBcxModern &&
+                Number.isFinite(avg) &&
+                Number.isFinite(stdDev)) ||
+            (isClBcxModern &&
+                Number.isFinite(recentAvg) &&
+                Number.isFinite(recentStdDev))
+        ) {
+            return _.min([
+                _.max([high, recentHigh]),
+                _.max([avg + 2 * stdDev, recentAvg + 2 * recentStdDev]),
+            ]);
+        }
+
         const bestLow =
             Number.isFinite(recentLow) && recentLow > low ? recentLow : low;
 
@@ -195,24 +224,6 @@ const getListingPrice = ({
                 lowestListingPrice,
                 bestLow,
             ]);
-        }
-
-        // handling for super high listings that are HIGHER than the max high
-        // no point in listing here...
-        const maxHigh = _.max([recentHigh, high]);
-        if (Number.isFinite(maxHigh) && lowestListingPrice > maxHigh) {
-            const twoStdAboveMean =
-                Number.isFinite(avg) && Number.isFinite(stdDev)
-                    ? avg + stdDev * 2
-                    : NaN;
-            if (
-                Number.isFinite(twoStdAboveMean) &&
-                lowestListingPrice > twoStdAboveMean
-            ) {
-                return _.max([twoStdAboveMean, recentAvg + recentStdDev * 2]);
-            } else {
-                return maxHigh;
-            }
         }
 
         if (

@@ -4,10 +4,13 @@ const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
 } = require('./rentalListInfo');
+const { getLowBCXModernCardsByUid } = require('../services/collection');
 const {
     getListingPrice,
     handleListingsTooHigh,
 } = require('./calculateRentalPriceToList');
+const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
+const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';
 
 const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
     try {
@@ -17,7 +20,12 @@ const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
 
         for (const level in collectionObj) {
             // should be a max of 10 possible times we can go through this because max lvl is 10
-
+            let clBcxModerns = {};
+            if (level === '1') {
+                clBcxModerns = getLowBCXModernCardsByUid({
+                    collection: collectionObj[level],
+                });
+            }
             // aggregate rental price data for cards of the level
             const groupedRentalsList = await getGroupedRentalsForLevel({
                 level,
@@ -35,6 +43,7 @@ const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
                         searchableRentList,
                         level,
                         marketPrices,
+                        isClBcxModern: clBcxModerns[card.uid] !== undefined,
                     });
                 if (rentalPriceForMarketId[0] === 'N') {
                     cardsUnableToFindPriceFor.push(rentalPriceForMarketId);
@@ -45,7 +54,6 @@ const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
                 }
             }
         }
-        // TNT TODO: find new price data for the cards in cardsUnableToFindPriceFor
         return { relistingPriceForEachMarketId, cardsNotWorthRelisting };
     } catch (err) {
         window.api.bot.log({
@@ -60,6 +68,7 @@ const addPriceRelistInformationForEachCardByMarketId = ({
     searchableRentList,
     level,
     marketPrices,
+    isClBcxModern,
 }) => {
     try {
         const {
@@ -82,6 +91,15 @@ const addPriceRelistInformationForEachCardByMarketId = ({
         const currentPriceData = searchableRentList[rentListKey];
 
         const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
+
+        if (
+            marketPrices[marketKey] == null ||
+            _.isEmpty(marketPrices[marketKey])
+        ) {
+            // we should not cancel because we don't have any accurate information due to missing data to reprice this rental right now
+            const shouldNotRelistRental = ['N'];
+            return shouldNotRelistRental;
+        }
         let listingPrice;
         if (marketPrices[marketKey] != null) {
             listingPrice = getListingPrice({
@@ -90,15 +108,18 @@ const addPriceRelistInformationForEachCardByMarketId = ({
                 lowestListingPrice: parseFloat(currentPriceData.low_price),
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
+                isClBcxModern,
             });
             listingPrice = handleListingsTooHigh({
                 currentPriceStats: marketPrices[marketKey],
                 listingPrice,
+                isClBcxModern,
             });
         } else {
             listingPrice = parseFloat(currentPriceData.low_price);
         }
 
+        const lowBcxModernFactor = isClBcxModern ? 2.0 : 1.0;
         if (
             currentPriceData == null ||
             currentPriceData.low_price == null ||
@@ -116,9 +137,9 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             }
         } else if (
             listingPrice < buy_price &&
-            (buy_price - listingPrice) / buy_price > 0.3
+            (buy_price - listingPrice) / buy_price > 0.3 * lowBcxModernFactor
         ) {
-            // the current listing (buy_price) is 20% more than what we would list it as today
+            // the current listing (buy_price) is 30% more than what we would list it as today
             // relist lower
             if (listingPrice < 0.2) {
                 const doNotChangeThePrice = [

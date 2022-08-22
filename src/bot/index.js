@@ -35,22 +35,26 @@ window.api.bot.start(async (event) => {
         if (marketRes.code === 1 && marketRes?.data?.marketPrices) {
             marketPrices = marketRes.data.marketPrices;
         }
+
         // ---
         // Get cards
         // ------------------------------------
-        console.log(
-            `about to call rentals.startRentalBot with marketPrices: ${JSON.stringify(
-                marketPrices
-            )}`
-        );
-        const { listings, relistings, cancellations } =
+
+        window.api.bot.log({
+            message: `marketPrices.length: ${
+                Array.isArray(Object.keys(marketPrices))
+                    ? Object.keys(marketPrices).length
+                    : 'bad data'
+            }`,
+        });
+        const { listings, relistings, relistActive } =
             await rentals.startRentalBot({
                 username,
                 settings,
                 marketPrices,
                 nextBotLoopTime,
             });
-        // process.exit();
+
         // ---
         // List, relist, cancel
         // ------------------------------------
@@ -89,18 +93,24 @@ window.api.bot.start(async (event) => {
         window.api.bot.log({
             message: `Number of relistings: ${listingsNum}`,
         });
+        numListed = 0;
 
-        for (const cancelGroup of cancellations) {
+        for (const relistActiveGroup of relistActive) {
             if (hiveTransactions % 4 === 0) {
                 await sleep(4000);
             }
-            if (cancelGroup.length > 0) {
-                await window.api.hive.deleteRentals({
-                    cards: cancelGroup,
+            if (relistActiveGroup.length > 0) {
+                await window.api.hive.updateRentals({
+                    cards: relistActiveGroup,
                 });
                 hiveTransactions = hiveTransactions + 1;
+                numListed += relistActiveGroup.length;
             }
         }
+        listingsNum = numListed - listingsNum;
+        window.api.bot.log({
+            message: `Number of relisted active rentals: ${numListed}`,
+        });
 
         listingsNum = 0;
         hiveTransactions = 0;

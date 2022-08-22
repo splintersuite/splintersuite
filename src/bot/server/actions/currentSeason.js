@@ -29,14 +29,14 @@ const cancellationMatrix = [
     { daysTillEOS: 11, cancellationThreshold: 0.15 },
     { daysTillEOS: 10, cancellationThreshold: 0.1 },
     { daysTillEOS: 9, cancellationThreshold: 0.07 },
-    { daysTillEOS: 8, cancellationThreshold: 0.05 },
-    { daysTillEOS: 7, cancellationThreshold: 0.04 },
-    { daysTillEOS: 6, cancellationThreshold: 0.03 },
-    { daysTillEOS: 5, cancellationThreshold: 0.02 },
-    { daysTillEOS: 4, cancellationThreshold: 0.01 },
-    { daysTillEOS: 3, cancellationThreshold: 0.01 },
-    { daysTillEOS: 2, cancellationThreshold: 0.001 },
-    { daysTillEOS: 1, cancellationThreshold: 0.001 },
+    { daysTillEOS: 8, cancellationThreshold: 0.07 },
+    { daysTillEOS: 7, cancellationThreshold: 0.07 },
+    { daysTillEOS: 6, cancellationThreshold: 0.07 },
+    { daysTillEOS: 5, cancellationThreshold: 0.05 },
+    { daysTillEOS: 4, cancellationThreshold: 0.05 },
+    { daysTillEOS: 3, cancellationThreshold: 0.02 },
+    { daysTillEOS: 2, cancellationThreshold: 0.02 },
+    { daysTillEOS: 1, cancellationThreshold: 99999 },
 ];
 
 const getEndOfSeasonSettings = ({ season }) => {
@@ -55,19 +55,19 @@ const getEndOfSeasonSettings = ({ season }) => {
         cancellationMatrix.some((day) => {
             if (day.daysTillEOS === 1) {
                 day.timeStart =
-                    seasonEndTime +
+                    seasonEndTime -
                     (day.daysTillEOS * msInDay + msInTwelveHours);
                 day.timeEnd = seasonEndTime - (day.daysTillEOS - 1) * msInDay;
             } else if (day.daysTillEOS === 2) {
                 day.timeStart = seasonEndTime - day.daysTillEOS * msInDay;
                 day.timeEnd =
-                    seasonEndTime +
+                    seasonEndTime -
                     ((day.daysTillEOS - 1) * msInDay + msInTwelveHours);
             } else {
                 day.timeStart = seasonEndTime - day.daysTillEOS * msInDay;
                 day.timeEnd = seasonEndTime - (day.daysTillEOS - 1) * msInDay;
             }
-            if (day.timeEnd > nowTime && nowTime > day.timeStart) {
+            if (day.timeEnd >= nowTime && nowTime > day.timeStart) {
                 if (day.daysTillEOS === 1) {
                     // make it such that this is almost impossible
                     // so you NEVER cancel in the last 28 hours of the season
@@ -87,6 +87,7 @@ const getEndOfSeasonSettings = ({ season }) => {
                 return true;
             }
         });
+
         return endOfSeasonSettings;
     } catch (err) {
         window.api.bot.log({
