@@ -13,6 +13,7 @@ const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
     try {
         const rentalPriceForEachCardUid = [];
         const cardsUnableToFindPriceFor = [];
+        const cardsNotWorthListing = [];
 
         // sorts through the collectionObj that has key = level, value = [array of cards that's level = key]
         for (const level in collectionObj) {
@@ -46,10 +47,17 @@ const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
                 if (rentalPriceForUid[1] === 'N') {
                     cardsUnableToFindPriceFor.push(rentalPriceForUid);
                 } else {
-                    rentalPriceForEachCardUid.push(rentalPriceForUid);
+                    if (parseFloat(rentalPriceForUid[1]) > 0.2) {
+                        rentalPriceForEachCardUid.push(rentalPriceForUid);
+                    } else {
+                        cardsNotWorthListing.push(rentalPriceForUid);
+                    }
                 }
             }
         }
+        window.api.bot.log({
+            message: `we excluded ${cardsNotWorthListing?.length} cards from being listed for rent`,
+        });
         return rentalPriceForEachCardUid;
     } catch (err) {
         window.api.bot.log({
