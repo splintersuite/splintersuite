@@ -47,17 +47,15 @@ const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
                 if (rentalPriceForUid[1] === 'N') {
                     cardsUnableToFindPriceFor.push(rentalPriceForUid);
                 } else {
-                    if (parseFloat(rentalPriceForUid[1]) > 0.2) {
-                        rentalPriceForEachCardUid.push(rentalPriceForUid);
-                    } else {
+                    if (parseFloat(rentalPriceForUid[1]) < 0.2) {
                         cardsNotWorthListing.push(rentalPriceForUid);
+                    } else {
+                        rentalPriceForEachCardUid.push(rentalPriceForUid);
                     }
                 }
             }
         }
-        window.api.bot.log({
-            message: `we excluded ${cardsNotWorthListing?.length} cards from being listed for rent`,
-        });
+
         return rentalPriceForEachCardUid;
     } catch (err) {
         window.api.bot.log({

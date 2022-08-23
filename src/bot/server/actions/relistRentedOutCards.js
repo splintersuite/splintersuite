@@ -93,7 +93,7 @@ const addActiveMarketIdsForRelisting = ({
     isLowBcxModern,
 }) => {
     try {
-        console.log('addActiveMarketIdsForRelistings');
+        // console.log('addActiveMarketIdsForRelistings');
 
         const {
             card_detail_id,

@@ -50,13 +50,13 @@ const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
                 } else if (rentalPriceForMarketId[0] === 'C') {
                     cardsNotWorthRelisting.push(rentalPriceForMarketId);
                 } else {
-                    if (parseFloat(rentalPriceForMarketId[1]) > 0.2) {
+                    if (parseFloat(rentalPriceForMarketId[1]) < 0.2) {
+                        // rental is less than 0.2 dec, not worth listing for 0.1 dec
+                        cardsNotWorthRelisting.push(rentalPriceForMarketId);
+                    } else {
                         relistingPriceForEachMarketId.push(
                             rentalPriceForMarketId
                         );
-                    } else {
-                        // rental is less than 0.2 dec, not worth listing for 0.1 dec
-                        cardsNotWorthRelisting.push(rentalPriceForMarketId);
                     }
                 }
             }
