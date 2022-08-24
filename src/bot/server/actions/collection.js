@@ -143,7 +143,11 @@ const filterCollectionArraysForPotentialRentalCards = ({
                     // seems to be some sort of delay where this errors because the active rentals endpoint is not updated
                     return;
                 }
-                if (currentRental.cancel_tx == null) {
+                if (
+                    currentRental.cancel_tx == null &&
+                    currentRental.cancel_player == null &&
+                    currentRental.cancel_date == null
+                ) {
                     cardToBeAdded.rental_date = currentRental.rental_date;
                     cardsBeingRentedOut.push(cardToBeAdded);
                 } else {
