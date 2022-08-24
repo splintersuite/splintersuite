@@ -3,7 +3,7 @@
 const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
-} = require('./rentalListInfo');
+} = require('../services/splinterlands');
 const { getLowBCXModernCardsByUid } = require('../services/collection');
 const {
     getListingPrice,

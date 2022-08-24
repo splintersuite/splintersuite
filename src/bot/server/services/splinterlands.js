@@ -19,7 +19,7 @@ const getGroupedRentalsForLevel = async ({ level }) => {
         return groupedRentalsList;
     } catch (err) {
         window.api.bot.log({
-            message: `/bot/server/actions/rentalListInfo/getGroupedRentalsForLevel error: ${err.message}`,
+            message: `/bot/server/services/splinterlands/getGroupedRentalsForLevel error: ${err.message}`,
         });
         throw err;
     }
@@ -53,11 +53,12 @@ const convertForRentGroupOutputToSearchableObject = ({
         return newSearchableRentList;
     } catch (err) {
         window.api.bot.log({
-            message: `/bot/server/actions/rentalListInfo/convertForRentGroupOutputToSearchableObject error: ${err.message}`,
+            message: `/bot/server/services/splinterlands/convertForRentGroupOutputToSearchableObject error: ${err.message}`,
         });
         throw err;
     }
 };
+
 module.exports = {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,

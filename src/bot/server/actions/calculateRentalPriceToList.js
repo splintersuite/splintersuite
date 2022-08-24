@@ -3,13 +3,17 @@ const _ = require('lodash');
 const {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
-} = require('./rentalListInfo');
+} = require('../services/splinterlands');
 const { getLowBCXModernCardsByUid } = require('../services/collection');
 const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
 const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';
 
 // this requires the object that has key = level, value [ array of cards with level = key]
-const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
+const calculateRentalPriceToList = async ({
+    collectionObj,
+    marketPrices,
+    groupedRentalListObj,
+}) => {
     try {
         const rentalPriceForEachCardUid = [];
         const cardsUnableToFindPriceFor = [];
