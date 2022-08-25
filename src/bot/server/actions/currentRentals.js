@@ -31,7 +31,7 @@ const activeRentalCardsInfo = async (username) => {
 
 const activeRentalCardsInfoByRentalTx = ({ activeRentals }) => {
     try {
-        console.log('activeRentalCardsInfoByRentalTx start');
+        //  console.log('activeRentalCardsInfoByRentalTx start');
 
         const activeRentalsByRentalTx = {};
 
@@ -58,7 +58,7 @@ const activeRentalCardsInfoByRentalTx = ({ activeRentals }) => {
 
 const getActiveRentalsByRentalId = async (username) => {
     try {
-        console.log('getActiveRentalsByRentalId start');
+        //sByRentalId start');
 
         const activeRentals = await activeRentalCardsInfo(username);
 

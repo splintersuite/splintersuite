@@ -5,7 +5,7 @@ const { sleep } = require('../axios_retry/general');
 
 const getGroupedRentalsForLevel = async ({ level }) => {
     try {
-        console.log(`getGroupedRentalsForLevel start`);
+        //  console.log(`getGroupedRentalsForLevel start`);
 
         const url = 'https://api2.splinterlands.com/market/for_rent_grouped';
 
@@ -28,23 +28,16 @@ const getGroupedRentalsForLevel = async ({ level }) => {
 
 const getAllGroupedRentalsByLevel = async () => {
     try {
-        console.log(`getAllGroupedRentalsByLevel start`);
+        //    console.log(`getAllGroupedRentalsByLevel start`);
         const levels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         const rentalObject = {};
         for (const level of levels) {
-            console.log(`getting level: ${level}`);
             const groupedRentalList = await getGroupedRentalsForLevel({
                 level,
             });
             rentalObject[level] = groupedRentalList;
             await sleep(1000);
         }
-
-        console.log(
-            `rentalObject has hopefully 10 properties: ${
-                Object.keys(rentalObject).length
-            }`
-        );
 
         return rentalObject;
     } catch (err) {

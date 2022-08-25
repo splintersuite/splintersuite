@@ -49,10 +49,6 @@ const startRentalBot = async ({
         const activeRentals = await getActiveRentalsByRentalId(username);
         const groupedRentalListObj = await getAllGroupedRentalsByLevel();
 
-        for (const [key, value] of Object.entries(groupedRentalListObj)) {
-            console.log(`rental for key: ${key} is length: ${value?.length}`);
-        }
-        //  throw new Error('checking rentalObject');
         const {
             cardsAvailableForRent,
             cardsListedButNotRentedOut,
