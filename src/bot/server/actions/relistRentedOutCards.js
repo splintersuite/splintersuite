@@ -21,6 +21,7 @@ const calculateRelistActiveRentalPrices = async ({
     nextBotLoopTime,
     activeRentalsBySellTrxId,
     endOfSeasonSettings,
+    groupedRentalListObj,
 }) => {
     try {
         const relistingPriceForActiveMarketId = [];
@@ -38,9 +39,10 @@ const calculateRelistActiveRentalPrices = async ({
             }
 
             // aggregate rental price data for cards of the level
-            const groupedRentalsList = await getGroupedRentalsForLevel({
-                level,
-            });
+            const groupedRentalsList = groupedRentalListObj[level];
+            // const groupedRentalsList = await getGroupedRentalsForLevel({
+            //     level,
+            // });
 
             const searchableRentList =
                 convertForRentGroupOutputToSearchableObject({

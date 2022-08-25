@@ -12,7 +12,11 @@ const {
 const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
 const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';
 
-const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
+const calculateRelistingPrice = async ({
+    collectionObj,
+    marketPrices,
+    groupedRentalListObj,
+}) => {
     try {
         const relistingPriceForEachMarketId = [];
         const cardsUnableToFindPriceFor = [];
@@ -27,9 +31,10 @@ const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
                 });
             }
             // aggregate rental price data for cards of the level
-            const groupedRentalsList = await getGroupedRentalsForLevel({
-                level,
-            });
+            const groupedRentalsList = groupedRentalListObj[level];
+            // const groupedRentalsList = await getGroupedRentalsForLevel({
+            //     level,
+            // });
 
             const searchableRentList =
                 convertForRentGroupOutputToSearchableObject({

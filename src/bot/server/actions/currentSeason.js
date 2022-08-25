@@ -101,3 +101,21 @@ module.exports = {
     getCurrentSeason,
     getEndOfSeasonSettings,
 };
+
+/*
+Access to XMLHttpRequest at 'https://api2.splinterlands.com/settings' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+xhr.js?1f12:221          GET https://api2.splinterlands.com/settings net::ERR_FAILED 504
+dispatchXhrRequest @ xhr.js?1f12:221
+xhrAdapter @ xhr.js?1f12:26
+dispatchRequest @ dispatchRequest.js?c6af:46
+Promise.then (async)
+request @ Axios.js?8cee:92
+wrap @ bind.js?a2f9:11
+getCurrentSeason @ currentSeason.js?28e3:7
+startRentalBot @ index.js?049c:40
+eval @ index.js?2681:51
+await in eval (async)
+emit @ VM8 sandbox_bundle:112
+onMessage @ VM8 sandbox_bundle:37
+bot_window:1 Uncaught (in promise) 
+*/

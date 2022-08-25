@@ -28,11 +28,12 @@ const calculateRentalPriceToList = async ({
                     collection: collectionObj[level],
                 });
             }
-
+            console.log(`level is: ${level}`);
             // aggregate rental price data for cards of the level
-            const groupedRentalsList = await getGroupedRentalsForLevel({
-                level,
-            });
+            const groupedRentalsList = groupedRentalListObj[level];
+            // const groupedRentalsList = await getGroupedRentalsForLevel({
+            //     level,
+            // });
 
             const searchableRentList =
                 convertForRentGroupOutputToSearchableObject({
@@ -63,7 +64,7 @@ const calculateRentalPriceToList = async ({
         return rentalPriceForEachCardUid;
     } catch (err) {
         window.api.bot.log({
-            message: `/bot/server/actions/calculateRentalPriceToList/calculateRentalPriceToList error: ${err.message}`,
+            message: `/bot/server/actions/calculateRentalPriceToList/calculateRentalPriceToList error: ${err.message}, err.stack: ${err.stack}`,
         });
         throw err;
     }
