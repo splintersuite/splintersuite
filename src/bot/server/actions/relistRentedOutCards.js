@@ -1,9 +1,8 @@
 'use strict';
 
 const {
-    getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
-} = require('./rentalListInfo');
+} = require('../services/splinterlands');
 const { getLowBCXModernCardsByUid } = require('../services/collection');
 const {
     getListingPrice,
@@ -21,13 +20,14 @@ const calculateRelistActiveRentalPrices = async ({
     nextBotLoopTime,
     activeRentalsBySellTrxId,
     endOfSeasonSettings,
+    groupedRentalListObj,
 }) => {
     try {
         const relistingPriceForActiveMarketId = [];
         const cardsUnableToFindPriceFor = [];
         const cardsNotWorthChangingPrice = [];
 
-        for (const level in collectionObj) {
+        for (const level of Object.keys(collectionObj)) {
             // should be a max of 10 possible times we can go through this because max lvl is 10
 
             let lowBcxModerns = {};
@@ -38,9 +38,7 @@ const calculateRelistActiveRentalPrices = async ({
             }
 
             // aggregate rental price data for cards of the level
-            const groupedRentalsList = await getGroupedRentalsForLevel({
-                level,
-            });
+            const groupedRentalsList = groupedRentalListObj[level];
 
             const searchableRentList =
                 convertForRentGroupOutputToSearchableObject({

@@ -16,15 +16,27 @@ const axiosInstance = axios.create({
         ss_access_token_iv,
         ss_access_token_content,
     },
+    transitional: {
+        clarifyTimeoutError: true,
+    },
 });
 
 axiosRetry.axiosRetry(axiosInstance, {
     retryDelay: (retryCount, error) => {
         console.error(`retryCount: ${retryCount}`);
+        console.error('retryDelay called with error: ', error);
+        console.error(`error message is: ${error.message}`);
+        console.error(`error response is: ${JSON.stringify(err?.response)}`);
         if (error?.response?.status === 502) {
             return 5000;
+        } else if (error?.response?.status === 504) {
+            console.error(
+                `this is a 504 response, splinterlands might be having issues`
+            );
+            return 100000;
+        } else {
+            return 500000;
         }
-        return 500000;
     },
     retryCondition: (error) => {
         return (

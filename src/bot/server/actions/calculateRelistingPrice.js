@@ -1,9 +1,8 @@
 'use strict';
 const _ = require('lodash');
 const {
-    getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
-} = require('./rentalListInfo');
+} = require('../services/splinterlands');
 const { getLowBCXModernCardsByUid } = require('../services/collection');
 const {
     getListingPrice,
@@ -12,13 +11,17 @@ const {
 const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
 const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';
 
-const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
+const calculateRelistingPrice = async ({
+    collectionObj,
+    marketPrices,
+    groupedRentalListObj,
+}) => {
     try {
         const relistingPriceForEachMarketId = [];
         const cardsUnableToFindPriceFor = [];
         const cardsNotWorthRelisting = [];
 
-        for (const level in collectionObj) {
+        for (const level of Object.keys(collectionObj)) {
             // should be a max of 10 possible times we can go through this because max lvl is 10
             let clBcxModerns = {};
             if (level === '1') {
@@ -26,10 +29,9 @@ const calculateRelistingPrice = async ({ collectionObj, marketPrices }) => {
                     collection: collectionObj[level],
                 });
             }
+
             // aggregate rental price data for cards of the level
-            const groupedRentalsList = await getGroupedRentalsForLevel({
-                level,
-            });
+            const groupedRentalsList = groupedRentalListObj[level];
 
             const searchableRentList =
                 convertForRentGroupOutputToSearchableObject({

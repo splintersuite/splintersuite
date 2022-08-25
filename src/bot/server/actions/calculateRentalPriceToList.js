@@ -1,22 +1,25 @@
 'use strict';
 const _ = require('lodash');
 const {
-    getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
-} = require('./rentalListInfo');
+} = require('../services/splinterlands');
 const { getLowBCXModernCardsByUid } = require('../services/collection');
 const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
 const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';
 
 // this requires the object that has key = level, value [ array of cards with level = key]
-const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
+const calculateRentalPriceToList = async ({
+    collectionObj,
+    marketPrices,
+    groupedRentalListObj,
+}) => {
     try {
         const rentalPriceForEachCardUid = [];
         const cardsUnableToFindPriceFor = [];
         const cardsNotWorthListing = [];
 
         // sorts through the collectionObj that has key = level, value = [array of cards that's level = key]
-        for (const level in collectionObj) {
+        for (const level of Object.keys(collectionObj)) {
             // should be a max of 10 possible times we can go through this because max lvl is 10
             let clBcxModerns = {};
             if (level === '1') {
@@ -24,11 +27,8 @@ const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
                     collection: collectionObj[level],
                 });
             }
-
             // aggregate rental price data for cards of the level
-            const groupedRentalsList = await getGroupedRentalsForLevel({
-                level,
-            });
+            const groupedRentalsList = groupedRentalListObj[level];
 
             const searchableRentList =
                 convertForRentGroupOutputToSearchableObject({
@@ -59,7 +59,7 @@ const calculateRentalPriceToList = async ({ collectionObj, marketPrices }) => {
         return rentalPriceForEachCardUid;
     } catch (err) {
         window.api.bot.log({
-            message: `/bot/server/actions/calculateRentalPriceToList/calculateRentalPriceToList error: ${err.message}`,
+            message: `/bot/server/actions/calculateRentalPriceToList/calculateRentalPriceToList error: ${err.message}, err.stack: ${err.stack}`,
         });
         throw err;
     }

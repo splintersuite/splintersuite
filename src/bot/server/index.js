@@ -26,7 +26,7 @@ const {
 } = require('./actions/relistRentedOutCards');
 const { getCardDetailObj } = require('./actions/_helpers');
 const { getActiveRentalsByRentalId } = require('./actions/currentRentals');
-
+const { getAllGroupedRentalsByLevel } = require('./services/splinterlands');
 const _ = require('lodash');
 
 const startRentalBot = async ({
@@ -47,6 +47,7 @@ const startRentalBot = async ({
         // grab the card_details endpoint
         const cardDetailObj = await getCardDetailObj();
         const activeRentals = await getActiveRentalsByRentalId(username);
+        const groupedRentalListObj = await getAllGroupedRentalsByLevel();
 
         const {
             cardsAvailableForRent,
@@ -81,12 +82,14 @@ const startRentalBot = async ({
         const rentalArrayWithPriceAndUid = await calculateRentalPriceToList({
             collectionObj: collectionByLevelObjAvailableForRent,
             marketPrices,
+            groupedRentalListObj,
         });
 
         const { relistingPriceForEachMarketId } = await calculateRelistingPrice(
             {
                 collectionObj: collectionByLevelObjListedButNotRentedOut,
                 marketPrices,
+                groupedRentalListObj,
             }
         );
         const { relistingPriceForActiveMarketId } =
@@ -97,6 +100,7 @@ const startRentalBot = async ({
                 activeRentalsBySellTrxId:
                     activeRentals.activeRentalsBySellTrxId,
                 endOfSeasonSettings,
+                groupedRentalListObj,
             });
 
         const listings = fmtToLimitCardsInEachHiveTx(
