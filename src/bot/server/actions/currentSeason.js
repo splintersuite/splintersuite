@@ -8,7 +8,7 @@ const getCurrentSeason = async () => {
             'https://api2.splinterlands.com/settings'
         );
         if (res?.data?.season?.ends) {
-            const { season } = res.data;
+            const { season } = res?.data;
             const { id, name, ends } = season;
             return { id, name, ends };
         }
@@ -43,10 +43,11 @@ const getEndOfSeasonSettings = ({ season }) => {
     try {
         // console.log(`/bot/server/actions/currentSeason/getEndOfSeasonSettings`);
 
-        const seasonEndTime = new Date(season.ends).getTime();
+        // const seasonEndTime = new Date(season.ends).getTime();
         const msInDay = 1000 * 60 * 60 * 24;
         const msInTwelveHours = 1000 * 60 * 60 * 12;
         const nowTime = new Date().getTime();
+        const seasonEndTime = nowTime + msInDay - 10000;
         const msTillSeasonEnd = seasonEndTime - nowTime;
         let endOfSeasonSettings = {
             ...cancellationMatrix[0],
@@ -68,22 +69,10 @@ const getEndOfSeasonSettings = ({ season }) => {
                 day.timeEnd = seasonEndTime - (day.daysTillEOS - 1) * msInDay;
             }
             if (day.timeEnd >= nowTime && nowTime > day.timeStart) {
-                if (day.daysTillEOS === 1) {
-                    // make it such that this is almost impossible
-                    // so you NEVER cancel in the last 28 hours of the season
-                    // (listingPrice - buy_price) / listingPrice >
-                    //     endOfSeasonSettings.cancellationThreshold;
-                    endOfSeasonSettings = {
-                        msTillSeasonEnd,
-                        ...day,
-                        cancellationThreshold: 99999,
-                    };
-                } else {
-                    endOfSeasonSettings = {
-                        msTillSeasonEnd,
-                        ...day,
-                    };
-                }
+                endOfSeasonSettings = {
+                    msTillSeasonEnd,
+                    ...day,
+                };
                 return true;
             }
         });

@@ -39,6 +39,9 @@ const getAllGroupedRentalsByLevel = async () => {
             await sleep(1000);
         }
 
+        window.api.bot.log({
+            message: `got all grouped rental listings`,
+        });
         return rentalObject;
     } catch (err) {
         window.api.bot.log({

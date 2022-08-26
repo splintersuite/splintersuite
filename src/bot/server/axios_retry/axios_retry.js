@@ -1,36 +1,36 @@
-"use strict";
+'use strict';
 
-const isRetryAllowed = require("./is_retry_allowed");
-const { setTimeout_safe } = require("./general");
+const isRetryAllowed = require('./is_retry_allowed');
+const { setTimeout_safe } = require('./general');
 
-const namespace = "axios-retry-sl-api";
+const namespace = 'axios-retry-sl-api';
 
 /**
  * @param  {Error}  error
  * @return {boolean}
  */
 const isNetworkError = (error) => {
-  return (
-    !error.response &&
-    Boolean(error.code) && // Prevents retrying cancelled requests
-    error.code !== "ECONNABORTED" && // Prevents retrying timed out requests
-    isRetryAllowed(error)
-  ); // Prevents retrying unsafe errors
+    return (
+        !error.response &&
+        Boolean(error.code) && // Prevents retrying cancelled requests
+        error.code !== 'ECONNABORTED' && // Prevents retrying timed out requests
+        isRetryAllowed(error)
+    ); // Prevents retrying unsafe errors
 };
 
-const SAFE_HTTP_METHODS = ["get", "head", "options"];
-const IDEMPOTENT_HTTP_METHODS = SAFE_HTTP_METHODS.concat(["put", "delete"]);
+const SAFE_HTTP_METHODS = ['get', 'head', 'options'];
+const IDEMPOTENT_HTTP_METHODS = SAFE_HTTP_METHODS.concat(['put', 'delete']);
 
 /**
  * @param  {Error}  error
  * @return {boolean}
  */
 const isRetryableError = (error) => {
-  return (
-    error.code !== "ECONNABORTED" &&
-    (!error.response ||
-      (error.response.status >= 500 && error.response.status <= 599))
-  );
+    return (
+        error.code !== 'ECONNABORTED' &&
+        (!error.response ||
+            (error.response.status >= 500 && error.response.status <= 599))
+    );
 };
 
 /**
@@ -38,15 +38,15 @@ const isRetryableError = (error) => {
  * @return {boolean}
  */
 const isSafeRequestError = (error) => {
-  if (!error.config) {
-    // Cannot determine if the request can be retried
-    return false;
-  }
+    if (!error.config) {
+        // Cannot determine if the request can be retried
+        return false;
+    }
 
-  return (
-    isRetryableError(error) &&
-    SAFE_HTTP_METHODS.indexOf(error.config.method) !== -1
-  );
+    return (
+        isRetryableError(error) &&
+        SAFE_HTTP_METHODS.indexOf(error.config.method) !== -1
+    );
 };
 
 /**
@@ -54,26 +54,33 @@ const isSafeRequestError = (error) => {
  * @return {boolean}
  */
 const isIdempotentRequestError = (error) => {
-  if (!error.config) {
-    // Cannot determine if the request can be retried
-    return false;
-  }
+    if (!error.config) {
+        // Cannot determine if the request can be retried
+        return false;
+    }
 
-  return (
-    isRetryableError(error) &&
-    IDEMPOTENT_HTTP_METHODS.indexOf(error.config.method) !== -1
-  );
+    return (
+        isRetryableError(error) &&
+        IDEMPOTENT_HTTP_METHODS.indexOf(error.config.method) !== -1
+    );
+};
+
+const isSplinterlandsServerError = (error) => {
+    return (
+        error?.code === 'ERR_NETWORK' &&
+        (error?.response?.status === 502 || error?.response?.status === 504)
+    );
 };
 
 const gotRateLimited = (error) => {
-  if (
-    "response" in error &&
-    typeof error.response !== "undefined" &&
-    "status" in error.response
-  ) {
-    return error.response.status === 429;
-  }
-  return false;
+    if (
+        'response' in error &&
+        typeof error.response !== 'undefined' &&
+        'status' in error.response
+    ) {
+        return error.response.status === 429;
+    }
+    return false;
 };
 
 /**
@@ -81,14 +88,14 @@ const gotRateLimited = (error) => {
  * @return {boolean | Promise}
  */
 const isNetworkOrIdempotentRequestError = (error) => {
-  return isNetworkError(error) || isIdempotentRequestError(error);
+    return isNetworkError(error) || isIdempotentRequestError(error);
 };
 
 /**
  * @return {number} - delay in milliseconds, always 0
  */
 const noDelay = () => {
-  return 0;
+    return 0;
 };
 
 /**
@@ -97,10 +104,10 @@ const noDelay = () => {
  * @return {Object}
  */
 const getCurrentState = (config) => {
-  const currentState = config[namespace] || {};
-  currentState.retryCount = currentState.retryCount || 0;
-  config[namespace] = currentState;
-  return currentState;
+    const currentState = config[namespace] || {};
+    currentState.retryCount = currentState.retryCount || 0;
+    config[namespace] = currentState;
+    return currentState;
 };
 
 /**
@@ -110,7 +117,7 @@ const getCurrentState = (config) => {
  * @return {AxiosRetryConfig}
  */
 const getRequestOptions = (config, defaultOptions) => {
-  return { ...defaultOptions, ...config[namespace] };
+    return { ...defaultOptions, ...config[namespace] };
 };
 
 /**
@@ -118,15 +125,15 @@ const getRequestOptions = (config, defaultOptions) => {
  * @param  {AxiosRequestConfig} config
  */
 const fixConfig = (axios, config) => {
-  if (axios.defaults.agent === config.agent) {
-    delete config.agent;
-  }
-  if (axios.defaults.httpAgent === config.httpAgent) {
-    delete config.httpAgent;
-  }
-  if (axios.defaults.httpsAgent === config.httpsAgent) {
-    delete config.httpsAgent;
-  }
+    if (axios.defaults.agent === config.agent) {
+        delete config.agent;
+    }
+    if (axios.defaults.httpAgent === config.httpAgent) {
+        delete config.httpAgent;
+    }
+    if (axios.defaults.httpsAgent === config.httpsAgent) {
+        delete config.httpsAgent;
+    }
 };
 
 /**
@@ -138,19 +145,19 @@ const fixConfig = (axios, config) => {
  * @return {boolean}
  */
 const shouldRetry = async (retries, retryCondition, currentState, error) => {
-  const shouldRetryOrPromise =
-    currentState.retryCount < retries && retryCondition(error);
+    const shouldRetryOrPromise =
+        currentState.retryCount < retries && retryCondition(error);
 
-  // This could be a promise
-  if (typeof shouldRetryOrPromise === "object") {
-    try {
-      await shouldRetryOrPromise;
-      return true;
-    } catch (_err) {
-      return false;
+    // This could be a promise
+    if (typeof shouldRetryOrPromise === 'object') {
+        try {
+            await shouldRetryOrPromise;
+            return true;
+        } catch (_err) {
+            return false;
+        }
     }
-  }
-  return shouldRetryOrPromise;
+    return shouldRetryOrPromise;
 };
 
 /**
@@ -206,70 +213,72 @@ const shouldRetry = async (retries, retryCondition, currentState, error) => {
  *        A function to determine the delay between retry requests
  */
 const axiosRetry = (axios, defaultOptions) => {
-  axios.interceptors.request.use((config) => {
-    const currentState = getCurrentState(config);
-    currentState.lastRequestTime = Date.now();
-    return config;
-  });
+    axios.interceptors.request.use((config) => {
+        const currentState = getCurrentState(config);
+        currentState.lastRequestTime = Date.now();
+        return config;
+    });
 
-  axios.interceptors.response.use(null, async (error) => {
-    const { config } = error;
+    axios.interceptors.response.use(null, async (error) => {
+        const { config } = error;
 
-    // If we have no information to retry the request
-    if (!config) {
-      return Promise.reject(error);
-    }
+        // If we have no information to retry the request
+        if (!config) {
+            return Promise.reject(error);
+        }
 
-    const {
-      retries = 3,
-      retryCondition = isNetworkOrIdempotentRequestError,
-      retryDelay = noDelay,
-      shouldResetTimeout = false,
-    } = getRequestOptions(config, defaultOptions);
+        const {
+            retries = 3,
+            retryCondition = isNetworkOrIdempotentRequestError,
+            retryDelay = noDelay,
+            shouldResetTimeout = false,
+        } = getRequestOptions(config, defaultOptions);
 
-    const currentState = getCurrentState(config);
+        const currentState = getCurrentState(config);
 
-    if (await shouldRetry(retries, retryCondition, currentState, error)) {
-      currentState.retryCount += 1;
-      const delay = retryDelay(currentState.retryCount, error);
+        if (await shouldRetry(retries, retryCondition, currentState, error)) {
+            currentState.retryCount += 1;
+            const delay = retryDelay(currentState.retryCount, error);
 
-      // Axios fails merging this configuration to the default configuration because it has an issue
-      // with circular structures: https://github.com/mzabriskie/axios/issues/370
-      fixConfig(axios, config);
+            // Axios fails merging this configuration to the default configuration because it has an issue
+            // with circular structures: https://github.com/mzabriskie/axios/issues/370
+            fixConfig(axios, config);
 
-      if (
-        !shouldResetTimeout &&
-        config.timeout &&
-        currentState.lastRequestTime
-      ) {
-        const lastRequestDuration = Date.now() - currentState.lastRequestTime;
-        // Minimum 1ms timeout (passing 0 or less to XHR means no timeout)
-        config.timeout = Math.max(
-          config.timeout - lastRequestDuration - delay,
-          1
-        );
-      }
+            if (
+                !shouldResetTimeout &&
+                config.timeout &&
+                currentState.lastRequestTime
+            ) {
+                const lastRequestDuration =
+                    Date.now() - currentState.lastRequestTime;
+                // Minimum 1ms timeout (passing 0 or less to XHR means no timeout)
+                config.timeout = Math.max(
+                    config.timeout - lastRequestDuration - delay,
+                    1
+                );
+            }
 
-      config.transformRequest = [(data) => data];
+            config.transformRequest = [(data) => data];
 
-      //   return new Promise((resolve) => setTimeout(() => resolve(axios(config)), delay));
-      return new Promise((resolve) =>
-        setTimeout_safe(() => resolve(axios(config)), delay)
-      );
-    }
+            //   return new Promise((resolve) => setTimeout(() => resolve(axios(config)), delay));
+            return new Promise((resolve) =>
+                setTimeout_safe(() => resolve(axios(config)), delay)
+            );
+        }
 
-    return Promise.reject(error);
-  });
+        return Promise.reject(error);
+    });
 };
 
 module.exports = {
-  isRetryableError,
-  isNetworkError,
-  isSafeRequestError,
-  isIdempotentRequestError,
-  isNetworkOrIdempotentRequestError,
-  axiosRetry,
-  gotRateLimited,
+    isRetryableError,
+    isNetworkError,
+    isSafeRequestError,
+    isIdempotentRequestError,
+    isNetworkOrIdempotentRequestError,
+    axiosRetry,
+    gotRateLimited,
+    isSplinterlandsServerError,
 };
 /*
   // Compatibility with CommonJS

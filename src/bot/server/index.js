@@ -41,7 +41,9 @@ const startRentalBot = async ({
         const endOfSeasonSettings = getEndOfSeasonSettings({
             season,
         });
-
+        console.log(
+            `endOfSeasonSettings: ${JSON.stringify(endOfSeasonSettings)}`
+        );
         const collection = await getCollection(username);
         // if there is a card in the collection we don't need
         // grab the card_details endpoint

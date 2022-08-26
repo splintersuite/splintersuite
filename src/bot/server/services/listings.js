@@ -32,4 +32,12 @@ const handleListingsTooHigh = ({
     }
 };
 
+// const getListingPrice = {
+//     lowestListingPrice,
+//     highestListingPrice,
+//     numListings,
+//     currentPriceStats,
+//     isClBcxModern,
+// };
+
 module.exports = { handleListingsTooHigh };
