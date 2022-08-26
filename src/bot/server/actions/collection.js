@@ -1,24 +1,6 @@
 'use strict';
 
-const { axiosInstance } = require('../requests/axiosGetInstance');
 const { isOnCooldown } = require('./_helpers.js');
-
-const getCollection = async (username) => {
-    try {
-        const url = `https://api2.splinterlands.com/cards/collection`;
-
-        const res = await axiosInstance(`${url}/${username}`);
-
-        const data = res.data;
-        const collection = data.cards;
-        return collection;
-    } catch (err) {
-        window.api.bot.log({
-            message: `/bot/server/actions/collection/getCollection error: ${err.message}`,
-        });
-        throw err;
-    }
-};
 
 const sortCollectionArrayByLevel = ({ collection }) => {
     try {
@@ -243,7 +225,6 @@ const filterCollectionArraysByLevelLimitThresholds = ({
 };
 
 module.exports = {
-    getCollection,
     filterCollectionArraysForPotentialRentalCards,
     sortCollectionArrayByLevel,
     filterCollectionArraysByLevelLimitThresholds,

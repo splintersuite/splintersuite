@@ -3,6 +3,27 @@
 const { axiosInstance } = require('../requests/axiosGetInstance');
 const { sleep } = require('../axios_retry/general');
 
+const getCollection = async (username) => {
+    try {
+        const url = `https://api2.splinterlands.com/cards/collection`;
+
+        const res = await axiosInstance(`${url}/${username}`);
+
+        const data = res.data;
+        const collection = data.cards;
+
+        window.api.bot.log({
+            message: `/bot/server/actions/collection/getCollection done for user: ${username}`,
+        });
+        return collection;
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/actions/collection/getCollection error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
 const getGroupedRentalsForLevel = async ({ level }) => {
     try {
         //  console.log(`getGroupedRentalsForLevel start`);
@@ -89,4 +110,5 @@ module.exports = {
     getGroupedRentalsForLevel,
     convertForRentGroupOutputToSearchableObject,
     getAllGroupedRentalsByLevel,
+    getCollection,
 };

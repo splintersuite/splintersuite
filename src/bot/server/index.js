@@ -1,6 +1,5 @@
 'use strict';
 const {
-    getCollection,
     filterCollectionArraysForPotentialRentalCards,
 } = require('./actions/collection');
 
@@ -26,7 +25,8 @@ const {
 } = require('./actions/relistRentedOutCards');
 const { getCardDetailObj } = require('./actions/_helpers');
 const { getActiveRentalsByRentalId } = require('./actions/currentRentals');
-const { getAllGroupedRentalsByLevel } = require('./services/splinterlands');
+
+const splinterlandsService = require('./services/splinterlands');
 const _ = require('lodash');
 
 const startRentalBot = async ({
@@ -41,15 +41,14 @@ const startRentalBot = async ({
         const endOfSeasonSettings = getEndOfSeasonSettings({
             season,
         });
-        console.log(
-            `endOfSeasonSettings: ${JSON.stringify(endOfSeasonSettings)}`
-        );
-        const collection = await getCollection(username);
+
+        const collection = await splinterlandsService.getCollection(username);
         // if there is a card in the collection we don't need
         // grab the card_details endpoint
         const cardDetailObj = await getCardDetailObj();
         const activeRentals = await getActiveRentalsByRentalId(username);
-        const groupedRentalListObj = await getAllGroupedRentalsByLevel();
+        const groupedRentalListObj =
+            await splinterlandsService.getAllGroupedRentalsByLevel();
 
         const {
             cardsAvailableForRent,
