@@ -24,7 +24,8 @@ const {
     calculateRelistActiveRentalPrices,
 } = require('./actions/relistRentedOutCards');
 const { getCardDetailObj } = require('./actions/_helpers');
-const { getActiveRentalsByRentalId } = require('./actions/currentRentals');
+
+const { getActiveRentalsByRentalId } = require('./services/activeRentals');
 
 const splinterlandsService = require('./services/splinterlands');
 const _ = require('lodash');

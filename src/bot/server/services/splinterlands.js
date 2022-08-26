@@ -3,6 +3,30 @@
 const { axiosInstance } = require('../requests/axiosGetInstance');
 const { sleep } = require('../axios_retry/general');
 
+const activeRentalCardsInfo = async (username) => {
+    try {
+        //console.log('activeRentalCardsInfo start');
+        // limit is 1k https://docs.splinterlands.com/platform/release-notes#2022-01-04
+
+        const url = 'https://api2.splinterlands.com/market/active_rentals';
+
+        const res = await axiosInstance(url, {
+            params: {
+                owner: username,
+            },
+        });
+        const results = res.data;
+
+        return results;
+        // TNT NOTE: my only concern with this endpoint is some sort of limit so potentially need pagination to get all of them, tbd though (and the return from collection filterCollectionArraysForPotentialRentalCards will have all the actual listed ones, so can compare
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/services/collection/activeRentalCardsInfo error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
 const getCollection = async (username) => {
     try {
         const url = `https://api2.splinterlands.com/cards/collection`;
@@ -13,12 +37,12 @@ const getCollection = async (username) => {
         const collection = data.cards;
 
         window.api.bot.log({
-            message: `/bot/server/actions/collection/getCollection done for user: ${username}`,
+            message: `/bot/server/services/collection/getCollection done for user: ${username}`,
         });
         return collection;
     } catch (err) {
         window.api.bot.log({
-            message: `/bot/server/actions/collection/getCollection error: ${err.message}`,
+            message: `/bot/server/services/collection/getCollection error: ${err.message}`,
         });
         throw err;
     }
@@ -111,4 +135,5 @@ module.exports = {
     convertForRentGroupOutputToSearchableObject,
     getAllGroupedRentalsByLevel,
     getCollection,
+    activeRentalCardsInfo,
 };

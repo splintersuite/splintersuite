@@ -249,7 +249,7 @@ const getListingPrice = ({
         throw err;
     }
 };
-/*
+
 const priceWithoutMedian = ({
     volume,
     lowestListingPrice,
@@ -318,7 +318,6 @@ const priceWithoutMedian = ({
         throw err;
     }
 };
-*/
 
 const getAvg = ({ currentPriceStats }) => {
     try {
