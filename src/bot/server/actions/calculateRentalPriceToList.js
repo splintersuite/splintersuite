@@ -221,12 +221,19 @@ const getListingPrice = ({
         const bestLow =
             Number.isFinite(recentLow) && recentLow > low ? recentLow : low;
 
+        const bestHigh =
+            Number.isFinite(recentHigh) && recentHigh > high
+                ? recentHigh
+                : high;
+
         // handling for uncommon legies like Epona, id = 297
         if (numListings < 5) {
             // if max only 3 are listed
             // tames idea implemented below... find a reasonable price to list
             return _.max([
-                _.max([avg + stdDev, recentAvg + recentStdDev]),
+                _.max([avg + stdDev * 1.5, recentAvg + 1.5 * recentStdDev]),
+                _.max([recentMedian, median]),
+                _.max([bestHigh - stdDev, bestHigh - recentStdDev]),
                 lowestListingPrice,
                 bestLow,
             ]);

@@ -21,7 +21,7 @@ const fetchMarketPrices = async () => {
 
     const message = `fetchMarketPrices got currentPrices for ${JSON.stringify(
         Object.keys(res?.data?.currentPrices)?.length
-    )} number of cards`;
+    )} number of cards from api`;
 
     const now = moment().format('DD/MM/YYYY HH:mm:ss Z');
     logger.info(`[${now}] ${message}`);
@@ -34,7 +34,7 @@ const getMarketPrices = async () => {
     // is there data? if so is it data from more than 12 hours ago?
     if (
         !priceData?.fetchTime ||
-        priceData.fetchTime < new Date().getTime() - 1000 * 60 * 60 * 12 ||
+        priceData.fetchTime < new Date().getTime() - 1000 * 60 * 60 * 3 ||
         Object.keys(priceData?.marketPrices).length < 75
     ) {
         const { currentPrices, timeOfLastFetch } = await fetchMarketPrices();

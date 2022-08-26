@@ -34,16 +34,11 @@ const activeRentalCardsInfoByRentalTx = ({ activeRentals }) => {
         //  console.log('activeRentalCardsInfoByRentalTx start');
 
         const activeRentalsByRentalTx = {};
-
-        activeRentals.forEach((rental) => {
-            const { rental_tx } = rental;
-            activeRentalsByRentalTx[rental_tx] = rental;
-        });
-
         const activeRentalsBySellTrxId = {};
 
         activeRentals.forEach((rental) => {
-            const { sell_trx_id } = rental;
+            const { rental_tx, sell_trx_id } = rental;
+            activeRentalsByRentalTx[rental_tx] = rental;
             activeRentalsBySellTrxId[sell_trx_id] = rental;
         });
 
