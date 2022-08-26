@@ -4,10 +4,7 @@ const {
     convertForRentGroupOutputToSearchableObject,
 } = require('../services/splinterlands');
 const { getLowBCXModernCardsByUid } = require('../services/collection');
-const {
-    getListingPrice,
-    //  handleListingsTooHigh,
-} = require('./calculateRentalPriceToList');
+const { getListingPrice } = require('./calculateRentalPriceToList');
 const listingsService = require('../services/listings');
 const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
 const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';

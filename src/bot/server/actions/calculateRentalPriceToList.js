@@ -137,54 +137,6 @@ const addPriceListInformationForEachCardByUid = ({
         throw err;
     }
 };
-/*
-const handleListingsTooHigh = ({
-    currentPriceStats,
-    listingPrice,
-    isClBcxModern,
-}) => {
-    try {
-        if (isClBcxModern) {
-            return listingPrice;
-        }
-        if (currentPriceStats === undefined) {
-            return null;
-        }
-
-        const { avg, stdDev, high } = currentPriceStats[ALL_OPEN_TRADES];
-        const {
-            avg: recentAvg,
-            stdDev: recentStdDev,
-            high: recentHigh,
-        } = currentPriceStats[TRADES_DURING_PERIOD];
-
-        const maxHigh = _.max([recentHigh, high]);
-        if (Number.isFinite(maxHigh) && listingPrice > maxHigh) {
-            const twoStdAboveMean =
-                Number.isFinite(avg) && Number.isFinite(stdDev)
-                    ? avg + stdDev * 2
-                    : NaN;
-            if (
-                Number.isFinite(twoStdAboveMean) &&
-                listingPrice > twoStdAboveMean
-            ) {
-                return _.max([
-                    avg + twoStdAboveMean * 2,
-                    recentAvg + recentStdDev * 2,
-                ]);
-            } else {
-                return maxHigh;
-            }
-        } else {
-            return listingPrice;
-        }
-    } catch (err) {
-        window.api.bot.log({
-            message: `/bot/server/actions/calculateRentalPriceToList/handleListingsTooHigh error: ${err.message}`,
-        });
-        throw err;
-    }
-};*/
 
 const getListingPrice = ({
     card_detail_id,
@@ -394,5 +346,4 @@ module.exports = {
     calculateRentalPriceToList,
     getListingPrice,
     getAvg,
-    //  handleListingsTooHigh,
 };
