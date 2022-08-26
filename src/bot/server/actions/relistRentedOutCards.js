@@ -6,8 +6,9 @@ const {
 const { getLowBCXModernCardsByUid } = require('../services/collection');
 const {
     getListingPrice,
-    handleListingsTooHigh,
+    // handleListingsTooHigh,
 } = require('./calculateRentalPriceToList');
+const listingsService = require('../services/listings');
 const _ = require('lodash');
 const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
 const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';
@@ -155,7 +156,7 @@ const addActiveMarketIdsForRelisting = ({
             currentPriceStats: marketPrices[marketKey],
             isClBcxModern: isLowBcxModern,
         });
-        listingPrice = handleListingsTooHigh({
+        listingPrice = listingsService.handleListingsTooHigh({
             currentPriceStats: marketPrices[marketKey],
             listingPrice,
             isClBcxModern: isLowBcxModern,

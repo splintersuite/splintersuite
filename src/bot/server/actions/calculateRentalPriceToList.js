@@ -4,6 +4,7 @@ const {
     convertForRentGroupOutputToSearchableObject,
 } = require('../services/splinterlands');
 const { getLowBCXModernCardsByUid } = require('../services/collection');
+const listingsService = require('../services/listings');
 const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
 const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';
 
@@ -112,7 +113,7 @@ const addPriceListInformationForEachCardByUid = ({
                 currentPriceStats: marketPrices[marketKey],
                 isClBcxModern,
             });
-            listingPrice = handleListingsTooHigh({
+            listingPrice = listingsService.handleListingsTooHigh({
                 currentPriceStats: marketPrices[marketKey],
                 listingPrice,
                 isClBcxModern,
@@ -136,7 +137,7 @@ const addPriceListInformationForEachCardByUid = ({
         throw err;
     }
 };
-
+/*
 const handleListingsTooHigh = ({
     currentPriceStats,
     listingPrice,
@@ -167,7 +168,10 @@ const handleListingsTooHigh = ({
                 Number.isFinite(twoStdAboveMean) &&
                 listingPrice > twoStdAboveMean
             ) {
-                return _.max([twoStdAboveMean, recentAvg + recentStdDev * 2]);
+                return _.max([
+                    avg + twoStdAboveMean * 2,
+                    recentAvg + recentStdDev * 2,
+                ]);
             } else {
                 return maxHigh;
             }
@@ -180,7 +184,7 @@ const handleListingsTooHigh = ({
         });
         throw err;
     }
-};
+};*/
 
 const getListingPrice = ({
     card_detail_id,
@@ -212,9 +216,9 @@ const getListingPrice = ({
                 Number.isFinite(recentAvg) &&
                 Number.isFinite(recentStdDev))
         ) {
-            return _.min([
-                _.max([high, recentHigh]),
+            return _.max([
                 _.max([avg + 2 * stdDev, recentAvg + 2 * recentStdDev]),
+                _.max([median + 2 * stdDev, recentMedian + 2 * recentStdDev]),
             ]);
         }
 
@@ -227,22 +231,41 @@ const getListingPrice = ({
                 : high;
 
         // handling for uncommon legies like Epona, id = 297
-        if (numListings < 5) {
-            // if max only 3 are listed
+        if (numListings <= 6) {
+            // if max only 5 are listed
+            if (volume >= numListings) {
+                return _.max([
+                    _.max([avg + stdDev * 1.5, recentAvg + 1.5 * recentStdDev]),
+                    _.max([
+                        median + 1.5 * stdDev,
+                        recentMedian + 1.5 * recentStdDev,
+                    ]),
+                    _.max([bestHigh - stdDev, bestHigh - recentStdDev]),
+                    lowestListingPrice,
+                    bestLow,
+                ]);
+            } else {
+                return _.max([
+                    _.max([
+                        avg + stdDev * 1.25,
+                        recentAvg + 1.25 * recentStdDev,
+                    ]),
+                    _.max([
+                        median + 1.25 * stdDev,
+                        recentMedian + 1.25 * recentStdDev,
+                    ]),
+                    _.max([bestHigh - 2 * stdDev, bestHigh - 2 * recentStdDev]),
+                    lowestListingPrice,
+                ]);
+            }
+            //  and more have been rented than the time remaining
             // tames idea implemented below... find a reasonable price to list
-            return _.max([
-                _.max([avg + stdDev * 1.5, recentAvg + 1.5 * recentStdDev]),
-                _.max([recentMedian, median]),
-                _.max([bestHigh - stdDev, bestHigh - recentStdDev]),
-                lowestListingPrice,
-                bestLow,
-            ]);
         }
 
         if (
             Number.isFinite(volume) &&
             volume > 3 &&
-            numListings > 5 &&
+            numListings > 6 &&
             (Number.isFinite(median) || Number.isFinite(recentMedian)) &&
             Number.isFinite(lowestListingPrice)
         ) {
@@ -262,7 +285,7 @@ const getListingPrice = ({
 
         // call priceWithoutMedian afterwards... basically chooses the low carefully
         return priceWithoutMedian({
-            rarity,
+            volume,
             lowestListingPrice,
             numListings,
             currentPriceStats,
@@ -274,15 +297,15 @@ const getListingPrice = ({
         throw err;
     }
 };
-
+/*
 const priceWithoutMedian = ({
-    rarity,
+    volume,
     lowestListingPrice,
     numListings,
     currentPriceStats,
 }) => {
     try {
-        if (currentPriceStats === undefined) {
+        if (currentPriceStats === undefined || currentPriceStats == null) {
             return lowestListingPrice;
         }
         const { avg, low, stdDev, volume } = currentPriceStats[ALL_OPEN_TRADES];
@@ -293,8 +316,8 @@ const priceWithoutMedian = ({
             Number.isFinite(recentLow) && recentLow > low ? recentLow : low;
 
         // handling for uncommon legies like Epona, id = 297
-        if (rarity === 4 && numListings < 4) {
-            // is legie and at max only 3 are listed
+        if (numListings < 4 && volume) {
+            // if max only 3 are listed
             // tames idea implemented below... find a reasonable price to list
             return _.max([avg - stdDev, lowestListingPrice, bestLow]);
         }
@@ -343,6 +366,7 @@ const priceWithoutMedian = ({
         throw err;
     }
 };
+*/
 
 const getAvg = ({ currentPriceStats }) => {
     try {
@@ -370,5 +394,5 @@ module.exports = {
     calculateRentalPriceToList,
     getListingPrice,
     getAvg,
-    handleListingsTooHigh,
+    //  handleListingsTooHigh,
 };
