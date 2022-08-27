@@ -37,7 +37,13 @@ const getCollection = async (username) => {
         const collection = data.cards;
 
         window.api.bot.log({
-            message: `/bot/server/services/collection/getCollection done for user: ${username}`,
+            message: `/bot/server/services/collection/getCollection`,
+        });
+        window.api.bot.log({
+            message: `User: ${username}`,
+        });
+        window.api.bot.log({
+            message: `Collection: ${collection?.length}`,
         });
         return collection;
     } catch (err) {

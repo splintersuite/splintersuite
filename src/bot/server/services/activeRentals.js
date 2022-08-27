@@ -37,7 +37,23 @@ const getActiveRentalsByRentalId = async (username) => {
                 activeRentals,
             });
         window.api.bot.log({
-            message: `/bot/server/services/activeRentals/getActiveRentalsByRentalId done for user: ${username}`,
+            message: `/bot/server/services/activeRentals/getActiveRentalsByRentalId`,
+        });
+        window.api.bot.log({
+            message: `User: ${username}`,
+        });
+        window.api.bot.log({
+            message: `Active Rentals: ${activeRentals?.length}`,
+        });
+        window.api.bot.log({
+            message: `By Rental Tx: ${
+                Object.keys(activeRentalsByRentalTx)?.length
+            }`,
+        });
+        window.api.bot.log({
+            message: `By Sell Tx: ${
+                Object.keys(activeRentalsBySellTrxId)?.length
+            }`,
         });
         return { activeRentalsByRentalTx, activeRentalsBySellTrxId };
     } catch (err) {

@@ -138,7 +138,25 @@ const filterCollectionArraysForPotentialRentalCards = ({
                 }
             } // other conditions dont matter because these are the only ones available for rentals
         });
-        // console.log('filterCollectionArraysForPotentialRentalCards done');
+
+        window.api.bot.log({
+            message: `/bot/server/actions/collection/filterCollectionArraysForPotentialRentalCards done`,
+        });
+        window.api.bot.log({
+            message: `Collection: ${collection?.length}`,
+        });
+        window.api.bot.log({
+            message: `Available: ${cardsAvailableForRent?.length}`,
+        });
+        window.api.bot.log({
+            message: `Cooldown: ${cardsOnRentalCooldown?.length}`,
+        });
+        window.api.bot.log({
+            message: `Rented Out: ${cardsBeingRentedOut?.length}`,
+        });
+        window.api.bot.log({
+            message: `Listed: ${cardsListedButNotRentedOut?.length}`,
+        });
         return {
             cardsAvailableForRent,
             cardsOnRentalCooldown,

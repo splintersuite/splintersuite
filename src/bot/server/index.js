@@ -80,6 +80,9 @@ const startRentalBot = async ({
                 collection: cardsBeingRentedOut,
             });
 
+        window.api.bot.log({
+            message: `/bot/server/index/startRentalBot filtered all collection data by level`,
+        });
         // this gives us the output of [uid, rentalPriceInDec] which is needed for initial market listings.
         const rentalArrayWithPriceAndUid = await calculateRentalPriceToList({
             collectionObj: collectionByLevelObjAvailableForRent,
@@ -116,6 +119,8 @@ const startRentalBot = async ({
         const relistActive = fmtToLimitCardsInEachHiveTx(
             relistingPriceForActiveMarketId
         );
+
+        window.api.bot.log(`/bot/server/index/startRentalBot done`);
 
         return {
             listings, // array of arrays that are formated by :[uid, rentalPriceInDec]

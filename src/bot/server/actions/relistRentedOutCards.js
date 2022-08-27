@@ -69,7 +69,20 @@ const calculateRelistActiveRentalPrices = async ({
             }
         }
 
-        return { relistingPriceForActiveMarketId, cardsNotWorthChangingPrice };
+        window.api.bot.log({
+            message: `/bot/server/actions/relistRentedOutCards/calculateRelistActiveRentalPrices`,
+        });
+        window.api.bot.log({
+            message: `Relist: ${relistingPriceForActiveMarketId?.length}`,
+        });
+        window.api.bot.log({
+            message: `Excluded: ${cardsNotWorthChangingPrice?.length}`,
+        });
+        window.api.bot.log({
+            message: `Unable to Price: ${cardsUnableToFindPriceFor?.length}`,
+        });
+
+        return { relistingPriceForActiveMarketId };
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/actions/relistRentedOutCards/calculateRelistActiveRentalPrices error: ${err.message}`,

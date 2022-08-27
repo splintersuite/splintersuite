@@ -56,7 +56,18 @@ const calculateRentalPriceToList = async ({
                 }
             }
         }
-
+        window.api.bot.log({
+            message: `/bot/server/actions/calculateRentalPriceToList/calculateRentalPriceToList done`,
+        });
+        window.api.bot.log({
+            message: `Rentals: ${rentalPriceForEachCardUid?.length}`,
+        });
+        window.api.bot.log({
+            message: `Excluded: ${cardsNotWorthListing?.length}`,
+        });
+        window.api.bot.log({
+            message: `Unable to price: ${cardsUnableToFindPriceFor?.length}`,
+        });
         return rentalPriceForEachCardUid;
     } catch (err) {
         window.api.bot.log({

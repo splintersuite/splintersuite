@@ -61,6 +61,18 @@ const calculateRelistingPrice = async ({
                 }
             }
         }
+        window.api.bot.log({
+            message: `/bot/server/actions/calculateRelistingPrice/calculateRelistingPrice done`,
+        });
+        window.api.bot.log({
+            message: `Relists: ${relistingPriceForEachMarketId?.length}`,
+        });
+        window.api.bot.log({
+            message: `Excluded: ${cardsNotWorthRelisting?.length}`,
+        });
+        window.api.bot.log({
+            message: `Unable to price: ${cardsUnableToFindPriceFor?.length}`,
+        });
         return { relistingPriceForEachMarketId, cardsNotWorthRelisting };
     } catch (err) {
         window.api.bot.log({
