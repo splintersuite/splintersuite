@@ -57,7 +57,7 @@ const calculateRentalPriceToList = async ({
             }
         }
         window.api.bot.log({
-            message: `/bot/server/actions/calculateRentalPriceToList/calculateRentalPriceToList done`,
+            message: `/bot/server/actions/calculateRentalPriceToList/calculateRentalPriceToList`,
         });
         window.api.bot.log({
             message: `Rentals: ${rentalPriceForEachCardUid?.length}`,

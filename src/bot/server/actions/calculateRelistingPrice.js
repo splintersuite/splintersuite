@@ -62,7 +62,7 @@ const calculateRelistingPrice = async ({
             }
         }
         window.api.bot.log({
-            message: `/bot/server/actions/calculateRelistingPrice/calculateRelistingPrice done`,
+            message: `/bot/server/actions/calculateRelistingPrice/calculateRelistingPrice`,
         });
         window.api.bot.log({
             message: `Relists: ${relistingPriceForEachMarketId?.length}`,

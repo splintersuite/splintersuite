@@ -6,16 +6,17 @@ const activeRentalCardsInfoByRentalTx = ({ activeRentals }) => {
     try {
         //  console.log('activeRentalCardsInfoByRentalTx start');
         // rentalTx is not unique, sellTx is unique, therefor getting rid of the rental_tx
-        const activeRentalsByRentalTx = {};
+        //  const activeRentalsByRentalTx = {};
         const activeRentalsBySellTrxId = {};
 
         activeRentals.forEach((rental) => {
-            const { rental_tx, sell_trx_id } = rental;
-            activeRentalsByRentalTx[rental_tx] = rental;
+            const { sell_trx_id } = rental;
+            //const { rental_tx, sell_trx_id } = rental;
+            // activeRentalsByRentalTx[rental_tx] = rental;
             activeRentalsBySellTrxId[sell_trx_id] = rental;
         });
-
-        return { activeRentalsByRentalTx, activeRentalsBySellTrxId };
+        return { activeRentalsBySellTrxId };
+        // return { activeRentalsByRentalTx, activeRentalsBySellTrxId };
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/activeRentals/activeRentalCardsInfoByRentalTx error: ${err.message}`,
@@ -36,10 +37,9 @@ const getActiveRentalsByRentalId = async (username) => {
             username
         );
 
-        const { activeRentalsByRentalTx, activeRentalsBySellTrxId } =
-            activeRentalCardsInfoByRentalTx({
-                activeRentals,
-            });
+        const { activeRentalsBySellTrxId } = activeRentalCardsInfoByRentalTx({
+            activeRentals,
+        });
         window.api.bot.log({
             message: `/bot/server/services/activeRentals/getActiveRentalsByRentalId`,
         });
@@ -50,16 +50,17 @@ const getActiveRentalsByRentalId = async (username) => {
             message: `Active Rentals: ${activeRentals?.length}`,
         });
         window.api.bot.log({
-            message: `By Rental Tx: ${
-                Object.keys(activeRentalsByRentalTx)?.length
-            }`,
-        });
-        window.api.bot.log({
             message: `By Sell Tx: ${
                 Object.keys(activeRentalsBySellTrxId)?.length
             }`,
         });
-        return { activeRentalsByRentalTx, activeRentalsBySellTrxId };
+        window.api.bot.log({
+            message: `Check: ${
+                Object.keys(activeRentalsBySellTrxId)?.length ===
+                activeRentals?.length
+            }`,
+        });
+        return { activeRentalsBySellTrxId };
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/activeRentals/getActiveRentalsByRentalId error: ${err.message}`,

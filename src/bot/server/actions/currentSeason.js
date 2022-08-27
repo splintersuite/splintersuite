@@ -43,11 +43,10 @@ const getEndOfSeasonSettings = ({ season }) => {
     try {
         // console.log(`/bot/server/actions/currentSeason/getEndOfSeasonSettings`);
 
-        // const seasonEndTime = new Date(season.ends).getTime();
+        const seasonEndTime = new Date(season.ends).getTime();
         const msInDay = 1000 * 60 * 60 * 24;
         const msInTwelveHours = 1000 * 60 * 60 * 12;
         const nowTime = new Date().getTime();
-        const seasonEndTime = nowTime + msInDay - 10000;
         const msTillSeasonEnd = seasonEndTime - nowTime;
         let endOfSeasonSettings = {
             ...cancellationMatrix[0],
@@ -77,6 +76,15 @@ const getEndOfSeasonSettings = ({ season }) => {
             }
         });
 
+        window.api.bot.log({
+            message: `/bot/server/actions/currentSeason/getEndOfSeasonSettings`,
+        });
+        window.api.bot.log({
+            message: `Season end: ${new Date(season?.ends)}`,
+        });
+        window.api.bot.log({
+            message: `Days Until EOS: ${endOfSeasonSettings?.daysTillEOS}`,
+        });
         return endOfSeasonSettings;
     } catch (err) {
         window.api.bot.log({

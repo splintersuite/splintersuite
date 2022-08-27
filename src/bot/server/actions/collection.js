@@ -130,18 +130,19 @@ const filterCollectionArraysForPotentialRentalCards = ({
                     card.delegated_to != null
                 ) {
                     // delegation_tx from here === rental_tx from active_rentals
+                    // sell_trx_id === card.market_id from collection
                     const currentRental =
                         activeRentalsBySellTrxId[card.market_id];
                     if (!currentRental) {
                         cardsNotOnActiveRentals.push(cardToBeAdded);
                         // seems to be some sort of delay where this errors because the active rentals endpoint is not updated
-                    }
-                    if (
-                        currentRental.cancel_tx == null &&
-                        currentRental.cancel_player == null &&
-                        currentRental.cancel_date == null
+                    } else if (
+                        currentRental?.cancel_tx == null &&
+                        currentRental?.cancel_player == null &&
+                        currentRental?.cancel_date == null &&
+                        currentRental?.rental_date
                     ) {
-                        cardToBeAdded.rental_date = currentRental.rental_date;
+                        cardToBeAdded.rental_date = currentRental?.rental_date;
                         cardsBeingRentedOut.push(cardToBeAdded);
                     } else {
                         // this would mean the cancel_tx has a value, and therefore the rental was cancelled.  We don't want to do anything with this right now, could change
@@ -163,7 +164,6 @@ const filterCollectionArraysForPotentialRentalCards = ({
                 cardsNotOwned.push(cardToBeAdded);
             }
         });
-        console.log(`cardsDelegatedOut: ${JSON.stringify(cardsDelegatedOut)}`);
         window.api.bot.log({
             message: `/bot/server/actions/collection/filterCollectionArraysForPotentialRentalCards`,
         });
@@ -172,9 +172,6 @@ const filterCollectionArraysForPotentialRentalCards = ({
         });
         window.api.bot.log({
             message: `Available: ${cardsAvailableForRent?.length}`,
-        });
-        window.api.bot.log({
-            message: `Cooldown: ${cardsOnRentalCooldown?.length}`,
         });
         window.api.bot.log({
             message: `Cancelled: ${cardsAlreadyCancelled?.length}`,
@@ -186,16 +183,19 @@ const filterCollectionArraysForPotentialRentalCards = ({
             message: `Listed: ${cardsListedButNotRentedOut?.length}`,
         });
         window.api.bot.log({
-            message: `Not Owned: ${cardsNotOwned?.length}`,
-        });
-        window.api.bot.log({
             message: `Owned: ${ownedCount}`,
         });
         window.api.bot.log({
-            message: `No Active Rental: ${cardsNotOnActiveRentals?.length}`,
+            message: `Delegated: ${cardsDelegatedOut?.length}`,
         });
         window.api.bot.log({
-            message: `Delegated: ${cardsDelegatedOut?.length}`,
+            message: `Not Owned: ${cardsNotOwned?.length}`,
+        });
+        window.api.bot.log({
+            message: `Cooldown: ${cardsOnRentalCooldown?.length}`,
+        });
+        window.api.bot.log({
+            message: `No Active Rental: ${cardsNotOnActiveRentals?.length}`,
         });
         window.api.bot.log({
             message: `Caught: ${uidsOfThoseNotLabeled?.length}`,
@@ -213,7 +213,7 @@ const filterCollectionArraysForPotentialRentalCards = ({
                     cardsNotOnActiveRentals?.length +
                     uidsOfThoseNotLabeled?.length +
                     cardsDelegatedOut?.length
-            }, sum of arrs: ${
+            }, sumAll: ${
                 cardsAvailableForRent?.length +
                 cardsOnRentalCooldown?.length +
                 cardsAlreadyCancelled?.length +

@@ -79,7 +79,7 @@ const calculateRelistActiveRentalPrices = async ({
             message: `Excluded: ${cardsNotWorthChangingPrice?.length}`,
         });
         window.api.bot.log({
-            message: `Unable to Price: ${cardsUnableToFindPriceFor?.length}`,
+            message: `Unable to price: ${cardsUnableToFindPriceFor?.length}`,
         });
 
         return { relistingPriceForActiveMarketId };

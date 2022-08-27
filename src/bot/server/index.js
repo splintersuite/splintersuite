@@ -58,8 +58,6 @@ const startRentalBot = async ({
         } = filterCollectionArraysForPotentialRentalCards({
             username,
             collection,
-            // activeRentalsByRentalId: activeRentals.activeRentalsByRentalTx,
-            //activeRentalsByRentalId: activeRentals.activeRentalsBySellTrxId,
             activeRentalsBySellTrxId: activeRentals.activeRentalsBySellTrxId,
             cardDetailObj,
         });
@@ -83,7 +81,7 @@ const startRentalBot = async ({
             });
 
         window.api.bot.log({
-            message: `/bot/server/index/startRentalBot filtered all collection data by level`,
+            message: `/bot/server/index/startRentalBot transform by level`,
         });
         // this gives us the output of [uid, rentalPriceInDec] which is needed for initial market listings.
         const rentalArrayWithPriceAndUid = await calculateRentalPriceToList({
@@ -122,7 +120,9 @@ const startRentalBot = async ({
             relistingPriceForActiveMarketId
         );
 
-        window.api.bot.log(`/bot/server/index/startRentalBot done`);
+        window.api.bot.log({
+            message: `/bot/server/index/startRentalBot`,
+        });
 
         return {
             listings, // array of arrays that are formated by :[uid, rentalPriceInDec]
