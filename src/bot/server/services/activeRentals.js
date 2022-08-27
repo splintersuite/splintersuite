@@ -5,7 +5,7 @@ const splinterlandsService = require('./splinterlands');
 const activeRentalCardsInfoByRentalTx = ({ activeRentals }) => {
     try {
         //  console.log('activeRentalCardsInfoByRentalTx start');
-
+        // rentalTx is not unique, sellTx is unique, therefor getting rid of the rental_tx
         const activeRentalsByRentalTx = {};
         const activeRentalsBySellTrxId = {};
 
@@ -27,7 +27,11 @@ const activeRentalCardsInfoByRentalTx = ({ activeRentals }) => {
 const getActiveRentalsByRentalId = async (username) => {
     try {
         //sByRentalId start');
-
+        /*
+      02:38:52.668 › [27/08/2022 02:38:52 -04:00] Active Rentals: 19135
+02:38:52.668 › [27/08/2022 02:38:52 -04:00] By Rental Tx: 11253
+02:38:52.670 › [27/08/2022 02:38:52 -04:00] By Sell Tx: 19135
+*/
         const activeRentals = await splinterlandsService.activeRentalCardsInfo(
             username
         );

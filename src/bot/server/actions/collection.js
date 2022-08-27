@@ -68,7 +68,7 @@ const filterCollectionArrayByLevel = ({ collection }) => {
 const filterCollectionArraysForPotentialRentalCards = ({
     username,
     collection,
-    activeRentalsByRentalId,
+    activeRentalsBySellTrxId,
     cardDetailObj,
 }) => {
     try {
@@ -84,63 +84,88 @@ const filterCollectionArraysForPotentialRentalCards = ({
 
         const cardsAlreadyCancelled = [];
 
+        const cardsNotOwned = [];
+
+        const cardsNotOnActiveRentals = [];
+
+        const uidsOfThoseNotLabeled = [];
+
+        const cardsDelegatedOut = [];
+
+        let ownedCount = 0;
+
         // need to convert from array of cards into object where key = rental_tx (aka delegation_tx)
         collection.forEach((card) => {
             const cardToBeAdded = card;
             const { rarity, tier } = cardDetailObj[card.card_detail_id];
             cardToBeAdded.rarity = rarity;
             cardToBeAdded.tier = tier;
-            if (card.player === username && card.delegated_to == null) {
-                if (
-                    card.last_used_player === username &&
-                    card.market_listing_type == null &&
-                    card.last_used_date != null &&
-                    isOnCooldown(card.last_used_date)
-                ) {
-                    cardsOnRentalCooldown.push(cardToBeAdded);
+            if (card.player === username) {
+                if (card.player === username && card.delegated_to == null) {
+                    if (
+                        card.last_used_player === username &&
+                        card.market_listing_type == null &&
+                        card.last_used_date != null &&
+                        isOnCooldown(card.last_used_date)
+                    ) {
+                        cardsOnRentalCooldown.push(cardToBeAdded);
+                    } else if (
+                        card.last_used_date != null &&
+                        isOnCooldown(card.last_used_date) &&
+                        card.last_transferred_date != null &&
+                        isOnCooldown(card.last_transferred_date)
+                    ) {
+                        cardsOnRentalCooldown.push(cardToBeAdded);
+                    } else if (
+                        card.market_listing_type === 'RENT' &&
+                        card.market_listing_status === 0
+                    ) {
+                        cardsListedButNotRentedOut.push(cardToBeAdded);
+                    } else {
+                        cardsAvailableForRent.push(cardToBeAdded);
+                    }
                 } else if (
-                    card.last_used_date != null &&
-                    isOnCooldown(card.last_used_date) &&
-                    card.last_transferred_date != null &&
-                    isOnCooldown(card.last_transferred_date)
-                ) {
-                    cardsOnRentalCooldown.push(cardToBeAdded);
-                } else if (
+                    card.player === username &&
                     card.market_listing_type === 'RENT' &&
-                    card.market_listing_status === 0
+                    card.delegated_to != null
                 ) {
-                    cardsListedButNotRentedOut.push(cardToBeAdded);
+                    // delegation_tx from here === rental_tx from active_rentals
+                    const currentRental =
+                        activeRentalsBySellTrxId[card.market_id];
+                    if (!currentRental) {
+                        cardsNotOnActiveRentals.push(cardToBeAdded);
+                        // seems to be some sort of delay where this errors because the active rentals endpoint is not updated
+                    }
+                    if (
+                        currentRental.cancel_tx == null &&
+                        currentRental.cancel_player == null &&
+                        currentRental.cancel_date == null
+                    ) {
+                        cardToBeAdded.rental_date = currentRental.rental_date;
+                        cardsBeingRentedOut.push(cardToBeAdded);
+                    } else {
+                        // this would mean the cancel_tx has a value, and therefore the rental was cancelled.  We don't want to do anything with this right now, could change
+                        cardsAlreadyCancelled.push(cardToBeAdded);
+                    }
                 } else {
-                    cardsAvailableForRent.push(cardToBeAdded);
-                }
-            } else if (
-                card.player === username &&
-                card.market_listing_type === 'RENT' &&
-                card.delegated_to != null
-            ) {
-                // delegation_tx from here === rental_tx from active_rentals
-                const currentRental =
-                    activeRentalsByRentalId[card.delegation_tx];
-                if (!currentRental) {
-                    // seems to be some sort of delay where this errors because the active rentals endpoint is not updated
-                    return;
-                }
-                if (
-                    currentRental.cancel_tx == null &&
-                    currentRental.cancel_player == null &&
-                    currentRental.cancel_date == null
-                ) {
-                    cardToBeAdded.rental_date = currentRental.rental_date;
-                    cardsBeingRentedOut.push(cardToBeAdded);
-                } else {
-                    // this would mean the cancel_tx has a value, and therefore the rental was cancelled.  We don't want to do anything with this right now, could change
-                    cardsAlreadyCancelled.push(cardToBeAdded);
-                }
-            } // other conditions dont matter because these are the only ones available for rentals
+                    if (
+                        card.delegated_to != null &&
+                        card.market_listing_type == null
+                    ) {
+                        cardsDelegatedOut.push(cardToBeAdded);
+                    } else {
+                        //uidsOfThoseNotLabeled.push(card?.uid);
+                        uidsOfThoseNotLabeled.push(cardToBeAdded);
+                    }
+                } // other conditions dont matter because these are the only ones available for rentals
+                ownedCount = ownedCount + 1;
+            } else {
+                cardsNotOwned.push(cardToBeAdded);
+            }
         });
-
+        console.log(`cardsDelegatedOut: ${JSON.stringify(cardsDelegatedOut)}`);
         window.api.bot.log({
-            message: `/bot/server/actions/collection/filterCollectionArraysForPotentialRentalCards done`,
+            message: `/bot/server/actions/collection/filterCollectionArraysForPotentialRentalCards`,
         });
         window.api.bot.log({
             message: `Collection: ${collection?.length}`,
@@ -152,10 +177,52 @@ const filterCollectionArraysForPotentialRentalCards = ({
             message: `Cooldown: ${cardsOnRentalCooldown?.length}`,
         });
         window.api.bot.log({
+            message: `Cancelled: ${cardsAlreadyCancelled?.length}`,
+        });
+        window.api.bot.log({
             message: `Rented Out: ${cardsBeingRentedOut?.length}`,
         });
         window.api.bot.log({
             message: `Listed: ${cardsListedButNotRentedOut?.length}`,
+        });
+        window.api.bot.log({
+            message: `Not Owned: ${cardsNotOwned?.length}`,
+        });
+        window.api.bot.log({
+            message: `Owned: ${ownedCount}`,
+        });
+        window.api.bot.log({
+            message: `No Active Rental: ${cardsNotOnActiveRentals?.length}`,
+        });
+        window.api.bot.log({
+            message: `Delegated: ${cardsDelegatedOut?.length}`,
+        });
+        window.api.bot.log({
+            message: `Caught: ${uidsOfThoseNotLabeled?.length}`,
+        });
+        window.api.bot.log({
+            message: `Checks: 1) ${
+                ownedCount + cardsNotOwned?.length === collection?.length
+            } 2) ${
+                ownedCount ===
+                cardsAvailableForRent?.length +
+                    cardsOnRentalCooldown?.length +
+                    cardsAlreadyCancelled?.length +
+                    cardsBeingRentedOut?.length +
+                    cardsListedButNotRentedOut?.length +
+                    cardsNotOnActiveRentals?.length +
+                    uidsOfThoseNotLabeled?.length +
+                    cardsDelegatedOut?.length
+            }, sum of arrs: ${
+                cardsAvailableForRent?.length +
+                cardsOnRentalCooldown?.length +
+                cardsAlreadyCancelled?.length +
+                cardsBeingRentedOut?.length +
+                cardsListedButNotRentedOut?.length +
+                cardsNotOnActiveRentals?.length +
+                uidsOfThoseNotLabeled?.length +
+                cardsDelegatedOut?.length
+            }`,
         });
         return {
             cardsAvailableForRent,

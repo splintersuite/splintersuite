@@ -58,7 +58,9 @@ const startRentalBot = async ({
         } = filterCollectionArraysForPotentialRentalCards({
             username,
             collection,
-            activeRentalsByRentalId: activeRentals.activeRentalsByRentalTx,
+            // activeRentalsByRentalId: activeRentals.activeRentalsByRentalTx,
+            //activeRentalsByRentalId: activeRentals.activeRentalsBySellTrxId,
+            activeRentalsBySellTrxId: activeRentals.activeRentalsBySellTrxId,
             cardDetailObj,
         });
 
