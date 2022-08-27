@@ -18,6 +18,9 @@ const calculateRentalPriceToList = async ({
         const rentalPriceForEachCardUid = [];
         const cardsUnableToFindPriceFor = [];
         const cardsNotWorthListing = [];
+        const cardCatch = [];
+
+        const minRentalSetting = 0.2;
 
         // sorts through the collectionObj that has key = level, value = [array of cards that's level = key]
         for (const level of Object.keys(collectionObj)) {
@@ -48,10 +51,14 @@ const calculateRentalPriceToList = async ({
                 if (rentalPriceForUid[1] === 'N') {
                     cardsUnableToFindPriceFor.push(rentalPriceForUid);
                 } else {
-                    if (parseFloat(rentalPriceForUid[1]) < 0.2) {
+                    if (parseFloat(rentalPriceForUid[1]) < minRentalSetting) {
                         cardsNotWorthListing.push(rentalPriceForUid);
                     } else {
-                        rentalPriceForEachCardUid.push(rentalPriceForUid);
+                        if (rentalPriceForUid) {
+                            rentalPriceForEachCardUid.push(rentalPriceForUid);
+                        } else {
+                            cardCatch.push(card);
+                        }
                     }
                 }
             }
@@ -67,6 +74,9 @@ const calculateRentalPriceToList = async ({
         });
         window.api.bot.log({
             message: `Unable to price: ${cardsUnableToFindPriceFor?.length}`,
+        });
+        window.api.bot.log({
+            message: `Catch: ${cardCatch?.length}`,
         });
         return rentalPriceForEachCardUid;
     } catch (err) {
@@ -99,9 +109,10 @@ const addPriceListInformationForEachCardByUid = ({
 
         if (
             currentPriceData == null ||
-            currentPriceData.low_price == null ||
+            currentPriceData?.low_price == null ||
             _.isEmpty(currentPriceData)
         ) {
+            // there are currently no listings on the market for this card
             if (marketPrices[marketKey] != null) {
                 const openTrades = marketPrices[marketKey][ALL_OPEN_TRADES];
                 const allTrades = marketPrices[marketKey][TRADES_DURING_PERIOD];

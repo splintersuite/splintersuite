@@ -118,7 +118,8 @@ const filterCollectionArraysForPotentialRentalCards = ({
                         cardsOnRentalCooldown.push(cardToBeAdded);
                     } else if (
                         card.market_listing_type === 'RENT' &&
-                        card.market_listing_status === 0
+                        card.market_listing_status === 0 &&
+                        card.market_created_date
                     ) {
                         cardsListedButNotRentedOut.push(cardToBeAdded);
                     } else {
@@ -198,7 +199,7 @@ const filterCollectionArraysForPotentialRentalCards = ({
             message: `No Active Rental: ${cardsNotOnActiveRentals?.length}`,
         });
         window.api.bot.log({
-            message: `Caught: ${uidsOfThoseNotLabeled?.length}`,
+            message: `Catch: ${uidsOfThoseNotLabeled?.length}`,
         });
         window.api.bot.log({
             message: `Checks: 1) ${

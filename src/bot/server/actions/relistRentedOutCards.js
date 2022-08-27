@@ -24,6 +24,7 @@ const calculateRelistActiveRentalPrices = async ({
         const relistingPriceForActiveMarketId = [];
         const cardsUnableToFindPriceFor = [];
         const cardsNotWorthChangingPrice = [];
+        const cardCatch = [];
 
         for (const level of Object.keys(collectionObj)) {
             // should be a max of 10 possible times we can go through this because max lvl is 10
@@ -62,9 +63,13 @@ const calculateRelistActiveRentalPrices = async ({
                 } else if (relistPriceForMarketId[0] == null) {
                     cardsUnableToFindPriceFor.push(card);
                 } else {
-                    relistingPriceForActiveMarketId.push(
-                        relistPriceForMarketId
-                    );
+                    if (relistPriceForMarketId) {
+                        relistingPriceForActiveMarketId.push(
+                            relistPriceForMarketId
+                        );
+                    } else {
+                        cardCatch.push(card);
+                    }
                 }
             }
         }
@@ -80,6 +85,9 @@ const calculateRelistActiveRentalPrices = async ({
         });
         window.api.bot.log({
             message: `Unable to price: ${cardsUnableToFindPriceFor?.length}`,
+        });
+        window.api.bot.log({
+            message: `Catch: ${cardCatch?.length}`,
         });
 
         return { relistingPriceForActiveMarketId };

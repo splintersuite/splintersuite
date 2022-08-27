@@ -89,9 +89,11 @@ const getAllGroupedRentalsByLevel = async () => {
             rentalObject[level] = groupedRentalList;
             await sleep(1000);
         }
-
         window.api.bot.log({
-            message: `got all grouped rental listings`,
+            message: `/bot/server/services/splinterlands/getAllGroupedRentalsByLevel`,
+        });
+        window.api.bot.log({
+            message: `Levels: ${Object.keys(rentalObject)?.length}`,
         });
         return rentalObject;
     } catch (err) {

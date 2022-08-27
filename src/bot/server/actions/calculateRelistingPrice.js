@@ -18,6 +18,7 @@ const calculateRelistingPrice = async ({
         const relistingPriceForEachMarketId = [];
         const cardsUnableToFindPriceFor = [];
         const cardsNotWorthRelisting = [];
+        const cardCatch = [];
 
         for (const level of Object.keys(collectionObj)) {
             // should be a max of 10 possible times we can go through this because max lvl is 10
@@ -54,9 +55,13 @@ const calculateRelistingPrice = async ({
                         // rental is less than 0.2 dec, not worth listing for 0.1 dec
                         cardsNotWorthRelisting.push(rentalPriceForMarketId);
                     } else {
-                        relistingPriceForEachMarketId.push(
-                            rentalPriceForMarketId
-                        );
+                        if (rentalPriceForMarketId) {
+                            relistingPriceForEachMarketId.push(
+                                rentalPriceForMarketId
+                            );
+                        } else {
+                            cardCatch.push(card);
+                        }
                     }
                 }
             }
@@ -73,7 +78,10 @@ const calculateRelistingPrice = async ({
         window.api.bot.log({
             message: `Unable to price: ${cardsUnableToFindPriceFor?.length}`,
         });
-        return { relistingPriceForEachMarketId, cardsNotWorthRelisting };
+        window.api.bot.log({
+            message: `Catch: ${cardCatch?.length}`,
+        });
+        return { relistingPriceForEachMarketId };
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/actions/calculateRelistingPrice/calculateRelistingPrice error: ${err.message}`,
