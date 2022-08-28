@@ -82,18 +82,24 @@ const getAllGroupedRentalsByLevel = async () => {
         //    console.log(`getAllGroupedRentalsByLevel start`);
         const levels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         const rentalObject = {};
+        const lengths = [];
         for (const level of levels) {
             const groupedRentalList = await getGroupedRentalsForLevel({
                 level,
             });
             rentalObject[level] = groupedRentalList;
+            lengths.push(groupedRentalList?.length);
             await sleep(1000);
         }
+
         window.api.bot.log({
             message: `/bot/server/services/splinterlands/getAllGroupedRentalsByLevel`,
         });
         window.api.bot.log({
             message: `Levels: ${Object.keys(rentalObject)?.length}`,
+        });
+        window.api.bot.log({
+            message: `Level Lengths: ${JSON.stringify(lengths)}`,
         });
         return rentalObject;
     } catch (err) {

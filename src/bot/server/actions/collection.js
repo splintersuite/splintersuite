@@ -92,6 +92,8 @@ const filterCollectionArraysForPotentialRentalCards = ({
 
         const cardsDelegatedOut = [];
 
+        const gladius = [];
+
         let ownedCount = 0;
 
         // need to convert from array of cards into object where key = rental_tx (aka delegation_tx)
@@ -101,7 +103,12 @@ const filterCollectionArraysForPotentialRentalCards = ({
             cardToBeAdded.rarity = rarity;
             cardToBeAdded.tier = tier;
             if (card.player === username) {
-                if (card.player === username && card.delegated_to == null) {
+                if (card.edition === 6) {
+                    gladius.push(cardToBeAdded);
+                } else if (
+                    //  card.player === username &&
+                    card.delegated_to == null
+                ) {
                     if (
                         card.last_used_player === username &&
                         card.market_listing_type == null &&
@@ -126,7 +133,7 @@ const filterCollectionArraysForPotentialRentalCards = ({
                         cardsAvailableForRent.push(cardToBeAdded);
                     }
                 } else if (
-                    card.player === username &&
+                    // card.player === username &&
                     card.market_listing_type === 'RENT' &&
                     card.delegated_to != null
                 ) {
@@ -201,6 +208,10 @@ const filterCollectionArraysForPotentialRentalCards = ({
         window.api.bot.log({
             message: `Catch: ${uidsOfThoseNotLabeled?.length}`,
         });
+
+        window.api.bot.log({
+            message: `Gladius: ${gladius?.length}`,
+        });
         window.api.bot.log({
             message: `Checks: 1) ${
                 ownedCount + cardsNotOwned?.length === collection?.length
@@ -211,6 +222,7 @@ const filterCollectionArraysForPotentialRentalCards = ({
                     cardsAlreadyCancelled?.length +
                     cardsBeingRentedOut?.length +
                     cardsListedButNotRentedOut?.length +
+                    gladius?.length +
                     cardsNotOnActiveRentals?.length +
                     uidsOfThoseNotLabeled?.length +
                     cardsDelegatedOut?.length
@@ -220,6 +232,7 @@ const filterCollectionArraysForPotentialRentalCards = ({
                 cardsAlreadyCancelled?.length +
                 cardsBeingRentedOut?.length +
                 cardsListedButNotRentedOut?.length +
+                gladius?.length +
                 cardsNotOnActiveRentals?.length +
                 uidsOfThoseNotLabeled?.length +
                 cardsDelegatedOut?.length
