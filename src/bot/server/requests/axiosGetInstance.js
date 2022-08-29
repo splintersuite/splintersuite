@@ -1,5 +1,4 @@
 'use strict';
-const { default: Logger } = require('@electron-forge/web-multi-logger');
 const axios = require('axios');
 
 const {
