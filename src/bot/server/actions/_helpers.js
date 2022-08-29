@@ -12,7 +12,13 @@ const getCardDetailObj = async () => {
             cardDetailObj[card.id] = card;
         });
 
-        // console.log(`/bot/server/actions/_helpers/getCardDetailObj done`);
+        window.api.bot.log({
+            message: `/bot/server/actions/_helpers/getCardDetailObj`,
+        });
+
+        window.api.bot.log({
+            message: `Length: ${Object.keys(cardDetailObj)?.length}`,
+        });
         return cardDetailObj;
     } catch (err) {
         window.api.bot.log({

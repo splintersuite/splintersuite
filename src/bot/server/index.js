@@ -1,6 +1,5 @@
 'use strict';
 const {
-    getCollection,
     filterCollectionArraysForPotentialRentalCards,
 } = require('./actions/collection');
 
@@ -25,8 +24,10 @@ const {
     calculateRelistActiveRentalPrices,
 } = require('./actions/relistRentedOutCards');
 const { getCardDetailObj } = require('./actions/_helpers');
-const { getActiveRentalsByRentalId } = require('./actions/currentRentals');
-const { getAllGroupedRentalsByLevel } = require('./services/splinterlands');
+
+const { getActiveRentalsByRentalId } = require('./services/activeRentals');
+
+const splinterlandsService = require('./services/splinterlands');
 const _ = require('lodash');
 
 const startRentalBot = async ({
@@ -42,12 +43,13 @@ const startRentalBot = async ({
             season,
         });
 
-        const collection = await getCollection(username);
+        const collection = await splinterlandsService.getCollection(username);
         // if there is a card in the collection we don't need
         // grab the card_details endpoint
         const cardDetailObj = await getCardDetailObj();
         const activeRentals = await getActiveRentalsByRentalId(username);
-        const groupedRentalListObj = await getAllGroupedRentalsByLevel();
+        const groupedRentalListObj =
+            await splinterlandsService.getAllGroupedRentalsByLevel();
 
         const {
             cardsAvailableForRent,
@@ -56,7 +58,7 @@ const startRentalBot = async ({
         } = filterCollectionArraysForPotentialRentalCards({
             username,
             collection,
-            activeRentalsByRentalId: activeRentals.activeRentalsByRentalTx,
+            activeRentalsBySellTrxId: activeRentals.activeRentalsBySellTrxId,
             cardDetailObj,
         });
 
@@ -78,11 +80,15 @@ const startRentalBot = async ({
                 collection: cardsBeingRentedOut,
             });
 
+        window.api.bot.log({
+            message: `/bot/server/index/startRentalBot transform by level`,
+        });
         // this gives us the output of [uid, rentalPriceInDec] which is needed for initial market listings.
         const rentalArrayWithPriceAndUid = await calculateRentalPriceToList({
             collectionObj: collectionByLevelObjAvailableForRent,
             marketPrices,
             groupedRentalListObj,
+            endOfSeasonSettings,
         });
 
         const { relistingPriceForEachMarketId } = await calculateRelistingPrice(
@@ -114,6 +120,10 @@ const startRentalBot = async ({
         const relistActive = fmtToLimitCardsInEachHiveTx(
             relistingPriceForActiveMarketId
         );
+
+        window.api.bot.log({
+            message: `/bot/server/index/startRentalBot`,
+        });
 
         return {
             listings, // array of arrays that are formated by :[uid, rentalPriceInDec]

@@ -8,7 +8,7 @@ const getCurrentSeason = async () => {
             'https://api2.splinterlands.com/settings'
         );
         if (res?.data?.season?.ends) {
-            const { season } = res.data;
+            const { season } = res?.data;
             const { id, name, ends } = season;
             return { id, name, ends };
         }
@@ -68,26 +68,23 @@ const getEndOfSeasonSettings = ({ season }) => {
                 day.timeEnd = seasonEndTime - (day.daysTillEOS - 1) * msInDay;
             }
             if (day.timeEnd >= nowTime && nowTime > day.timeStart) {
-                if (day.daysTillEOS === 1) {
-                    // make it such that this is almost impossible
-                    // so you NEVER cancel in the last 28 hours of the season
-                    // (listingPrice - buy_price) / listingPrice >
-                    //     endOfSeasonSettings.cancellationThreshold;
-                    endOfSeasonSettings = {
-                        msTillSeasonEnd,
-                        ...day,
-                        cancellationThreshold: 99999,
-                    };
-                } else {
-                    endOfSeasonSettings = {
-                        msTillSeasonEnd,
-                        ...day,
-                    };
-                }
+                endOfSeasonSettings = {
+                    msTillSeasonEnd,
+                    ...day,
+                };
                 return true;
             }
         });
 
+        window.api.bot.log({
+            message: `/bot/server/actions/currentSeason/getEndOfSeasonSettings`,
+        });
+        window.api.bot.log({
+            message: `Season end: ${new Date(season?.ends)}`,
+        });
+        window.api.bot.log({
+            message: `Days Until EOS: ${endOfSeasonSettings?.daysTillEOS}`,
+        });
         return endOfSeasonSettings;
     } catch (err) {
         window.api.bot.log({

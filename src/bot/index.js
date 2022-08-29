@@ -41,10 +41,10 @@ window.api.bot.start(async (event) => {
         // ------------------------------------
 
         window.api.bot.log({
-            message: `marketPrices.length: ${
+            message: `Market Prices: ${
                 Array.isArray(Object.keys(marketPrices))
                     ? Object.keys(marketPrices).length
-                    : 'bad data'
+                    : 'Bad Data'
             }`,
         });
         const { listings, relistings, relistActive } =
@@ -73,7 +73,7 @@ window.api.bot.start(async (event) => {
 
         let listingsNum = numListed;
         window.api.bot.log({
-            message: `Number of listings: ${listingsNum}`,
+            message: `Listings: ${listingsNum}`,
         });
 
         for (const relistingGroup of relistings) {
@@ -91,7 +91,7 @@ window.api.bot.start(async (event) => {
 
         listingsNum = numListed - listingsNum;
         window.api.bot.log({
-            message: `Number of relistings: ${listingsNum}`,
+            message: `Relistings: ${listingsNum}`,
         });
         numListed = 0;
 
@@ -109,7 +109,7 @@ window.api.bot.start(async (event) => {
         }
         listingsNum = numListed - listingsNum;
         window.api.bot.log({
-            message: `Number of relisted active rentals: ${numListed}`,
+            message: `Relisted Active Rentals: ${numListed}`,
         });
 
         listingsNum = 0;
