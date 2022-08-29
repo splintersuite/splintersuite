@@ -180,14 +180,7 @@ const addActiveMarketIdsForRelisting = ({
             currentPriceStats: marketPrices[marketKey],
             isClBcxModern: isLowBcxModern,
         });
-        // listingPrice = getListingPrice({
-        //     card_detail_id,
-        //     rarity,
-        //     lowestListingPrice: parseFloat(currentPriceData.low_price),
-        //     numListings: currentPriceData.qty,
-        //     currentPriceStats: marketPrices[marketKey],
-        //     isClBcxModern: isLowBcxModern,
-        // });
+
         listingPrice = listingsService.handleListingsTooHigh({
             currentPriceStats: marketPrices[marketKey],
             listingPrice,

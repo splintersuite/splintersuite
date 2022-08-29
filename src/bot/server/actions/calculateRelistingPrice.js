@@ -4,7 +4,6 @@ const {
     convertForRentGroupOutputToSearchableObject,
 } = require('../services/splinterlands');
 const { getLowBCXModernCardsByUid } = require('../services/collection');
-const { getListingPrice } = require('./calculateRentalPriceToList');
 const listingsService = require('../services/listings');
 const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
 const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';
@@ -48,6 +47,7 @@ const calculateRelistingPrice = async ({
                         level,
                         marketPrices,
                         isClBcxModern: clBcxModerns[card.uid] !== undefined,
+                        endOfSeasonSettings,
                     });
                 if (rentalPriceForMarketId[0] === 'N') {
                     cardsUnableToFindPriceFor.push(rentalPriceForMarketId);
@@ -153,14 +153,6 @@ const addPriceRelistInformationForEachCardByMarketId = ({
                 currentPriceStats: marketPrices[marketKey],
                 isClBcxModern,
             });
-            // listingPrice = getListingPrice({
-            //     card_detail_id,
-            //     rarity,
-            //     lowestListingPrice: parseFloat(currentPriceData.low_price),
-            //     numListings: currentPriceData.qty,
-            //     currentPriceStats: marketPrices[marketKey],
-            //     isClBcxModern,
-            // });
             listingPrice = listingsService.handleListingsTooHigh({
                 currentPriceStats: marketPrices[marketKey],
                 listingPrice,
