@@ -1,4 +1,5 @@
 'use strict';
+const { default: Logger } = require('@electron-forge/web-multi-logger');
 const axios = require('axios');
 
 const {
@@ -23,8 +24,10 @@ axiosRetry(axiosInstance, {
         console.error(`error response is: ${JSON.stringify(error?.response)}`);
         if (
             error?.response?.status === 504 ||
-            error?.response?.status === 502
+            error?.response?.status === 502 ||
+            error?.response?.status === 503
         ) {
+            console.error(`response status is: ${error?.response?.status}`);
             return 100000;
         } else {
             return 500000;

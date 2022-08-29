@@ -24,6 +24,7 @@ const calculateRelistActiveRentalPrices = async ({
         const relistingPriceForActiveMarketId = [];
         const cardsUnableToFindPriceFor = [];
         const cardsNotWorthChangingPrice = [];
+        const outOfLoop = [];
         const cardCatch = [];
 
         for (const level of Object.keys(collectionObj)) {
@@ -60,6 +61,8 @@ const calculateRelistActiveRentalPrices = async ({
                     cardsUnableToFindPriceFor.push(card);
                 } else if (relistPriceForMarketId[0] === 'N') {
                     cardsNotWorthChangingPrice.push(card);
+                } else if (relistPriceForMarketId[0] === 'T') {
+                    outOfLoop.push(card);
                 } else if (relistPriceForMarketId[0] == null) {
                     cardsUnableToFindPriceFor.push(card);
                 } else {
@@ -82,6 +85,9 @@ const calculateRelistActiveRentalPrices = async ({
         });
         window.api.bot.log({
             message: `Excluded: ${cardsNotWorthChangingPrice?.length}`,
+        });
+        window.api.bot.log({
+            message: `Not in Loop: ${outOfLoop?.length}`,
         });
         window.api.bot.log({
             message: `Unable to price: ${cardsUnableToFindPriceFor?.length}`,
@@ -119,7 +125,6 @@ const addActiveMarketIdsForRelisting = ({
             market_id,
             buy_price,
             rental_date,
-            rarity,
         } = card;
 
         let _gold = 'F';
@@ -133,21 +138,23 @@ const addActiveMarketIdsForRelisting = ({
         const rentalDateInMs = new Date(rental_date).getTime();
         if (rentalDateInMs + oneDayTime > now) {
             // this is so we don't cancel a rental that hasn't lasted over 24 hours at least
-            const shouldNotRelistRental = ['N'];
+            const shouldNotRelistRental = ['T'];
             return shouldNotRelistRental;
         }
 
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
-        const currentPriceData =
-            searchableRentList[rentListKey] !== undefined
-                ? searchableRentList[rentListKey]
-                : {};
+        const currentPriceData = searchableRentList[rentListKey];
+        // const currentPriceData =
+        //     searchableRentList[rentListKey] !== undefined
+        //         ? searchableRentList[rentListKey]
+        //         : {};
 
         const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
         let listingPrice;
         if (
             marketPrices[marketKey] == null ||
-            _.isEmpty(marketPrices[marketKey])
+            _.isEmpty(marketPrices[marketKey]) ||
+            !marketPrices
         ) {
             // we should not cancel because we don't have any accurate information due to missing data to reprice this rental right now
             const shouldNotRelistRental = ['MD']; // MD = missing data
@@ -156,7 +163,8 @@ const addActiveMarketIdsForRelisting = ({
         if (
             _.isEmpty(currentPriceData) ||
             currentPriceData == null ||
-            currentPriceData?.low_price == null
+            currentPriceData?.low_price == null ||
+            !currentPriceData
         ) {
             // if there aren't any listings currently, then we should get the marketPrices and reprice the same way we aggresively price the lowBcxModern cards
             const openTrades = marketPrices[marketKey][ALL_OPEN_TRADES];
@@ -165,15 +173,21 @@ const addActiveMarketIdsForRelisting = ({
             const relistingPrice = [market_id, parseFloat(maxHigh)];
             return relistingPrice;
         }
-
-        listingPrice = getListingPrice({
-            card_detail_id,
-            rarity,
-            lowestListingPrice: parseFloat(currentPriceData.low_price),
-            numListings: currentPriceData.qty,
+        listingPrice = listingsService.getListingPrice({
+            daysTillEOS: endOfSeasonSettings?.daysTillEOS,
+            lowestListingPrice: parseFloat(currentPriceData?.low_price),
+            numListings: currentPriceData?.qty,
             currentPriceStats: marketPrices[marketKey],
             isClBcxModern: isLowBcxModern,
         });
+        // listingPrice = getListingPrice({
+        //     card_detail_id,
+        //     rarity,
+        //     lowestListingPrice: parseFloat(currentPriceData.low_price),
+        //     numListings: currentPriceData.qty,
+        //     currentPriceStats: marketPrices[marketKey],
+        //     isClBcxModern: isLowBcxModern,
+        // });
         listingPrice = listingsService.handleListingsTooHigh({
             currentPriceStats: marketPrices[marketKey],
             listingPrice,
@@ -198,7 +212,7 @@ const addActiveMarketIdsForRelisting = ({
                 const rentalRelistingPriceForMarketId = [
                     market_id,
                     parseFloat(currentPriceData?.low_price) > listingPrice
-                        ? currentPriceData.low_price
+                        ? currentPriceData?.low_price
                         : `${listingPrice}`,
                 ];
                 return rentalRelistingPriceForMarketId;

@@ -34,6 +34,11 @@ axiosRetry.axiosRetry(axiosInstance, {
                 `this is a 504 response, splinterlands might be having issues`
             );
             return 100000;
+        } else if (error?.response?.status === 503) {
+            console.error(
+                `this is a 504 response, splinterlands might be having issues`
+            );
+            return 100000;
         } else {
             return 500000;
         }

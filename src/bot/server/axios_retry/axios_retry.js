@@ -68,7 +68,9 @@ const isIdempotentRequestError = (error) => {
 const isSplinterlandsServerError = (error) => {
     return (
         error?.code === 'ERR_NETWORK' &&
-        (error?.response?.status === 502 || error?.response?.status === 504)
+        (error?.response?.status === 502 ||
+            error?.response?.status === 504 ||
+            error?.response?.status === 503)
     );
 };
 

@@ -111,7 +111,6 @@ const getAllGroupedRentalsByLevel = async () => {
 };
 
 // https://api2.splinterlands.com/market/for_rent_grouped?level=10&
-// https://api2.splinterlands.com/market/for_rent_by_card?min_level=3&max_level=4&card_detail_id=353&edition=7&gold=false
 
 // sorts groupedRentalList (array of objects) into an object where we can search by card_detail_id, gold, and edition of the card in price data
 const convertForRentGroupOutputToSearchableObject = ({

@@ -13,12 +13,15 @@ const calculateRelistingPrice = async ({
     collectionObj,
     marketPrices,
     groupedRentalListObj,
+    endOfSeasonSettings,
 }) => {
     try {
         const relistingPriceForEachMarketId = [];
         const cardsUnableToFindPriceFor = [];
         const cardsNotWorthRelisting = [];
         const cardCatch = [];
+
+        const minRentalSetting = 0.2;
 
         for (const level of Object.keys(collectionObj)) {
             // should be a max of 10 possible times we can go through this because max lvl is 10
@@ -51,7 +54,9 @@ const calculateRelistingPrice = async ({
                 } else if (rentalPriceForMarketId[0] === 'C') {
                     cardsNotWorthRelisting.push(rentalPriceForMarketId);
                 } else {
-                    if (parseFloat(rentalPriceForMarketId[1]) < 0.2) {
+                    if (
+                        parseFloat(rentalPriceForMarketId[1]) < minRentalSetting
+                    ) {
                         // rental is less than 0.2 dec, not worth listing for 0.1 dec
                         cardsNotWorthRelisting.push(rentalPriceForMarketId);
                     } else {
@@ -96,17 +101,11 @@ const addPriceRelistInformationForEachCardByMarketId = ({
     level,
     marketPrices,
     isClBcxModern,
+    endOfSeasonSettings,
 }) => {
     try {
-        const {
-            card_detail_id,
-            gold,
-            edition,
-            market_id,
-            buy_price,
-            rarity,
-            uid,
-        } = card;
+        const { card_detail_id, gold, edition, market_id, buy_price, uid } =
+            card;
 
         let _gold = 'F';
         if (gold) {
@@ -121,36 +120,64 @@ const addPriceRelistInformationForEachCardByMarketId = ({
 
         if (
             marketPrices[marketKey] == null ||
-            _.isEmpty(marketPrices[marketKey])
+            _.isEmpty(marketPrices[marketKey] || !marketPrices)
         ) {
             // we should not cancel because we don't have any accurate information due to missing data to reprice this rental right now
             const shouldNotRelistRental = ['N'];
             return shouldNotRelistRental;
         }
+        if (
+            currentPriceData == null ||
+            currentPriceData.low_price == null ||
+            _.isEmpty(currentPriceData) ||
+            !currentPriceData
+        ) {
+            if (marketPrices[marketKey] != null) {
+                const openTrades = marketPrices[marketKey][ALL_OPEN_TRADES];
+                const allTrades = marketPrices[marketKey][TRADES_DURING_PERIOD];
+                const maxHigh = _.max([openTrades.high, allTrades.high]);
+                const relistingPrice = [market_id, parseFloat(maxHigh)];
+                return relistingPrice;
+            } else {
+                const rentalNotFoundForCard = ['N', uid, market_id];
+                return rentalNotFoundForCard;
+            }
+        }
+
         let listingPrice;
         if (marketPrices[marketKey] != null) {
-            listingPrice = getListingPrice({
-                card_detail_id,
-                rarity,
-                lowestListingPrice: parseFloat(currentPriceData.low_price),
+            listingPrice = listingsService.getListingPrice({
+                daysTillEOS: endOfSeasonSettings?.daysTillEOS,
+                lowestListingPrice: parseFloat(currentPriceData?.low_price),
                 numListings: currentPriceData.qty,
                 currentPriceStats: marketPrices[marketKey],
                 isClBcxModern,
             });
+            // listingPrice = getListingPrice({
+            //     card_detail_id,
+            //     rarity,
+            //     lowestListingPrice: parseFloat(currentPriceData.low_price),
+            //     numListings: currentPriceData.qty,
+            //     currentPriceStats: marketPrices[marketKey],
+            //     isClBcxModern,
+            // });
             listingPrice = listingsService.handleListingsTooHigh({
                 currentPriceStats: marketPrices[marketKey],
                 listingPrice,
                 isClBcxModern,
             });
         } else {
-            listingPrice = parseFloat(currentPriceData.low_price);
+            const rentalNotFoundForCard = ['N', uid, market_id];
+            return rentalNotFoundForCard;
         }
 
-        const lowBcxModernFactor = isClBcxModern ? 2.0 : 1.0;
+        const lowBcxModernFactor = isClBcxModern ? 1.5 : 1.0;
+
         if (
             currentPriceData == null ||
             currentPriceData.low_price == null ||
-            _.isEmpty(currentPriceData)
+            _.isEmpty(currentPriceData) ||
+            !currentPriceData
         ) {
             if (marketPrices[marketKey] != null) {
                 const openTrades = marketPrices[marketKey][ALL_OPEN_TRADES];

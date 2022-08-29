@@ -88,6 +88,7 @@ const startRentalBot = async ({
             collectionObj: collectionByLevelObjAvailableForRent,
             marketPrices,
             groupedRentalListObj,
+            endOfSeasonSettings,
         });
 
         const { relistingPriceForEachMarketId } = await calculateRelistingPrice(

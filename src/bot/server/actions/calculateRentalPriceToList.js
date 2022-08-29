@@ -13,6 +13,7 @@ const calculateRentalPriceToList = async ({
     collectionObj,
     marketPrices,
     groupedRentalListObj,
+    endOfSeasonSettings,
 }) => {
     try {
         const rentalPriceForEachCardUid = [];
@@ -47,6 +48,7 @@ const calculateRentalPriceToList = async ({
                         level,
                         marketPrices,
                         isClBcxModern: clBcxModerns[card.uid] !== undefined,
+                        endOfSeasonSettings,
                     });
                 if (rentalPriceForUid[1] === 'N') {
                     cardsUnableToFindPriceFor.push(rentalPriceForUid);
@@ -93,9 +95,10 @@ const addPriceListInformationForEachCardByUid = ({
     level,
     marketPrices,
     isClBcxModern,
+    endOfSeasonSettings,
 }) => {
     try {
-        const { card_detail_id, gold, edition, rarity, uid } = card;
+        const { card_detail_id, gold, edition, uid } = card;
         let _gold = 'F';
         if (gold) {
             _gold = 'T';
@@ -110,7 +113,8 @@ const addPriceListInformationForEachCardByUid = ({
         if (
             currentPriceData == null ||
             currentPriceData?.low_price == null ||
-            _.isEmpty(currentPriceData)
+            _.isEmpty(currentPriceData) ||
+            !currentPriceData
         ) {
             // there are currently no listings on the market for this card
             if (marketPrices[marketKey] != null) {
@@ -127,27 +131,35 @@ const addPriceListInformationForEachCardByUid = ({
 
         let listingPrice;
         if (marketPrices[marketKey] != null) {
-            listingPrice = getListingPrice({
-                card_detail_id,
-                rarity,
-                lowestListingPrice: parseFloat(currentPriceData.low_price),
-                numListings: currentPriceData.qty,
+            listingPrice = listingsService.getListingPrice({
+                daysTillEOS: endOfSeasonSettings?.daysTillEOS,
+                lowestListingPrice: parseFloat(currentPriceData?.low_price),
+                numListings: currentPriceData?.qty,
                 currentPriceStats: marketPrices[marketKey],
                 isClBcxModern,
             });
+            // listingPrice = getListingPrice({
+            //     card_detail_id,
+            //     rarity,
+            //     lowestListingPrice: parseFloat(currentPriceData.low_price),
+            //     numListings: currentPriceData.qty,
+            //     currentPriceStats: marketPrices[marketKey],
+            //     isClBcxModern,
+            // });
             listingPrice = listingsService.handleListingsTooHigh({
                 currentPriceStats: marketPrices[marketKey],
                 listingPrice,
                 isClBcxModern,
             });
         } else {
-            listingPrice = parseFloat(currentPriceData.low_price);
+            const rentalNotFoundForCard = [uid, 'N'];
+            return rentalNotFoundForCard;
         }
 
         const rentalPriceForUid = [
             uid,
-            parseFloat(currentPriceData.low_price) > listingPrice
-                ? currentPriceData.low_price
+            parseFloat(currentPriceData?.low_price) > listingPrice
+                ? currentPriceData?.low_price
                 : `${listingPrice}`,
         ];
 
