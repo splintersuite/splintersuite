@@ -117,8 +117,8 @@ const filterCollectionArraysForPotentialRentalCards = ({
                     ) {
                         cardsOnRentalCooldown.push(cardToBeAdded);
                     } else if (
-                        card.last_used_date != null &&
-                        isOnCooldown(card.last_used_date) &&
+                        // card.last_used_date != null &&
+                        // isOnCooldown(card.last_used_date) &&
                         card.last_transferred_date != null &&
                         isOnCooldown(card.last_transferred_date)
                     ) {
