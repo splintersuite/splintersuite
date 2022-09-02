@@ -53,7 +53,7 @@ const getListingPrice = ({
                 (Number.isFinite(tradesDuringPeriod?.avg) &&
                     Number.isFinite(tradesDuringPeriod?.stdDev)))
         ) {
-            if (daysTillEOS < 12) {
+            if (daysTillEOS < 11) {
                 return _.max([
                     _.max([
                         openTrades?.avg + 2 * openTrades?.stdDev,
@@ -93,7 +93,7 @@ const getListingPrice = ({
         if (numListings <= 4) {
             // there are 6 or less listings currently for the card
             if (openTrades?.volume >= numListings) {
-                if (daysTillEOS < 12) {
+                if (daysTillEOS < 11) {
                     return _.max([
                         _.max([
                             openTrades?.avg + openTrades?.stdDev * 1.5,
@@ -131,7 +131,7 @@ const getListingPrice = ({
                     ]);
                 }
             } else {
-                if (daysTillEOS < 12) {
+                if (daysTillEOS < 11) {
                     return _.max([
                         _.max([
                             openTrades?.avg + openTrades?.stdDev * 0.75,
@@ -171,7 +171,7 @@ const getListingPrice = ({
             }
         }
 
-        if (Number.isFinite(daysTillEOS) && daysTillEOS < 9) {
+        if (Number.isFinite(daysTillEOS) && daysTillEOS < 11) {
             return _.max([
                 openTrades?.avg + openTrades?.stdDev,
                 tradesDuringPeriod?.avg + tradesDuringPeriod?.stdDev,
