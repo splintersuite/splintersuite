@@ -134,24 +134,6 @@ const getListingPrice = ({
                 if (daysTillEOS < 12) {
                     return _.max([
                         _.max([
-                            openTrades?.avg + openTrades?.stdDev * 1.25,
-                            tradesDuringPeriod?.avg +
-                                1.25 * tradesDuringPeriod?.stdDev,
-                        ]),
-                        _.max([
-                            openTrades?.median + 1.25 * openTrades?.stdDev,
-                            tradesDuringPeriod?.median +
-                                1.25 * tradesDuringPeriod?.stdDev,
-                        ]),
-                        _.max([
-                            bestHigh - 2 * openTrades?.stdDev,
-                            bestHigh - 2 * tradesDuringPeriod?.stdDev,
-                        ]),
-                        lowestListingPrice,
-                    ]);
-                } else {
-                    return _.max([
-                        _.max([
                             openTrades?.avg + openTrades?.stdDev * 0.75,
                             tradesDuringPeriod?.avg +
                                 0.75 * tradesDuringPeriod?.stdDev,
@@ -160,6 +142,24 @@ const getListingPrice = ({
                             openTrades?.median + 0.75 * openTrades?.stdDev,
                             tradesDuringPeriod?.median +
                                 0.75 * tradesDuringPeriod?.stdDev,
+                        ]),
+                        _.max([
+                            bestHigh - 1.75 * openTrades?.stdDev,
+                            bestHigh - 1.75 * tradesDuringPeriod?.stdDev,
+                        ]),
+                        lowestListingPrice,
+                    ]);
+                } else {
+                    return _.max([
+                        _.max([
+                            openTrades?.avg + openTrades?.stdDev * 0.25,
+                            tradesDuringPeriod?.avg +
+                                0.25 * tradesDuringPeriod?.stdDev,
+                        ]),
+                        _.max([
+                            openTrades?.median + 0.25 * openTrades?.stdDev,
+                            tradesDuringPeriod?.median +
+                                0.25 * tradesDuringPeriod?.stdDev,
                         ]),
                         _.max([
                             bestHigh - 2 * openTrades?.stdDev,
