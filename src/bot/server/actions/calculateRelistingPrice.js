@@ -20,7 +20,7 @@ const calculateRelistingPrice = async ({
         const cardsNotWorthRelisting = [];
         const cardCatch = [];
 
-        const minRentalSetting = 0.2;
+        const minRentalSetting = 0.13;
 
         for (const level of Object.keys(collectionObj)) {
             // should be a max of 10 possible times we can go through this because max lvl is 10

@@ -53,17 +53,35 @@ const getListingPrice = ({
                 (Number.isFinite(tradesDuringPeriod?.avg) &&
                     Number.isFinite(tradesDuringPeriod?.stdDev)))
         ) {
-            return _.max([
-                _.max([
-                    openTrades?.avg + 2 * openTrades?.stdDev,
-                    tradesDuringPeriod?.avg + 2 * tradesDuringPeriod?.stdDev,
-                ]),
-                _.max([
-                    openTrades?.median + 2 * openTrades?.stdDev,
-                    tradesDuringPeriod?.median + 2 * tradesDuringPeriod?.stdDev,
-                ]),
-                lowestListingPrice,
-            ]);
+            if (daysTillEOS < 12) {
+                return _.max([
+                    _.max([
+                        openTrades?.avg + 2 * openTrades?.stdDev,
+                        tradesDuringPeriod?.avg +
+                            2 * tradesDuringPeriod?.stdDev,
+                    ]),
+                    _.max([
+                        openTrades?.median + 2 * openTrades?.stdDev,
+                        tradesDuringPeriod?.median +
+                            2 * tradesDuringPeriod?.stdDev,
+                    ]),
+                    lowestListingPrice,
+                ]);
+            } else {
+                return _.max([
+                    _.max([
+                        openTrades?.avg + 1.75 * openTrades?.stdDev,
+                        tradesDuringPeriod?.avg +
+                            1.75 * tradesDuringPeriod?.stdDev,
+                    ]),
+                    _.max([
+                        openTrades?.median + 1.75 * openTrades?.stdDev,
+                        tradesDuringPeriod?.median +
+                            1.75 * tradesDuringPeriod?.stdDev,
+                    ]),
+                    lowestListingPrice,
+                ]);
+            }
         }
 
         const bestHigh =
@@ -72,44 +90,84 @@ const getListingPrice = ({
                 ? tradesDuringPeriod?.high
                 : openTrades?.high;
 
-        if (numListings <= 6) {
+        if (numListings <= 4) {
             // there are 6 or less listings currently for the card
             if (openTrades?.volume >= numListings) {
-                return _.max([
-                    _.max([
-                        openTrades?.avg + openTrades?.stdDev * 1.5,
-                        tradesDuringPeriod?.avg +
-                            1.5 * tradesDuringPeriod?.stdDev,
-                    ]),
-                    _.max([
-                        openTrades?.median + 1.5 * openTrades?.stdDev,
-                        tradesDuringPeriod?.median +
-                            1.5 * tradesDuringPeriod?.stdDev,
-                    ]),
-                    _.max([
-                        bestHigh - openTrades?.stdDev,
-                        bestHigh - tradesDuringPeriod?.stdDev,
-                    ]),
-                    lowestListingPrice,
-                ]);
+                if (daysTillEOS < 12) {
+                    return _.max([
+                        _.max([
+                            openTrades?.avg + openTrades?.stdDev * 1.5,
+                            tradesDuringPeriod?.avg +
+                                1.5 * tradesDuringPeriod?.stdDev,
+                        ]),
+                        _.max([
+                            openTrades?.median + 1.5 * openTrades?.stdDev,
+                            tradesDuringPeriod?.median +
+                                1.5 * tradesDuringPeriod?.stdDev,
+                        ]),
+                        _.max([
+                            bestHigh - openTrades?.stdDev,
+                            bestHigh - tradesDuringPeriod?.stdDev,
+                        ]),
+                        lowestListingPrice,
+                    ]);
+                } else {
+                    return _.max([
+                        _.max([
+                            openTrades?.avg + openTrades?.stdDev * 1,
+                            tradesDuringPeriod?.avg +
+                                1 * tradesDuringPeriod?.stdDev,
+                        ]),
+                        _.max([
+                            openTrades?.median + 1 * openTrades?.stdDev,
+                            tradesDuringPeriod?.median +
+                                1 * tradesDuringPeriod?.stdDev,
+                        ]),
+                        _.max([
+                            bestHigh - 1.5 * openTrades?.stdDev,
+                            bestHigh - 1.5 * tradesDuringPeriod?.stdDev,
+                        ]),
+                        lowestListingPrice,
+                    ]);
+                }
             } else {
-                return _.max([
-                    _.max([
-                        openTrades?.avg + openTrades?.stdDev * 1.25,
-                        tradesDuringPeriod?.avg +
-                            1.25 * tradesDuringPeriod?.stdDev,
-                    ]),
-                    _.max([
-                        openTrades?.median + 1.25 * openTrades?.stdDev,
-                        tradesDuringPeriod?.median +
-                            1.25 * tradesDuringPeriod?.stdDev,
-                    ]),
-                    _.max([
-                        bestHigh - 2 * openTrades?.stdDev,
-                        bestHigh - 2 * tradesDuringPeriod?.stdDev,
-                    ]),
-                    lowestListingPrice,
-                ]);
+                if (daysTillEOS < 12) {
+                    return _.max([
+                        _.max([
+                            openTrades?.avg + openTrades?.stdDev * 1.25,
+                            tradesDuringPeriod?.avg +
+                                1.25 * tradesDuringPeriod?.stdDev,
+                        ]),
+                        _.max([
+                            openTrades?.median + 1.25 * openTrades?.stdDev,
+                            tradesDuringPeriod?.median +
+                                1.25 * tradesDuringPeriod?.stdDev,
+                        ]),
+                        _.max([
+                            bestHigh - 2 * openTrades?.stdDev,
+                            bestHigh - 2 * tradesDuringPeriod?.stdDev,
+                        ]),
+                        lowestListingPrice,
+                    ]);
+                } else {
+                    return _.max([
+                        _.max([
+                            openTrades?.avg + openTrades?.stdDev * 0.75,
+                            tradesDuringPeriod?.avg +
+                                0.75 * tradesDuringPeriod?.stdDev,
+                        ]),
+                        _.max([
+                            openTrades?.median + 0.75 * openTrades?.stdDev,
+                            tradesDuringPeriod?.median +
+                                0.75 * tradesDuringPeriod?.stdDev,
+                        ]),
+                        _.max([
+                            bestHigh - 2 * openTrades?.stdDev,
+                            bestHigh - 2 * tradesDuringPeriod?.stdDev,
+                        ]),
+                        lowestListingPrice,
+                    ]);
+                }
             }
         }
 
