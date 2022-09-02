@@ -198,7 +198,7 @@ const addActiveMarketIdsForRelisting = ({
             (listingPrice - buy_price) / listingPrice >
                 endOfSeasonSettings?.cancellationThreshold * lowBcxModernFactor
         ) {
-            if (listingPrice < 0.2) {
+            if (listingPrice < 0.13) {
                 const shouldNotRelistRental = ['N'];
                 return shouldNotRelistRental;
             } else {

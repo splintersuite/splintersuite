@@ -20,7 +20,7 @@ const calculateRelistingPrice = async ({
         const cardsNotWorthRelisting = [];
         const cardCatch = [];
 
-        const minRentalSetting = 0.2;
+        const minRentalSetting = 0.13;
 
         for (const level of Object.keys(collectionObj)) {
             // should be a max of 10 possible times we can go through this because max lvl is 10
@@ -164,7 +164,8 @@ const addPriceRelistInformationForEachCardByMarketId = ({
         }
 
         const lowBcxModernFactor = isClBcxModern ? 1.5 : 1.0;
-
+        const isEarlySeason =
+            endOfSeasonSettings?.daysTillEOS > 10 ? 0.25 : 1.0;
         if (
             currentPriceData == null ||
             currentPriceData.low_price == null ||
@@ -183,11 +184,12 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             }
         } else if (
             listingPrice < buy_price &&
-            (buy_price - listingPrice) / buy_price > 0.3 * lowBcxModernFactor
+            (buy_price - listingPrice) / buy_price >
+                0.3 * lowBcxModernFactor * isEarlySeason
         ) {
             // the current listing (buy_price) is 30% more than what we would list it as today
             // relist lower
-            if (listingPrice < 0.2) {
+            if (listingPrice < 0.13) {
                 const doNotChangeThePrice = [
                     'C',
                     uid,
