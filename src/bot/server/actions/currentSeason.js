@@ -51,6 +51,7 @@ const getEndOfSeasonSettings = ({ season }) => {
         let endOfSeasonSettings = {
             ...cancellationMatrix[0],
             msTillSeasonEnd: msInDay * 16,
+            seasonEndTime,
         };
         cancellationMatrix.some((day) => {
             if (day.daysTillEOS === 1) {

@@ -164,8 +164,7 @@ const addPriceRelistInformationForEachCardByMarketId = ({
         }
 
         const lowBcxModernFactor = isClBcxModern ? 1.5 : 1.0;
-        const isEarlySeason =
-            endOfSeasonSettings?.daysTillEOS > 10 ? 0.25 : 1.0;
+        const isEarlySeason = endOfSeasonSettings?.daysTillEOS > 10 ? 0.5 : 1.0;
         if (
             currentPriceData == null ||
             currentPriceData.low_price == null ||
@@ -185,7 +184,7 @@ const addPriceRelistInformationForEachCardByMarketId = ({
         } else if (
             listingPrice < buy_price &&
             (buy_price - listingPrice) / buy_price >
-                0.3 * lowBcxModernFactor * isEarlySeason
+                0.15 * lowBcxModernFactor * isEarlySeason
         ) {
             // the current listing (buy_price) is 30% more than what we would list it as today
             // relist lower
