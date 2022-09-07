@@ -1,7 +1,6 @@
 'use strict';
 
 const { axiosInstance } = require('../requests/axiosGetInstance');
-const { sleep } = require('../axios_retry/general');
 
 const getRecentHiveListings = async ({ username }) => {
     try {
@@ -65,11 +64,31 @@ const getPostedSuiteListings = async ({ username }) => {
     }
 };
 
-const getSuccessfulSuiteRelistings = async ({ username }) => {
+const getPostedSuiteRelistings = async ({ username }) => {
     try {
+        console.log(`/bot/server/services/hive/getPostedSuiteRelistings`);
+
+        const relistings = await getRecentHiveRelistings({ username });
+
+        const postedRelistings = getSuccessfulTransactions({
+            transactions: relistings,
+        });
+
+        const postedSuiteRelistings = getSplinterSuiteTransactions({
+            transactions: postedRelistings,
+        });
+
+        window.api.bot.log({
+            message: `/bot/server/services/hive/getPostedSuiteRelistings`,
+        });
+        window.api.bot.log({
+            message: `Relistings: ${postedSuiteRelistings?.length}`,
+        });
+
+        return postedSuiteRelistings;
     } catch (err) {
         window.api.bot.log({
-            message: `/bot/server/services/hive/getSuccessfulSuiteRelistings error: ${err.message}`,
+            message: `/bot/server/services/hive/getPostedSuiteRelistings error: ${err.message}`,
         });
         throw err;
     }
@@ -182,5 +201,5 @@ const isSplintersuite = ({ hiveTransaction }) => {
 
 module.exports = {
     getPostedSuiteListings,
-    getRecentHiveRelistings,
+    getPostedSuiteRelistings,
 };
