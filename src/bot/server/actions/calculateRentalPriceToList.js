@@ -21,7 +21,7 @@ const calculateRentalPriceToList = async ({
         const cardsNotWorthListing = [];
         const cardCatch = [];
 
-        const minRentalSetting = 0.13;
+        const minRentalSetting = 0.11;
 
         // sorts through the collectionObj that has key = level, value = [array of cards that's level = key]
         for (const level of Object.keys(collectionObj)) {

@@ -59,8 +59,8 @@ const getListingPrice = ({
                 const bestCalcPrice = _.min([
                     _.max([openTrades?.high, tradesDuringPeriod?.high]),
                     _.max([
-                        bests.bestMid + 1.5 * openTrades?.stdDev,
-                        bests.bestMid + 1.5 * tradesDuringPeriod?.stdDev,
+                        bests.bestMid + 1 * openTrades?.stdDev,
+                        bests.bestMid + 1 * tradesDuringPeriod?.stdDev,
                     ]),
                 ]);
                 // so that we don't list way lower than the lowest listing
@@ -69,8 +69,8 @@ const getListingPrice = ({
                 const bestCalcPrice = _.min([
                     _.max([openTrades?.high, tradesDuringPeriod?.high]),
                     _.max([
-                        bests.bestMid + 1 * openTrades?.stdDev,
-                        bests.bestMid + 1 * tradesDuringPeriod?.stdDev,
+                        bests.bestMid + 0.5 * openTrades?.stdDev,
+                        bests.bestMid + 0.5 * tradesDuringPeriod?.stdDev,
                     ]),
                 ]);
                 // so that we don't list way lower than the lowest listing
@@ -106,20 +106,13 @@ const getListingPrice = ({
             }
         } else {
             if (daysTillEOS < 11) {
-                return _.max([
-                    _.max([
-                        bests?.bestMid + 0.25 * openTrades?.stdDev,
-                        bests?.bestMid + 0.25 * tradesDuringPeriod?.stdDev,
-                    ]),
-                    lowestListingPrice * 0.99,
-                ]);
+                return _.max([bests?.bestMid, lowestListingPrice * 0.99]);
             } else {
-                return _.max([bests?.bestMid, lowestListingPrice]);
-                // const bestLows = getBestLows({
-                //     tradesDuringPeriod,
-                //     openTrades,
-                // });
-                // return _.max([lowestListingPrice * 0.99, bestLows?.lowMid]);
+                const bestLows = getBestLows({
+                    tradesDuringPeriod,
+                    openTrades,
+                });
+                return _.max([lowestListingPrice * 0.99, bestLows?.lowMid]);
             }
         }
     } catch (err) {

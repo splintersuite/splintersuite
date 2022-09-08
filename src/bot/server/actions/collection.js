@@ -112,8 +112,8 @@ const filterCollectionArraysForPotentialRentalCards = ({
                     if (
                         card.last_used_player === username &&
                         card.market_listing_type == null &&
-                        card.last_used_date != null &&
-                        isOnCooldown(card.last_used_date)
+                        card?.last_used_date &&
+                        isOnCooldown(card?.last_used_date)
                     ) {
                         cardsOnRentalCooldown.push(cardToBeAdded);
                     } else if (
