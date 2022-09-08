@@ -29,7 +29,6 @@ const handleListingTooLong = ({
         //  const market_created_date = card?.market_created_date;
         if (
             card?.market_listing_status === 0 &&
-            isOnCooldown(card?.market_created_date) &&
             card?.market_created_date?.getTime() &&
             dates.isBeforeTime({
                 time: card?.market_created_date,

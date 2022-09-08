@@ -56,25 +56,17 @@ const getListingPrice = ({
                     Number.isFinite(tradesDuringPeriod?.stdDev)))
         ) {
             if (daysTillEOS < 11) {
-                const bestCalcPrice = _.min([
-                    _.max([openTrades?.high, tradesDuringPeriod?.high]),
-                    _.max([
-                        bests.bestMid + 1 * openTrades?.stdDev,
-                        bests.bestMid + 1 * tradesDuringPeriod?.stdDev,
-                    ]),
+                return _.max([
+                    bests.bestMid + 1 * openTrades?.stdDev,
+                    bests.bestMid + 1 * tradesDuringPeriod?.stdDev,
+                    lowestListingPrice * 0.99,
                 ]);
-                // so that we don't list way lower than the lowest listing
-                return _.max([bestCalcPrice, lowestListingPrice * 0.99]);
             } else {
-                const bestCalcPrice = _.min([
-                    _.max([openTrades?.high, tradesDuringPeriod?.high]),
-                    _.max([
-                        bests.bestMid + 0.5 * openTrades?.stdDev,
-                        bests.bestMid + 0.5 * tradesDuringPeriod?.stdDev,
-                    ]),
+                return _.max([
+                    bests.bestMid + 0.5 * openTrades?.stdDev,
+                    bests.bestMid + 0.5 * tradesDuringPeriod?.stdDev,
+                    lowestListingPrice * 0.99,
                 ]);
-                // so that we don't list way lower than the lowest listing
-                return _.max([bestCalcPrice, lowestListingPrice * 0.99]);
             }
         }
 
@@ -89,18 +81,14 @@ const getListingPrice = ({
             // This means there are few cards listed on the market, and volume is sufficient to expect that we will be able to get our stuff rented out.
             if (daysTillEOS < 11) {
                 return _.max([
-                    _.max([
-                        bests?.bestMid + openTrades?.stdDev,
-                        bests?.bestMid + tradesDuringPeriod?.stdDev,
-                    ]),
+                    bests?.bestMid + openTrades?.stdDev,
+                    bests?.bestMid + tradesDuringPeriod?.stdDev,
                     lowestListingPrice,
                 ]);
             } else {
                 return _.max([
-                    _.max([
-                        bests?.bestMid + 0.25 * openTrades?.stdDev,
-                        bests?.bestMid + 0.25 * tradesDuringPeriod?.stdDev,
-                    ]),
+                    bests?.bestMid + 0.25 * openTrades?.stdDev,
+                    bests?.bestMid + 0.25 * tradesDuringPeriod?.stdDev,
                     lowestListingPrice,
                 ]);
             }
