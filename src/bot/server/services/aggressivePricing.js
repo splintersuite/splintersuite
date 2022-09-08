@@ -47,11 +47,20 @@ const getListingPrice = ({
         const openTrades = currentPriceStats[ALL_OPEN_TRADES];
         const tradesDuringPeriod = currentPriceStats[TRADES_DURING_PERIOD];
 
+        // if (
+        //     isClBcxModern &&
+        //     ((Number.isFinite(openTrades?.avg) &&
+        //         Number.isFinite(openTrades?.stdDev)) ||
+        //         (Number.isFinite(tradesDuringPeriod?.avg) &&
+        //             Number.isFinite(tradesDuringPeriod?.stdDev)))
+        // ) {
+
         if (
             isClBcxModern &&
             ((Number.isFinite(openTrades?.avg) &&
                 Number.isFinite(openTrades?.stdDev)) ||
-                (Number.isFinite(tradesDuringPeriod?.avg) &&
+                (isClBcxModern &&
+                    Number.isFinite(tradesDuringPeriod?.avg) &&
                     Number.isFinite(tradesDuringPeriod?.stdDev)))
         ) {
             if (daysTillEOS < 11) {
