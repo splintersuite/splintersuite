@@ -83,13 +83,13 @@ const getListingPrice = ({
                 return _.max([
                     bests?.bestMid + 0.25 * openTrades?.stdDev,
                     bests?.bestMid + 0.25 * tradesDuringPeriod?.stdDev,
-                    lowestListingPrice,
+                    lowestListingPrice * 0.99,
                 ]);
             } else {
                 return _.max([
                     bests?.bestMid,
                     bests?.bestMid,
-                    lowestListingPrice,
+                    lowestListingPrice * 0.99,
                 ]);
             }
         } else {

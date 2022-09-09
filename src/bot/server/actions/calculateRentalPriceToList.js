@@ -149,12 +149,7 @@ const addPriceListInformationForEachCardByUid = ({
             return rentalNotFoundForCard;
         }
 
-        const rentalPriceForUid = [
-            uid,
-            parseFloat(currentPriceData?.low_price) > listingPrice
-                ? currentPriceData?.low_price
-                : `${listingPrice}`,
-        ];
+        const rentalPriceForUid = [uid, parseFloat(listingPrice)];
 
         return rentalPriceForUid;
     } catch (err) {

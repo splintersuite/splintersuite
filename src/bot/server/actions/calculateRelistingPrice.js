@@ -164,24 +164,6 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             return rentalNotFoundForCard;
         }
 
-        // const lowBcxModernFactor = isClBcxModern ? 1.5 : 1.0;
-        // if (
-        //     currentPriceData == null ||
-        //     currentPriceData.low_price == null ||
-        //     _.isEmpty(currentPriceData) ||
-        //     !currentPriceData
-        // ) {
-        //     if (marketPrices[marketKey] != null) {
-        //         const openTrades = marketPrices[marketKey][ALL_OPEN_TRADES];
-        //         const allTrades = marketPrices[marketKey][TRADES_DURING_PERIOD];
-        //         const maxHigh = _.max([openTrades.high, allTrades.high]);
-        //         const relistingPrice = [market_id, parseFloat(maxHigh)];
-        //         return relistingPrice;
-        //     } else {
-        //         const rentalNotFoundForCard = ['N', uid, market_id];
-        //         return rentalNotFoundForCard;
-        //     }
-        // } else
         if (
             listingPrice < buy_price
             // &&
@@ -189,7 +171,8 @@ const addPriceRelistInformationForEachCardByMarketId = ({
         ) {
             // the current listing (buy_price) is 15% more than what we would list it as today
             // relist lower
-            if (listingPrice < 0.11) {
+            // TNT NOTE: this buy_price - listingPrice < 0.2, we should let the 0.2 value be set by a user setting imo
+            if (listingPrice < 0.11 || buy_price - listingPrice < 0.2) {
                 const doNotChangeThePrice = [
                     'C',
                     uid,
@@ -204,9 +187,6 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             const rentalRelistingPriceForMarketId = [
                 market_id,
                 parseFloat(listingPrice),
-                // parseFloat(currentPriceData.low_price) > listingPrice
-                //     ? currentPriceData.low_price
-                //     : `${listingPrice}`,
             ];
 
             return rentalRelistingPriceForMarketId;
