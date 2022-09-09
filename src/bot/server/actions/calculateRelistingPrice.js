@@ -128,14 +128,15 @@ const addPriceRelistInformationForEachCardByMarketId = ({
         }
         if (
             currentPriceData == null ||
-            currentPriceData.low_price == null ||
+            currentPriceData?.low_price == null ||
             _.isEmpty(currentPriceData) ||
             !currentPriceData
         ) {
+            // this means there aren't any currently listed cards on the market
             if (marketPrices[marketKey] != null) {
                 const openTrades = marketPrices[marketKey][ALL_OPEN_TRADES];
                 const allTrades = marketPrices[marketKey][TRADES_DURING_PERIOD];
-                const maxHigh = _.max([openTrades.high, allTrades.high]);
+                const maxHigh = _.max([openTrades?.high, allTrades?.high]);
                 const relistingPrice = [market_id, parseFloat(maxHigh)];
                 return relistingPrice;
             } else {
@@ -163,30 +164,30 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             return rentalNotFoundForCard;
         }
 
-        const lowBcxModernFactor = isClBcxModern ? 1.5 : 1.0;
-        const isEarlySeason = endOfSeasonSettings?.daysTillEOS > 10 ? 0.5 : 1.0;
+        // const lowBcxModernFactor = isClBcxModern ? 1.5 : 1.0;
+        // if (
+        //     currentPriceData == null ||
+        //     currentPriceData.low_price == null ||
+        //     _.isEmpty(currentPriceData) ||
+        //     !currentPriceData
+        // ) {
+        //     if (marketPrices[marketKey] != null) {
+        //         const openTrades = marketPrices[marketKey][ALL_OPEN_TRADES];
+        //         const allTrades = marketPrices[marketKey][TRADES_DURING_PERIOD];
+        //         const maxHigh = _.max([openTrades.high, allTrades.high]);
+        //         const relistingPrice = [market_id, parseFloat(maxHigh)];
+        //         return relistingPrice;
+        //     } else {
+        //         const rentalNotFoundForCard = ['N', uid, market_id];
+        //         return rentalNotFoundForCard;
+        //     }
+        // } else
         if (
-            currentPriceData == null ||
-            currentPriceData.low_price == null ||
-            _.isEmpty(currentPriceData) ||
-            !currentPriceData
+            listingPrice < buy_price
+            // &&
+            // (buy_price - listingPrice) / buy_price > 0.15 * lowBcxModernFactor
         ) {
-            if (marketPrices[marketKey] != null) {
-                const openTrades = marketPrices[marketKey][ALL_OPEN_TRADES];
-                const allTrades = marketPrices[marketKey][TRADES_DURING_PERIOD];
-                const maxHigh = _.max([openTrades.high, allTrades.high]);
-                const relistingPrice = [market_id, parseFloat(maxHigh)];
-                return relistingPrice;
-            } else {
-                const rentalNotFoundForCard = ['N', uid, market_id];
-                return rentalNotFoundForCard;
-            }
-        } else if (
-            listingPrice < buy_price &&
-            (buy_price - listingPrice) / buy_price >
-                0.15 * lowBcxModernFactor * isEarlySeason
-        ) {
-            // the current listing (buy_price) is 30% more than what we would list it as today
+            // the current listing (buy_price) is 15% more than what we would list it as today
             // relist lower
             if (listingPrice < 0.11) {
                 const doNotChangeThePrice = [
@@ -202,9 +203,10 @@ const addPriceRelistInformationForEachCardByMarketId = ({
 
             const rentalRelistingPriceForMarketId = [
                 market_id,
-                parseFloat(currentPriceData.low_price) > listingPrice
-                    ? currentPriceData.low_price
-                    : `${listingPrice}`,
+                parseFloat(listingPrice),
+                // parseFloat(currentPriceData.low_price) > listingPrice
+                //     ? currentPriceData.low_price
+                //     : `${listingPrice}`,
             ];
 
             return rentalRelistingPriceForMarketId;

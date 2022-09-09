@@ -79,7 +79,7 @@ const getListingPrice = ({
                     tradesDuringPeriod?.volume / openTrades?.volume < 0.2)) // this is so if there hasn't been much volume recently, but there is a lot more volume that happened in past 48 hours than 12, we should anticipate volume will pickup, and therefore dont need price insanely conservatively
         ) {
             // This means there are few cards listed on the market, and volume is sufficient to expect that we will be able to get our stuff rented out.
-            if (daysTillEOS < 3) {
+            if (daysTillEOS < 9) {
                 return _.max([
                     bests?.bestMid + 0.25 * openTrades?.stdDev,
                     bests?.bestMid + 0.25 * tradesDuringPeriod?.stdDev,
