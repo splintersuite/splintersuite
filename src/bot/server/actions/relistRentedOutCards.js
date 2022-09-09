@@ -144,10 +144,6 @@ const addActiveMarketIdsForRelisting = ({
 
         const rentListKey = `${card_detail_id}${_gold}${edition}`;
         const currentPriceData = searchableRentList[rentListKey];
-        // const currentPriceData =
-        //     searchableRentList[rentListKey] !== undefined
-        //         ? searchableRentList[rentListKey]
-        //         : {};
 
         const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
         let listingPrice;
@@ -204,9 +200,7 @@ const addActiveMarketIdsForRelisting = ({
             } else {
                 const rentalRelistingPriceForMarketId = [
                     market_id,
-                    parseFloat(currentPriceData?.low_price) > listingPrice
-                        ? currentPriceData?.low_price
-                        : `${listingPrice}`,
+                    parseFloat(listingPrice),
                 ];
                 return rentalRelistingPriceForMarketId;
             }

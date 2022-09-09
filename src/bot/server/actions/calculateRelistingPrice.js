@@ -20,7 +20,7 @@ const calculateRelistingPrice = async ({
         const cardsNotWorthRelisting = [];
         const cardCatch = [];
 
-        const minRentalSetting = 0.13;
+        const minRentalSetting = 0.11;
 
         for (const level of Object.keys(collectionObj)) {
             // should be a max of 10 possible times we can go through this because max lvl is 10
@@ -128,14 +128,15 @@ const addPriceRelistInformationForEachCardByMarketId = ({
         }
         if (
             currentPriceData == null ||
-            currentPriceData.low_price == null ||
+            currentPriceData?.low_price == null ||
             _.isEmpty(currentPriceData) ||
             !currentPriceData
         ) {
+            // this means there aren't any currently listed cards on the market
             if (marketPrices[marketKey] != null) {
                 const openTrades = marketPrices[marketKey][ALL_OPEN_TRADES];
                 const allTrades = marketPrices[marketKey][TRADES_DURING_PERIOD];
-                const maxHigh = _.max([openTrades.high, allTrades.high]);
+                const maxHigh = _.max([openTrades?.high, allTrades?.high]);
                 const relistingPrice = [market_id, parseFloat(maxHigh)];
                 return relistingPrice;
             } else {
@@ -163,33 +164,15 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             return rentalNotFoundForCard;
         }
 
-        const lowBcxModernFactor = isClBcxModern ? 1.5 : 1.0;
-        const isEarlySeason =
-            endOfSeasonSettings?.daysTillEOS > 10 ? 0.25 : 1.0;
         if (
-            currentPriceData == null ||
-            currentPriceData.low_price == null ||
-            _.isEmpty(currentPriceData) ||
-            !currentPriceData
+            listingPrice < buy_price
+            // &&
+            // (buy_price - listingPrice) / buy_price > 0.15 * lowBcxModernFactor
         ) {
-            if (marketPrices[marketKey] != null) {
-                const openTrades = marketPrices[marketKey][ALL_OPEN_TRADES];
-                const allTrades = marketPrices[marketKey][TRADES_DURING_PERIOD];
-                const maxHigh = _.max([openTrades.high, allTrades.high]);
-                const relistingPrice = [market_id, parseFloat(maxHigh)];
-                return relistingPrice;
-            } else {
-                const rentalNotFoundForCard = ['N', uid, market_id];
-                return rentalNotFoundForCard;
-            }
-        } else if (
-            listingPrice < buy_price &&
-            (buy_price - listingPrice) / buy_price >
-                0.3 * lowBcxModernFactor * isEarlySeason
-        ) {
-            // the current listing (buy_price) is 30% more than what we would list it as today
+            // the current listing (buy_price) is 15% more than what we would list it as today
             // relist lower
-            if (listingPrice < 0.13) {
+            // TNT NOTE: this buy_price - listingPrice < 0.2, we should let the 0.2 value be set by a user setting imo
+            if (listingPrice < 0.11 || buy_price - listingPrice < 0.2) {
                 const doNotChangeThePrice = [
                     'C',
                     uid,
@@ -203,9 +186,7 @@ const addPriceRelistInformationForEachCardByMarketId = ({
 
             const rentalRelistingPriceForMarketId = [
                 market_id,
-                parseFloat(currentPriceData.low_price) > listingPrice
-                    ? currentPriceData.low_price
-                    : `${listingPrice}`,
+                parseFloat(listingPrice),
             ];
 
             return rentalRelistingPriceForMarketId;

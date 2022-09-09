@@ -46,43 +46,110 @@ const getListingPrice = ({
         const openTrades = currentPriceStats[ALL_OPEN_TRADES];
         const tradesDuringPeriod = currentPriceStats[TRADES_DURING_PERIOD];
 
+        const bests = getBests({ tradesDuringPeriod, openTrades });
         if (
             isClBcxModern &&
             ((Number.isFinite(openTrades?.avg) &&
                 Number.isFinite(openTrades?.stdDev)) ||
-                (Number.isFinite(tradesDuringPeriod?.avg) &&
+                (isClBcxModern &&
+                    Number.isFinite(tradesDuringPeriod?.avg) &&
                     Number.isFinite(tradesDuringPeriod?.stdDev)))
         ) {
             if (daysTillEOS < 11) {
                 return _.max([
-                    _.max([
-                        openTrades?.avg + 2 * openTrades?.stdDev,
-                        tradesDuringPeriod?.avg +
-                            2 * tradesDuringPeriod?.stdDev,
-                    ]),
-                    _.max([
-                        openTrades?.median + 2 * openTrades?.stdDev,
-                        tradesDuringPeriod?.median +
-                            2 * tradesDuringPeriod?.stdDev,
-                    ]),
-                    lowestListingPrice,
+                    bests.bestMid + 1 * openTrades?.stdDev,
+                    bests.bestMid + 1 * tradesDuringPeriod?.stdDev,
+                    lowestListingPrice * 0.99,
                 ]);
             } else {
                 return _.max([
-                    _.max([
-                        openTrades?.avg + 1.75 * openTrades?.stdDev,
-                        tradesDuringPeriod?.avg +
-                            1.75 * tradesDuringPeriod?.stdDev,
-                    ]),
-                    _.max([
-                        openTrades?.median + 1.75 * openTrades?.stdDev,
-                        tradesDuringPeriod?.median +
-                            1.75 * tradesDuringPeriod?.stdDev,
-                    ]),
-                    lowestListingPrice,
+                    bests.bestMid + 0.5 * openTrades?.stdDev,
+                    bests.bestMid + 0.5 * tradesDuringPeriod?.stdDev,
+                    lowestListingPrice * 0.99,
                 ]);
             }
         }
+
+        if (
+            Number.isFinite(tradesDuringPeriod?.volume) &&
+            numListings <= 4 &&
+            (tradesDuringPeriod?.volume >= 12 ||
+                (Number.isFinite(openTrades?.volume) &&
+                    openTrades?.volume >= 60 &&
+                    tradesDuringPeriod?.volume / openTrades?.volume < 0.2)) // this is so if there hasn't been much volume recently, but there is a lot more volume that happened in past 48 hours than 12, we should anticipate volume will pickup, and therefore dont need price insanely conservatively
+        ) {
+            // This means there are few cards listed on the market, and volume is sufficient to expect that we will be able to get our stuff rented out.
+            if (daysTillEOS < 9) {
+                return _.max([
+                    bests?.bestMid + 0.25 * openTrades?.stdDev,
+                    bests?.bestMid + 0.25 * tradesDuringPeriod?.stdDev,
+                    lowestListingPrice * 0.99,
+                ]);
+            } else {
+                return _.max([
+                    bests?.bestMid,
+                    bests?.bestMid,
+                    lowestListingPrice * 0.99,
+                ]);
+            }
+        } else {
+            if (daysTillEOS < 11) {
+                return _.max([bests?.bestMid, lowestListingPrice * 0.99]);
+            } else {
+                const bestLows = getBestLows({
+                    tradesDuringPeriod,
+                    openTrades,
+                });
+                return _.max([lowestListingPrice * 0.99, bestLows?.lowMid]);
+            }
+        }
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/services/listings/getListingPrice error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
+const getBestLows = ({ tradesDuringPeriod, openTrades }) => {
+    try {
+        const lowAvg =
+            Number.isFinite(tradesDuringPeriod?.avg) &&
+            Number.isFinite(openTrades?.avg) &&
+            tradesDuringPeriod?.avg > openTrades?.avg
+                ? openTrades?.avg
+                : tradesDuringPeriod?.avg;
+
+        const lowMedian =
+            Number.isFinite(tradesDuringPeriod?.median) &&
+            Number.isFinite(openTrades?.median) &&
+            tradesDuringPeriod?.median > openTrades?.median
+                ? openTrades?.median
+                : tradesDuringPeriod?.median;
+
+        const lowMid =
+            (Number.isFinite(tradesDuringPeriod?.median) ||
+                Number.isFinite(openTrades?.median)) &&
+            lowAvg > lowMedian
+                ? lowMedian
+                : lowAvg;
+
+        return { lowMid, lowMedian, lowAvg };
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/services/listings/getBestLows error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
+const getBests = ({ tradesDuringPeriod, openTrades }) => {
+    try {
+        const bestLow =
+            Number.isFinite(tradesDuringPeriod?.low) &&
+            tradesDuringPeriod?.low > openTrades?.low
+                ? tradesDuringPeriod?.low
+                : openTrades?.low;
 
         const bestHigh =
             Number.isFinite(tradesDuringPeriod?.high) &&
@@ -90,107 +157,28 @@ const getListingPrice = ({
                 ? tradesDuringPeriod?.high
                 : openTrades?.high;
 
-        if (numListings <= 4) {
-            // there are 6 or less listings currently for the card
-            if (openTrades?.volume >= numListings) {
-                if (daysTillEOS < 11) {
-                    return _.max([
-                        _.max([
-                            openTrades?.avg + openTrades?.stdDev * 1.5,
-                            tradesDuringPeriod?.avg +
-                                1.5 * tradesDuringPeriod?.stdDev,
-                        ]),
-                        _.max([
-                            openTrades?.median + 1.5 * openTrades?.stdDev,
-                            tradesDuringPeriod?.median +
-                                1.5 * tradesDuringPeriod?.stdDev,
-                        ]),
-                        _.max([
-                            bestHigh - openTrades?.stdDev,
-                            bestHigh - tradesDuringPeriod?.stdDev,
-                        ]),
-                        lowestListingPrice,
-                    ]);
-                } else {
-                    return _.max([
-                        _.max([
-                            openTrades?.avg + openTrades?.stdDev * 1,
-                            tradesDuringPeriod?.avg +
-                                1 * tradesDuringPeriod?.stdDev,
-                        ]),
-                        _.max([
-                            openTrades?.median + 1 * openTrades?.stdDev,
-                            tradesDuringPeriod?.median +
-                                1 * tradesDuringPeriod?.stdDev,
-                        ]),
-                        _.max([
-                            bestHigh - 1.5 * openTrades?.stdDev,
-                            bestHigh - 1.5 * tradesDuringPeriod?.stdDev,
-                        ]),
-                        lowestListingPrice,
-                    ]);
-                }
-            } else {
-                if (daysTillEOS < 11) {
-                    return _.max([
-                        _.max([
-                            openTrades?.avg + openTrades?.stdDev * 0.75,
-                            tradesDuringPeriod?.avg +
-                                0.75 * tradesDuringPeriod?.stdDev,
-                        ]),
-                        _.max([
-                            openTrades?.median + 0.75 * openTrades?.stdDev,
-                            tradesDuringPeriod?.median +
-                                0.75 * tradesDuringPeriod?.stdDev,
-                        ]),
-                        _.max([
-                            bestHigh - 1.75 * openTrades?.stdDev,
-                            bestHigh - 1.75 * tradesDuringPeriod?.stdDev,
-                        ]),
-                        lowestListingPrice,
-                    ]);
-                } else {
-                    return _.max([
-                        _.max([
-                            openTrades?.avg + openTrades?.stdDev * 0.25,
-                            tradesDuringPeriod?.avg +
-                                0.25 * tradesDuringPeriod?.stdDev,
-                        ]),
-                        _.max([
-                            openTrades?.median + 0.25 * openTrades?.stdDev,
-                            tradesDuringPeriod?.median +
-                                0.25 * tradesDuringPeriod?.stdDev,
-                        ]),
-                        _.max([
-                            bestHigh - 2 * openTrades?.stdDev,
-                            bestHigh - 2 * tradesDuringPeriod?.stdDev,
-                        ]),
-                        lowestListingPrice,
-                    ]);
-                }
-            }
-        }
+        const bestAvg =
+            Number.isFinite(tradesDuringPeriod?.avg) &&
+            tradesDuringPeriod?.avg > openTrades?.avg
+                ? tradesDuringPeriod?.avg
+                : openTrades?.avg;
 
-        if (Number.isFinite(daysTillEOS) && daysTillEOS < 11) {
-            return _.max([
-                openTrades?.avg + openTrades?.stdDev,
-                tradesDuringPeriod?.avg + tradesDuringPeriod?.stdDev,
-                openTrades?.median + openTrades?.stdDev,
-                tradesDuringPeriod?.median + tradesDuringPeriod?.stdDev,
-                lowestListingPrice,
-            ]);
-        } else {
-            return _.max([
-                openTrades?.avg,
-                tradesDuringPeriod?.avg,
-                openTrades?.median,
-                tradesDuringPeriod?.median,
-                lowestListingPrice,
-            ]);
-        }
+        const bestMedian =
+            Number.isFinite(tradesDuringPeriod?.median) &&
+            tradesDuringPeriod?.median > openTrades?.median
+                ? tradesDuringPeriod?.median
+                : openTrades?.median;
+
+        const bestMid =
+            (Number.isFinite(bestAvg) || Number.isFinite(bestMedian)) &&
+            bestAvg > bestMedian
+                ? bestAvg
+                : bestMedian;
+
+        return { bestLow, bestHigh, bestAvg, bestMedian, bestMid };
     } catch (err) {
         window.api.bot.log({
-            message: `/bot/server/services/listings/getListingPrice error: ${err.message}`,
+            message: `/bot/server/services/listings/getBests error: ${err.message}`,
         });
         throw err;
     }
