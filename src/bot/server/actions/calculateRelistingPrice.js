@@ -168,25 +168,12 @@ const addPriceRelistInformationForEachCardByMarketId = ({
                 currentPriceStats: marketPrices[marketKey],
                 isClBcxModern,
             });
-            // window.api.bot.log({
-            //     message: `/bot/server/actions/calculateRelistingPrice/addPriceRelistInformationForEachCardByUid before handleListingsTooHigh listingPrice; ${listingPrice}, parseFloat: ${parseFloat(
-            //         listingPrice
-            //     )}, parseFloat('${listingPrice}'): ${parseFloat(
-            //         `${listingPrice}`
-            //     )}`,
-            // });
+
             listingPrice = listingsService.handleListingsTooHigh({
                 currentPriceStats: marketPrices[marketKey],
                 listingPrice,
                 isClBcxModern,
             });
-            // window.api.bot.log({
-            //     message: `/bot/server/actions/calculateRelistingPrice/addPriceRelistInformationForEachCardByUid after handleListingsTooHigh listingPrice; ${listingPrice}, parseFloat: ${parseFloat(
-            //         listingPrice
-            //     )}, parseFloat('${listingPrice}'): ${parseFloat(
-            //         `${listingPrice}`
-            //     )}`,
-            // });
         } else {
             const rentalNotFoundForCard = ['N', uid, market_id];
             return rentalNotFoundForCard;

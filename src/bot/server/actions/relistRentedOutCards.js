@@ -185,25 +185,13 @@ const addActiveMarketIdsForRelisting = ({
             currentPriceStats: marketPrices[marketKey],
             isClBcxModern: isLowBcxModern,
         });
-        // window.api.bot.log({
-        //     message: `/bot/server/actions/relistRentedOutCards/addActiveMarketIdsForRelisting before handleListingsTooHigh listingPrice; ${listingPrice}, parseFloat: ${parseFloat(
-        //         listingPrice
-        //     )}, parseFloat('${listingPrice}'): ${parseFloat(
-        //         `${listingPrice}`
-        //     )}`,
-        // });
+
         listingPrice = listingsService.handleListingsTooHigh({
             currentPriceStats: marketPrices[marketKey],
             listingPrice,
             isClBcxModern: isLowBcxModern,
         });
-        // window.api.bot.log({
-        //     message: `/bot/server/actions/relistRentedOutCards/addActiveMarketIdsForRelisting after handleListingsTooHigh listingPrice; ${listingPrice}, parseFloat: ${parseFloat(
-        //         listingPrice
-        //     )}, parseFloat('${listingPrice}'): ${parseFloat(
-        //         `${listingPrice}`
-        //     )}`,
-        // });
+
         const nextRentalPaymentTime = new Date(
             rentalTransaction.next_rental_payment
         ).getTime();

@@ -148,33 +148,14 @@ const addPriceListInformationForEachCardByUid = ({
                 currentPriceStats: marketPrices[marketKey],
                 isClBcxModern,
             });
-            // window.api.bot.log({
-            //     message: `/bot/server/actions/calculateRentalPriceToList/addPriceListInformationForEachCardByUid before handleListingsTooHigh listingPrice; ${listingPrice}, parseFloat: ${parseFloat(
-            //         listingPrice
-            //     )}, parseFloat('${listingPrice}'): ${parseFloat(
-            //         `${listingPrice}`
-            //     )}`,
-            // });
+
             listingPrice = listingsService.handleListingsTooHigh({
                 currentPriceStats: marketPrices[marketKey],
                 listingPrice,
                 isClBcxModern,
             });
-            // window.api.bot.log({
-            //     message: `/bot/server/actions/calculateRentalPriceToList/addPriceListInformationForEachCardByUid after handleListingsTooHigh listingPrice; ${listingPrice}, parseFloat: ${parseFloat(
-            //         listingPrice
-            //     )}, parseFloat('${listingPrice}'): ${parseFloat(
-            //         `${listingPrice}`
-            //     )}`,
-            // });
+
             if (!listingPrice) {
-                window.api.bot.log({
-                    message: `/bot/server/actions/calculateRentalPriceToList/addPriceListInformationForEachCardByUid listingPrice; ${listingPrice}, parseFloat: ${parseFloat(
-                        listingPrice
-                    )}, parseFloat('${listingPrice}'): ${parseFloat(
-                        `${listingPrice}`
-                    )}`,
-                });
                 const rentalNotFound = [uid, 'E'];
                 return rentalNotFound;
             }
