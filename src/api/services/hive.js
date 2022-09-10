@@ -46,6 +46,30 @@ const updateRentals = async (cards) => {
             json: JSON.stringify({
                 items: cards,
                 agent: 'splintersuite',
+                suite_action: 'relist',
+                required_posting_auths: [username],
+                required_auths: [],
+            }),
+        },
+        key
+    );
+    return res;
+};
+
+const relistActiveRentals = async (cards) => {
+    const username = userService.getUsername();
+    const rawKey = await userService.getKey(username);
+    const key = PrivateKey.from(rawKey);
+
+    const res = await client.broadcast.json(
+        {
+            required_posting_auths: [username],
+            required_auths: [],
+            id: 'sm_update_rental_price',
+            json: JSON.stringify({
+                items: cards,
+                agent: 'splintersuite',
+                suite_action: 'cancel',
                 required_posting_auths: [username],
                 required_auths: [],
             }),
@@ -68,6 +92,7 @@ const deleteRentals = async (cards) => {
             json: JSON.stringify({
                 items: cards,
                 agent: 'splintersuite',
+                suite_action: 'cancel',
                 required_posting_auths: [username],
                 required_auths: [],
             }),
@@ -86,5 +111,6 @@ export default {
     createRentals,
     updateRentals,
     deleteRentals,
+    relistActiveRentals,
     getRc,
 };

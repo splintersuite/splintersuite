@@ -100,9 +100,10 @@ window.api.bot.start(async (event) => {
                 await sleep(4000);
             }
             if (relistActiveGroup.length > 0) {
-                await window.api.hive.updateRentals({
+                await window.api.hive.relistActiveRentals({
                     cards: relistActiveGroup,
                 });
+
                 hiveTransactions = hiveTransactions + 1;
                 numListed += relistActiveGroup.length;
             }

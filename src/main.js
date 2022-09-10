@@ -109,6 +109,10 @@ app.on('ready', () => {
         middlewareWrapper(hive.updateRentals, 'hive:updateRentals')
     );
     ipcMain.handle(
+        'hive:relistActiveRentals',
+        middlewareWrapper(hive.relistActiveRentals, 'hive:relistActiveRentals')
+    );
+    ipcMain.handle(
         'hive:deleteRentals',
         middlewareWrapper(hive.deleteRentals, 'hive:deleteRentals')
     );
