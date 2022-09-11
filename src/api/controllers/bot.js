@@ -62,15 +62,14 @@ const updateLoading = async (event, payload) => {
     return util.success();
 };
 
-const getCardDetails = async (event) => {
-    const cardDetails = await botService.getCardDetails();
-    return util.success({ cardDetails });
+const getRentalDetails = async (event) => {
+    const rentalDetails = await botService.getRentalDetails();
+    return util.success({ rentalDetails });
 };
 
-const updateCardDetails = async (event, payload) => {
-    const { cardDetails } = payload;
-
-    botService.setCardDetails(cardDetails);
+const updateRentalDetails = async (event, payload) => {
+    const { rentalDetails } = payload;
+    botService.setRentalDetails(rentalDetails);
 
     return util.success();
 };
@@ -91,7 +90,7 @@ export default {
     updateStats,
     getLoading,
     updateLoading,
-    getCardDetails,
-    updateCardDetails,
+    getRentalDetails,
+    updateRentalDetails,
     log,
 };
