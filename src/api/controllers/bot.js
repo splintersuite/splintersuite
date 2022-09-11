@@ -62,6 +62,19 @@ const updateLoading = async (event, payload) => {
     return util.success();
 };
 
+const getCardDetails = async (event) => {
+    const cardDetails = await botService.getCardDetails();
+    return util.success({ cardDetails });
+};
+
+const updateCardDetails = async (event, payload) => {
+    const { cardDetails } = payload;
+
+    botService.setCardDetails(cardDetails);
+
+    return util.success();
+};
+
 const log = (event, payload) => {
     const { message } = payload;
     const now = moment().format('DD/MM/YYYY HH:mm:ss Z');
@@ -78,5 +91,7 @@ export default {
     updateStats,
     getLoading,
     updateLoading,
+    getCardDetails,
+    updateCardDetails,
     log,
 };

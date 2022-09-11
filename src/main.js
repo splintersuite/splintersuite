@@ -95,6 +95,14 @@ app.on('ready', () => {
         bot.updateLoading(event, payload);
         mainWindow.webContents.send('bot:updateLoading', payload);
     });
+    ipcMain.handle(
+        'bot:getRentalDetails',
+        middlewareWrapper(bot.getRentalDetails, 'bot:getRentalDetails')
+    );
+    ipcMain.handle('bot:updateRentalDetails', (event, payload) => {
+        bot.updateRentalDetails(event, payload);
+        mainWindow.webContents.send('bot:updateRentalDetails', payload);
+    });
     ipcMain.handle('bot:log', bot.log);
     ipcMain.handle(
         'market:getMarketPrices',

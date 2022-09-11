@@ -31,6 +31,14 @@ const setStats = (stats) => {
     return store.set('bot.stats', stats);
 };
 
+const getCardDetails = () => {
+    return store.get('bot.getCardDetails');
+};
+
+const setCardDetails = (cardDetails) => {
+    return store.set('bot.cardDetails', cardDetails);
+};
+
 const getLoading = () => {
     return store.get('bot.isLoading');
 };
@@ -50,4 +58,6 @@ export default {
     setStats,
     getLoading,
     setLoading,
+    getCardDetails,
+    setCardDetails,
 };

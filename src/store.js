@@ -96,6 +96,20 @@ const schema = {
                     },
                 },
             },
+            rentalDetails: {
+                type: 'object',
+                properties: {
+                    is_rented: {
+                        type: 'boolean',
+                    },
+                    last_rental_payment: {
+                        type: 'date',
+                    },
+                    last_price_update: {
+                        type: 'date',
+                    },
+                },
+            },
         },
     },
 };
@@ -132,6 +146,7 @@ const defaults = {
             endedAt: '',
             numListed: 0,
         },
+        rentalDetails: {},
     },
 };
 

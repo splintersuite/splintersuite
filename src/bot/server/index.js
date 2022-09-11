@@ -1,6 +1,7 @@
 'use strict';
 const {
     filterCollectionArraysForPotentialRentalCards,
+    getActiveListingsObj,
 } = require('./actions/collection');
 
 const {
@@ -27,6 +28,8 @@ const { getCardDetailObj } = require('./actions/_helpers');
 
 const { getActiveRentalsByRentalId } = require('./services/activeRentals');
 
+const { updateRentalsStore } = require('./actions/rentalDetails');
+
 const splinterlandsService = require('./services/splinterlands');
 const _ = require('lodash');
 
@@ -34,6 +37,7 @@ const startRentalBot = async ({
     username,
     settings,
     marketPrices,
+    rentalDetailsObj,
     nextBotLoopTime,
 }) => {
     try {
@@ -48,6 +52,19 @@ const startRentalBot = async ({
         // grab the card_details endpoint
         const cardDetailObj = await getCardDetailObj();
         const activeRentals = await getActiveRentalsByRentalId(username);
+
+        // listings...
+        const activeListingsObj = await getActiveListingsObj({
+            collection,
+        });
+
+        // updates rentalDetails
+        await updateRentalsStore({
+            rentalDetailsObj,
+            activeListingsObj,
+            activeRentals,
+        });
+
         const groupedRentalListObj =
             await splinterlandsService.getAllGroupedRentalsByLevel();
 
