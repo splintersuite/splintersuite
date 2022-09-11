@@ -11,6 +11,9 @@ const updateRentalsStore = ({
                 rentalDetailsObj[rental.card_uid] = { is_rented: true };
             }
         });
+
+        window.api.bot.updateRentalDetails(rentalDetailsObj);
+        // no return if we don't want,  will update the object by reference
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/actions/rentalDetails/updateRentals error: ${err.message}`,
