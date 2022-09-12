@@ -63,6 +63,7 @@ const updateLoading = async (event, payload) => {
 };
 
 const getRentalDetails = async (event) => {
+    console.log('/src/api/services/getRentalDetails');
     const rentalDetails = await botService.getRentalDetails();
     return util.success({ rentalDetails });
 };

@@ -36,7 +36,7 @@ window.api.bot.start(async (event) => {
             marketPrices = marketRes.data.marketPrices;
         }
 
-        const rentalDetailsObj = await window.api.bot.getRentalDetails();
+        let rentalDetailsObj = await window.api.bot.getRentalDetails();
         // ---
         // Get cards
         // ------------------------------------

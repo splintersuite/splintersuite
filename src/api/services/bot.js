@@ -32,6 +32,7 @@ const setStats = (stats) => {
 };
 
 const getRentalDetails = () => {
+    console.log('/src/api/services/getRentalDetails');
     return store.get('bot.getRentalDetails');
 };
 

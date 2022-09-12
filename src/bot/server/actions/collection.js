@@ -332,7 +332,7 @@ const getActiveListingsObj = async ({ collection }) => {
                 card?.market_listing_status === 0 &&
                 card?.delegated_to === null
             ) {
-                activeListingsObj[card.sell_trx_id] = { ...card };
+                activeListingsObj[card.uid] = { ...card };
             }
         });
         return activeListingsObj;

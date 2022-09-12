@@ -28,7 +28,8 @@ const { getCardDetailObj } = require('./actions/_helpers');
 
 const { getActiveRentalsByRentalId } = require('./services/activeRentals');
 
-const { updateRentalsStore } = require('./actions/rentalDetails');
+//const { updateRentalsStore } = require('./actions/rentalDetails');
+const { updateRentalsStore } = require('./services/rentalDetails');
 
 const splinterlandsService = require('./services/splinterlands');
 const _ = require('lodash');
@@ -62,7 +63,7 @@ const startRentalBot = async ({
         await updateRentalsStore({
             rentalDetailsObj,
             activeListingsObj,
-            activeRentals,
+            activeRentals: activeRentals.activeRentalsBySellTrxId,
         });
 
         const groupedRentalListObj =
