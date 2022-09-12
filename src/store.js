@@ -108,6 +108,10 @@ const schema = {
                     last_price_update: {
                         type: 'date',
                     },
+                    buy_price: {
+                        type: 'number',
+                        minimum: 0.1,
+                    },
                 },
             },
         },

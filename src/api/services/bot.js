@@ -37,7 +37,7 @@ const getRentalDetails = () => {
 };
 
 const setRentalDetails = (rentalDetails) => {
-    return store.get('bot.setRentalDetails');
+    return store.set('bot.setRentalDetails', rentalDetails);
 };
 
 const getLoading = () => {

@@ -1,4 +1,5 @@
 'use strict';
+const datesUtil = require('../util/dates');
 
 const updateRentalsStore = ({
     rentalDetailsObj,
@@ -12,9 +13,12 @@ const updateRentalsStore = ({
         console.log(`rentalDetailsObj: ${JSON.stringify(rentalDetailsObj)}`);
         console.log(`activeListingsObj: ${JSON.stringify(activeListingsObj)}`);
         console.log(`activeRentals: ${JSON.stringify(activeRentals)}`);
-        const rentDetails = {};
         if (!rentalDetailsObj) {
-            const rentalDetObj = {};
+            const rentalDetails = buildNewRentalDetailsObj({
+                activeRentals,
+                activeListingsObj,
+            });
+            await window.api.bot.updateRentalDetails({rentalDetails});
             return;
         } else {
             if (activeRentals) {
@@ -47,10 +51,40 @@ const buildNewRentalDetailsObj = ({ activeRentals, activeListingsObj }) => {
         const rentalDetailsObj = {};
 
         for (const rental of Object.keys(activeRentals)) {
+            if (rentalDetailsObj[rental.card_id] == null) {
+                const { next_rental_payment, buy_price } = rental;
+                const oneDayBefore = datesUtil.getNumDaysAgo({
+                    numberOfDaysAgo: 1,
+                    next_rental_payment,
+                });
+                const last_rental_payment = oneDayBefore.daysAgo;
+                //const last_rental_payment = datesUtil.ge
+                rentalDetailsObj[rental.card_id] = {
+                    is_rented: true,
+                    last_rental_payment,
+                    last_price_update: null,
+                    buy_price,
+                };
+            } else {
+                window.api.bot.log({
+                    message: `/bot/server/services/rentalDetails/buildNewRentalDetailsObj rentalDetailsObj[rental.card_uid] wasnt empty: ${JSON.stringify(
+                        rentalDetailsObj[rental.card_uid]
+                    )}`,
+                });
+            }
         }
-        const rentalIDs = Object.keys(activeRentals);
 
-        rentalIDs.forEach((rental) => {});
+        for (const listing of Object.keys(activeListingsObj)) {
+            if (rentalDetailsObj[listing.uid] == null) {
+                const { market_created_date, buy_price } = listing;
+                rentalDetailsObj[listing.uid] = {
+                    is_rented: false,
+                    last_rental_payment: null,
+                    last_price_update: market_created_date,
+                    buy_price,
+                };
+            }
+        }
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/rentalDetails/buildNewRentalDetailsObj error: ${err.message}`,
@@ -72,6 +106,9 @@ module.exports = {
 // last_price_update: {
 //     type: 'date',
 // },
+// price: {
+// type: 'number'
+// }
 
 /*
 activeRentals: {"03f88a3bdd4a3b53ecb0097ad4341168bc36bc34-35":{"id":102228745,
