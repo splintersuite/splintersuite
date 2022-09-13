@@ -70,7 +70,9 @@ const isSplinterlandsServerError = (error) => {
         error?.code === 'ERR_NETWORK' &&
         (error?.response?.status === 502 ||
             error?.response?.status === 504 ||
-            error?.response?.status === 503)
+            error?.response?.status === 503 ||
+            error?.response?.status == null ||
+            error?.response?.status === 0)
     );
 };
 

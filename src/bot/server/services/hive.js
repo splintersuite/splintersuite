@@ -87,7 +87,11 @@ const getPostedSuiteRelistings = async ({ username }) => {
             message: `Relistings: ${postedSuiteRelistings?.length}`,
         });
 
-        return postedSuiteRelistings;
+        const postedSuiteRelistingsByType = getRelistingType({
+            transactions: postedSuiteRelistings,
+        });
+
+        return postedSuiteRelistingsByType;
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/hive/getPostedSuiteRelistings error: ${err.message}`,
@@ -205,6 +209,65 @@ const isSplintersuite = ({ hiveTransaction }) => {
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/hive/isSplintersuite error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
+const getRelistingType = ({ transactions }) => {
+    try {
+        const relist = [];
+        const cancel = [];
+        const notSpecified = [];
+
+        transactions.forEach((hiveTransaction) => {
+            const data = hiveTransaction?.data;
+            const jsonData = JSON.parse(data);
+
+            if (!jsonData) {
+                window.api.bot.log({
+                    message: `/bot/server/services/hive/getRelistingType hiveTransaction does not have data or jsonData, hiveTransaction: ${JSON.stringify(
+                        hiveTransaction
+                    )}`,
+                });
+                return;
+            }
+            if (jsonData?.suite_action === 'cancel') {
+                cancel.push(hiveTransaction);
+            } else if (jsonData?.suite_action === 'relist') {
+                relist.push(hiveTransaction);
+            } else {
+                notSpecified.push(hiveTransaction);
+            }
+        });
+
+        window.api.bot.log({
+            message: `/bot/server/services/hive/getRelistingType`,
+        });
+
+        window.api.bot.log({
+            message: `Hive Transactions: ${transactions?.length}`,
+        });
+        window.api.bot.log({
+            message: `Relisted: ${relist?.length}`,
+        });
+        window.api.bot.log({
+            message: `Cancel: ${cancel?.length}`,
+        });
+        window.api.bot.log({
+            message: `Not Specified: ${notSpecified?.length}`,
+        });
+        window.api.bot.log({
+            message: `Check: ${
+                notSpecified?.length + cancel?.length + relist?.length ===
+                transactions?.length
+            }`,
+        });
+
+        return { relist, cancel, notSpecified };
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/services/hive/getRelistingType error: ${err.message}`,
         });
         throw err;
     }

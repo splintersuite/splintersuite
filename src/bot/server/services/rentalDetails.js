@@ -20,18 +20,19 @@ const updateRentalsStore = async ({
             username,
         });
         console.log(`hiveRelistings: ${JSON.stringify(hiveRelistings)}`);
-        throw new Error('checking');
+
         if (!rentalDetailsObj) {
             const rentalDetails = buildNewRentalDetailsObj({
                 activeRentals,
                 activeListingsObj,
-                //  hiveRelistings,
+                hiveRelistings,
             });
             console.log(
                 `rentalDetails after we build new one: ${JSON.stringify(
                     rentalDetails
                 )}`
             );
+            throw new Error('checking');
             await window.api.bot.updateRentalDetails({ rentalDetails });
             return;
         } else {
@@ -54,7 +55,7 @@ const updateRentalsStore = async ({
 const buildNewRentalDetailsObj = ({
     activeRentals,
     activeListingsObj,
-    //   hiveRelistings,
+    hiveRelistings,
 }) => {
     try {
         const rentalDetailsObj = {};
@@ -129,12 +130,15 @@ const buildNewRentalDetailsObj = ({
             }
         }
 
-        return rentalDetailsObj;
-        // if (!hiveRelistings || hiveRelistings?.length < 1) {
-        //     return rentalDetailsObj;
-        // } else {
-        //     return rentalDetailsObj;
-        // }
+        if (hiveRelistings && Object.keys(hiveRelistings)?.length > 1) {
+            console.log(
+                `we have hiveRelistings!: ${JSON.stringify(hiveRelistings)}`
+            );
+            return rentalDetailsObj;
+        } else {
+            console.log(`we don't have hiveRelistings!`);
+            return rentalDetailsObj;
+        }
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/rentalDetails/buildNewRentalDetailsObj error: ${err.message}`,
