@@ -3,6 +3,7 @@ const datesUtil = require('../../util/dates');
 const hive = require('./hive');
 
 const updateRentalsStore = async ({
+    username,
     rentalDetailsObj,
     activeListingsObj,
     activeRentals,
@@ -11,11 +12,15 @@ const updateRentalsStore = async ({
     try {
         // continue with adding here...
         console.log(`/bot/server/services/rentalDetails/updateRentalStore`);
-        console.log(`rentalDetailsObj: ${JSON.stringify(rentalDetailsObj)}`);
-        console.log(`activeListingsObj: ${JSON.stringify(activeListingsObj)}`);
-        console.log(`activeRentals: ${JSON.stringify(activeRentals)}`);
+        // console.log(`rentalDetailsObj: ${JSON.stringify(rentalDetailsObj)}`);
+        // console.log(`activeListingsObj: ${JSON.stringify(activeListingsObj)}`);
+        // console.log(`activeRentals: ${JSON.stringify(activeRentals)}`);
 
-        //const hiveRelistings = hive.getPostedSuiteListings();
+        const hiveRelistings = await hive.getPostedSuiteRelistings({
+            username,
+        });
+        console.log(`hiveRelistings: ${JSON.stringify(hiveRelistings)}`);
+        throw new Error('checking');
         if (!rentalDetailsObj) {
             const rentalDetails = buildNewRentalDetailsObj({
                 activeRentals,
@@ -56,7 +61,7 @@ const buildNewRentalDetailsObj = ({
         console.log(
             `/bot/server/services/rentalDetails/buildNewRentalDetailsObj start`
         );
-        //  for (const rental of activeRentals) {
+
         for (const [tx_id, rental] of Object.entries(activeRentals)) {
             if (rentalDetailsObj[rental.card_id] == null) {
                 console.log(
@@ -83,10 +88,12 @@ const buildNewRentalDetailsObj = ({
                     oneDayBefore?.msDaysAgo
                 ) {
                     const last_rental_payment = oneDayBefore.daysAgo;
-                    //const last_rental_payment = datesUtil.ge
+                    const last_rental_payment_time = oneDayBefore.msDaysAgo;
+
                     rentalDetailsObj[rental.card_id] = {
                         is_rented: true,
                         last_rental_payment,
+                        last_rental_payment_time,
                         last_price_update: null,
                         buy_price,
                     };
@@ -101,6 +108,11 @@ const buildNewRentalDetailsObj = ({
                         rentalDetailsObj[rental.card_uid]
                     )}`,
                 });
+                throw new Error(
+                    `/bot/server/services/rentalDetails/buildNewRentalDetailsObj rentalDetailsObj[rental.card_uid] wasnt empty: ${JSON.stringify(
+                        rentalDetailsObj[rental.card_uid]
+                    )}`
+                );
             }
         }
 
@@ -110,6 +122,7 @@ const buildNewRentalDetailsObj = ({
                 rentalDetailsObj[listing.uid] = {
                     is_rented: false,
                     last_rental_payment: null,
+                    last_rental_payment_time: null,
                     last_price_update: market_created_date,
                     buy_price,
                 };

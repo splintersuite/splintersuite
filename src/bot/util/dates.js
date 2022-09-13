@@ -2,9 +2,9 @@
 
 const getNumDaysAgo = ({ numberOfDaysAgo, date }) => {
     try {
-        console.log(
-            `/bot/server/util/dates/getNumDaysAgo start with numberOfDaysAgo: ${numberOfDaysAgo}, date: ${date}`
-        );
+        // console.log(
+        //     `/bot/server/util/dates/getNumDaysAgo start with numberOfDaysAgo: ${numberOfDaysAgo}, date: ${date}`
+        // );
         const nowMs = date?.getTime();
         if (!nowMs) {
             window.api.bot.log({

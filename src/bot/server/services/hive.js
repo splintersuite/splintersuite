@@ -69,11 +69,13 @@ const getPostedSuiteRelistings = async ({ username }) => {
         console.log(`/bot/server/services/hive/getPostedSuiteRelistings`);
 
         const relistings = await getRecentHiveRelistings({ username });
+        //  console.log(`relistings: ${JSON.stringify(relistings)}`);
 
         const postedRelistings = getSuccessfulTransactions({
             transactions: relistings,
         });
 
+        //  console.log(`postedRelistings: ${JSON.stringify(postedRelistings)}`);
         const postedSuiteRelistings = getSplinterSuiteTransactions({
             transactions: postedRelistings,
         });
@@ -101,9 +103,9 @@ const getSuccessfulTransactions = ({ transactions }) => {
         transactions.forEach((hiveTransaction) => {
             const posted = successfullyPosted({ hiveTransaction });
             if (posted) {
-                successArr.push(transaction);
+                successArr.push(hiveTransaction);
             } else {
-                errArr.push(transaction);
+                errArr.push(hiveTransaction);
             }
         });
 
@@ -186,9 +188,18 @@ const getSplinterSuiteTransactions = ({ transactions }) => {
 const isSplintersuite = ({ hiveTransaction }) => {
     try {
         const data = hiveTransaction?.data;
-        if (data && data?.agent === 'splintersuite') {
+        console.log(
+            `isSplintersuite: data: ${JSON.stringify(
+                data
+            )}, hiveTransaction data?.agent: $${data?.agent}`
+        );
+        const jsonData = JSON.parse(data);
+        console.log(`jsonData: ${JSON.stringify(jsonData)}`);
+        if (jsonData && jsonData?.agent === 'splintersuite') {
+            console.log(`is splintersuite`);
             return true;
         } else {
+            console.log(`not splintersuite`);
             return false;
         }
     } catch (err) {

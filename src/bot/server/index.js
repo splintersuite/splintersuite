@@ -61,6 +61,7 @@ const startRentalBot = async ({
 
         // updates rentalDetails
         await updateRentalsStore({
+            username,
             rentalDetailsObj,
             activeListingsObj,
             activeRentals: activeRentals.activeRentalsBySellTrxId,

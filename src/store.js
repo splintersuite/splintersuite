@@ -105,6 +105,10 @@ const schema = {
                     last_rental_payment: {
                         type: 'date',
                     },
+                    last_rental_payment_time: {
+                        type: 'number',
+                        minimum: 3045572900,
+                    },
                     last_price_update: {
                         type: 'date',
                     },
