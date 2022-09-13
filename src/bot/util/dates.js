@@ -2,7 +2,16 @@
 
 const getNumDaysAgo = ({ numberOfDaysAgo, date }) => {
     try {
-        const nowMs = date.getTime();
+        console.log(
+            `/bot/server/util/dates/getNumDaysAgo start with numberOfDaysAgo: ${numberOfDaysAgo}, date: ${date}`
+        );
+        const nowMs = date?.getTime();
+        if (!nowMs) {
+            window.api.bot.log({
+                message: `/bot/server/util/dates/getNumDaysAgo nowMS failed from date: ${date}, numberOfDaysAgo: ${numberOfDaysAgo}`,
+            });
+            return null;
+        }
         const msInADay = 1000 * 60 * 60 * 24;
         const numOfDaysAgoMs = msInADay * numberOfDaysAgo;
         const msDaysAgo = nowMs - parseInt(numOfDaysAgoMs);

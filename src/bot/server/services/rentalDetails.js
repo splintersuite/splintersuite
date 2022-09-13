@@ -1,7 +1,8 @@
 'use strict';
-const datesUtil = require('../util/dates');
+const datesUtil = require('../../util/dates');
+const hive = require('./hive');
 
-const updateRentalsStore = ({
+const updateRentalsStore = async ({
     rentalDetailsObj,
     activeListingsObj,
     activeRentals,
@@ -13,28 +14,27 @@ const updateRentalsStore = ({
         console.log(`rentalDetailsObj: ${JSON.stringify(rentalDetailsObj)}`);
         console.log(`activeListingsObj: ${JSON.stringify(activeListingsObj)}`);
         console.log(`activeRentals: ${JSON.stringify(activeRentals)}`);
+
+        //const hiveRelistings = hive.getPostedSuiteListings();
         if (!rentalDetailsObj) {
             const rentalDetails = buildNewRentalDetailsObj({
                 activeRentals,
                 activeListingsObj,
+                //  hiveRelistings,
             });
-            await window.api.bot.updateRentalDetails({rentalDetails});
+            console.log(
+                `rentalDetails after we build new one: ${JSON.stringify(
+                    rentalDetails
+                )}`
+            );
+            await window.api.bot.updateRentalDetails({ rentalDetails });
             return;
         } else {
-            if (activeRentals) {
-                const rentalIDs = Object.keys(activeRentals);
-                rentalIDs.forEach((rental) => {
-                    if (rentalDetailsObj[rental.card_uid] == null) {
-                        rentalDetailsObj[rental.card_uid] = { is_rented: true };
-                        // last_rental_payment -> needs to be a date
-                        // last_price_update -> is a date
-                    }
-                });
-                return;
-            } else {
-                return;
-                // const rentalDetails = activeListingsObj =
-            }
+            window.api.bot.log({
+                message: `/bot/server/services/rentalDetails/updateRentalStore found a rentalDetailsObj of :${JSON.stringify(
+                    rentalDetailsObj
+                )}`,
+            });
         }
     } catch (err) {
         window.api.bot.log({
@@ -46,25 +46,55 @@ const updateRentalsStore = ({
 
 // this is for when the rentalDetailObject is not populated, either because the store got cleared or its the first usage.
 // we also need input of the relisting actions, so we can see when we last changed the price for the activeListingsObj
-const buildNewRentalDetailsObj = ({ activeRentals, activeListingsObj }) => {
+const buildNewRentalDetailsObj = ({
+    activeRentals,
+    activeListingsObj,
+    //   hiveRelistings,
+}) => {
     try {
         const rentalDetailsObj = {};
-
-        for (const rental of Object.keys(activeRentals)) {
+        console.log(
+            `/bot/server/services/rentalDetails/buildNewRentalDetailsObj start`
+        );
+        //  for (const rental of activeRentals) {
+        for (const [tx_id, rental] of Object.entries(activeRentals)) {
             if (rentalDetailsObj[rental.card_id] == null) {
+                console.log(
+                    `/bot/server/services/rentalDetails/buildNewRentalDetailsObj rental: ${JSON.stringify(
+                        rental
+                    )}, Object.keys(activeRentals): ${JSON.stringify(
+                        Object.keys(activeRentals)
+                    )}`
+                );
                 const { next_rental_payment, buy_price } = rental;
+                console.log(
+                    `/bot/server/services/rentalDetails/buildNewRentalDetailsObj next_rental_payment : ${next_rental_payment}, buy_price: ${buy_price}, rental: ${JSON.stringify(
+                        rental
+                    )}`
+                );
+                const _next_rental_payment = new Date(next_rental_payment);
                 const oneDayBefore = datesUtil.getNumDaysAgo({
                     numberOfDaysAgo: 1,
-                    next_rental_payment,
+                    date: _next_rental_payment,
                 });
-                const last_rental_payment = oneDayBefore.daysAgo;
-                //const last_rental_payment = datesUtil.ge
-                rentalDetailsObj[rental.card_id] = {
-                    is_rented: true,
-                    last_rental_payment,
-                    last_price_update: null,
-                    buy_price,
-                };
+                if (
+                    oneDayBefore ||
+                    oneDayBefore?.daysAgo ||
+                    oneDayBefore?.msDaysAgo
+                ) {
+                    const last_rental_payment = oneDayBefore.daysAgo;
+                    //const last_rental_payment = datesUtil.ge
+                    rentalDetailsObj[rental.card_id] = {
+                        is_rented: true,
+                        last_rental_payment,
+                        last_price_update: null,
+                        buy_price,
+                    };
+                } else {
+                    console.log(
+                        `/bot/server/services/rentalDetails/buildNewRentalDetailsObj issue with oneDayBefore`
+                    );
+                }
             } else {
                 window.api.bot.log({
                     message: `/bot/server/services/rentalDetails/buildNewRentalDetailsObj rentalDetailsObj[rental.card_uid] wasnt empty: ${JSON.stringify(
@@ -85,6 +115,13 @@ const buildNewRentalDetailsObj = ({ activeRentals, activeListingsObj }) => {
                 };
             }
         }
+
+        return rentalDetailsObj;
+        // if (!hiveRelistings || hiveRelistings?.length < 1) {
+        //     return rentalDetailsObj;
+        // } else {
+        //     return rentalDetailsObj;
+        // }
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/rentalDetails/buildNewRentalDetailsObj error: ${err.message}`,
