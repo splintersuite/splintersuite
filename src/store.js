@@ -116,6 +116,9 @@ const schema = {
                         type: 'number',
                         minimum: 0.1,
                     },
+                    last_sell_trx_id: {
+                        type: 'string',
+                    },
                 },
             },
         },

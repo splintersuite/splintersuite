@@ -45,7 +45,7 @@ const getEndOfSeasonSettings = ({ season }) => {
 
         const seasonEndTime = new Date(season.ends).getTime();
         const msInDay = 1000 * 60 * 60 * 24;
-        const msInTwentyHours = 1000 * 60 * 60 * 20;
+        const msInFourHours = 1000 * 60 * 60 * 4;
         const nowTime = new Date().getTime();
         const msTillSeasonEnd = seasonEndTime - nowTime;
         let endOfSeasonSettings = {
@@ -56,14 +56,13 @@ const getEndOfSeasonSettings = ({ season }) => {
         cancellationMatrix.some((day) => {
             if (day.daysTillEOS === 1) {
                 day.timeStart =
-                    seasonEndTime -
-                    (day.daysTillEOS * msInDay + msInTwentyHours);
+                    seasonEndTime - (day.daysTillEOS * msInDay + msInFourHours);
                 day.timeEnd = seasonEndTime - (day.daysTillEOS - 1) * msInDay;
             } else if (day.daysTillEOS === 2) {
                 day.timeStart = seasonEndTime - day.daysTillEOS * msInDay;
                 day.timeEnd =
                     seasonEndTime -
-                    ((day.daysTillEOS - 1) * msInDay + msInTwentyHours);
+                    ((day.daysTillEOS - 1) * msInDay + msInFourHours);
             } else {
                 day.timeStart = seasonEndTime - day.daysTillEOS * msInDay;
                 day.timeEnd = seasonEndTime - (day.daysTillEOS - 1) * msInDay;
