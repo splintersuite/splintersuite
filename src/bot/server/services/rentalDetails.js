@@ -27,12 +27,11 @@ const updateRentalsStore = async ({
                 activeListingsObj,
                 hiveRelistings,
             });
-            console.log(
-                `rentalDetails after we build new one: ${JSON.stringify(
-                    rentalDetails
-                )}`
-            );
-            throw new Error('checking');
+            // console.log(
+            //     `rentalDetails after we build new one: ${JSON.stringify(
+            //         rentalDetails
+            //     )}`
+            // );
             await window.api.bot.updateRentalDetails({ rentalDetails });
             return;
         } else {
@@ -65,13 +64,13 @@ const buildNewRentalDetailsObj = ({
 
         for (const [tx_id, rental] of Object.entries(activeRentals)) {
             if (rentalDetailsObj[rental.card_id] == null) {
-                console.log(
-                    `/bot/server/services/rentalDetails/buildNewRentalDetailsObj rental: ${JSON.stringify(
-                        rental
-                    )}, Object.keys(activeRentals): ${JSON.stringify(
-                        Object.keys(activeRentals)
-                    )}`
-                );
+                // console.log(
+                //     `/bot/server/services/rentalDetails/buildNewRentalDetailsObj rental: ${JSON.stringify(
+                //         rental
+                //     )}, Object.keys(activeRentals): ${JSON.stringify(
+                //         Object.keys(activeRentals)
+                //     )}`
+                // );
                 const { next_rental_payment, buy_price } = rental;
                 console.log(
                     `/bot/server/services/rentalDetails/buildNewRentalDetailsObj next_rental_payment : ${next_rental_payment}, buy_price: ${buy_price}, rental: ${JSON.stringify(
@@ -100,7 +99,9 @@ const buildNewRentalDetailsObj = ({
                     };
                 } else {
                     console.log(
-                        `/bot/server/services/rentalDetails/buildNewRentalDetailsObj issue with oneDayBefore`
+                        `/bot/server/services/rentalDetails/buildNewRentalDetailsObj issue with oneDayBefore: ${JSON.stringify(
+                            oneDayBefore
+                        )}`
                     );
                 }
             } else {
@@ -131,9 +132,6 @@ const buildNewRentalDetailsObj = ({
         }
 
         if (hiveRelistings && Object.keys(hiveRelistings)?.length > 1) {
-            console.log(
-                `we have hiveRelistings!: ${JSON.stringify(hiveRelistings)}`
-            );
             return rentalDetailsObj;
         } else {
             console.log(`we don't have hiveRelistings!`);

@@ -56,6 +56,7 @@ const calculateRelistActiveRentalPrices = async ({
                     endOfSeasonSettings,
                     isClBcxModern: lowBcxModerns[card.uid] !== undefined,
                 });
+
                 if (relistPriceForMarketId[0] === 'MD') {
                     // missing data
                     cardsUnableToFindPriceFor.push(card);

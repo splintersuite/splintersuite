@@ -45,7 +45,7 @@ const getEndOfSeasonSettings = ({ season }) => {
 
         const seasonEndTime = new Date(season.ends).getTime();
         const msInDay = 1000 * 60 * 60 * 24;
-        const msInTwelveHours = 1000 * 60 * 60 * 12;
+        const msInTwentyHours = 1000 * 60 * 60 * 20;
         const nowTime = new Date().getTime();
         const msTillSeasonEnd = seasonEndTime - nowTime;
         let endOfSeasonSettings = {
@@ -57,13 +57,13 @@ const getEndOfSeasonSettings = ({ season }) => {
             if (day.daysTillEOS === 1) {
                 day.timeStart =
                     seasonEndTime -
-                    (day.daysTillEOS * msInDay + msInTwelveHours);
+                    (day.daysTillEOS * msInDay + msInTwentyHours);
                 day.timeEnd = seasonEndTime - (day.daysTillEOS - 1) * msInDay;
             } else if (day.daysTillEOS === 2) {
                 day.timeStart = seasonEndTime - day.daysTillEOS * msInDay;
                 day.timeEnd =
                     seasonEndTime -
-                    ((day.daysTillEOS - 1) * msInDay + msInTwelveHours);
+                    ((day.daysTillEOS - 1) * msInDay + msInTwentyHours);
             } else {
                 day.timeStart = seasonEndTime - day.daysTillEOS * msInDay;
                 day.timeEnd = seasonEndTime - (day.daysTillEOS - 1) * msInDay;

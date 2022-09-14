@@ -56,7 +56,6 @@ window.api.bot.start(async (event) => {
                 rentalDetailsObj,
                 nextBotLoopTime,
             });
-
         // ---
         // List, relist, cancel
         // ------------------------------------
