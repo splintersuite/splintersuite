@@ -216,11 +216,15 @@ const isSplintersuite = ({ hiveTransaction }) => {
 
 const getRelistingType = ({ transactions }) => {
     try {
+        console.log(`getRelistingType start`);
         const relist = [];
         const cancel = [];
         const notSpecified = [];
 
         transactions.forEach((hiveTransaction) => {
+            const jsonHiveTransaction = JSON.parse(
+                JSON.stringify(hiveTransaction)
+            );
             const data = hiveTransaction?.data;
             const jsonData = JSON.parse(data);
 
@@ -232,12 +236,37 @@ const getRelistingType = ({ transactions }) => {
                 });
                 return;
             }
+            console.log(
+                `hiveTransaction: ${JSON.stringify(
+                    hiveTransaction
+                )}, hiveTransaction?.created_date: ${
+                    hiveTransaction?.created_date
+                }, jsonHiveTransaction: ${JSON.stringify(
+                    jsonHiveTransaction
+                )}, jsonHiveTransaction?.created_date: ${
+                    jsonHiveTransaction?.created_date
+                }`
+            );
+
+            const transactionData = prepTransactionData({
+                items: jsonData?.items,
+                created_date: hiveTransaction?.created_date, //jsonHiveTransaction?.created_date,
+            });
+            console.log(
+                `transactionData is: ${JSON.stringify(transactionData)}`
+            );
             if (jsonData?.suite_action === 'cancel') {
-                cancel.push(hiveTransaction);
+                //cancel.push(hiveTransaction);
+                // cancel.push(jsonData?.items);
+                cancel.push(transactionData);
             } else if (jsonData?.suite_action === 'relist') {
-                relist.push(hiveTransaction);
+                // relist.push(hiveTransaction);
+                // relist.push(jsonData?.items);
+                relist.push(transactionData);
             } else {
-                notSpecified.push(hiveTransaction);
+                // notSpecified.push(hiveTransaction);
+                // notSpecified.push(jsonData?.items);
+                notSpecified.push(transactionData);
             }
         });
 
@@ -268,6 +297,29 @@ const getRelistingType = ({ transactions }) => {
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/hive/getRelistingType error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
+const prepTransactionData = ({ items, created_date }) => {
+    try {
+        const transactions = [];
+        console.log(
+            `prepTransactionData with created_date: ${created_date},  items: ${JSON.stringify(
+                items
+            )}`
+        );
+        items?.forEach((item) => {
+            const txToAdd = item;
+            txToAdd.created_date = created_date;
+            transactions.push(txToAdd);
+        });
+
+        return transactions;
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/services/hive/prepTransactionData error: ${err.message}`,
         });
         throw err;
     }

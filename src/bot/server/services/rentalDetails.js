@@ -1,4 +1,5 @@
 'use strict';
+const { filter } = require('lodash');
 const datesUtil = require('../../util/dates');
 const hive = require('./hive');
 
@@ -20,7 +21,7 @@ const updateRentalsStore = async ({
             username,
         });
         console.log(`hiveRelistings: ${JSON.stringify(hiveRelistings)}`);
-
+        // throw new Error('checking');
         if (!rentalDetailsObj) {
             const rentalDetails = buildNewRentalDetailsObj({
                 activeRentals,
@@ -64,14 +65,15 @@ const buildNewRentalDetailsObj = ({
 
         for (const [tx_id, rental] of Object.entries(activeRentals)) {
             if (rentalDetailsObj[rental.card_id] == null) {
-                // console.log(
-                //     `/bot/server/services/rentalDetails/buildNewRentalDetailsObj rental: ${JSON.stringify(
-                //         rental
-                //     )}, Object.keys(activeRentals): ${JSON.stringify(
-                //         Object.keys(activeRentals)
-                //     )}`
-                // );
-                const { next_rental_payment, buy_price } = rental;
+                console.log(
+                    `/bot/server/services/rentalDetails/buildNewRentalDetailsObj rental: ${JSON.stringify(
+                        rental
+                    )}, Object.keys(activeRentals): ${JSON.stringify(
+                        Object.keys(activeRentals)
+                    )}`
+                );
+                //   throw new Error('checking for last_sell_trx_id');
+                const { next_rental_payment, buy_price, sell_trx_id } = rental;
                 console.log(
                     `/bot/server/services/rentalDetails/buildNewRentalDetailsObj next_rental_payment : ${next_rental_payment}, buy_price: ${buy_price}, rental: ${JSON.stringify(
                         rental
@@ -96,7 +98,7 @@ const buildNewRentalDetailsObj = ({
                         last_rental_payment_time,
                         last_price_update: null,
                         buy_price,
-                        last_sell_trx_id: null,
+                        last_sell_trx_id: sell_trx_id,
                     };
                 } else {
                     console.log(
@@ -133,6 +135,16 @@ const buildNewRentalDetailsObj = ({
             }
         }
 
+        const rentalDetailsBySellTrx = filterRentalDetailsBySellTrxId({
+            rentalDetailsObj,
+        });
+
+        console.log(
+            `rentalDetailsBySellTrx: ${JSON.stringify(rentalDetailsBySellTrx)}`
+        );
+
+        console.log(`hiveRelistings: ${JSON.stringify(hiveRelistings)}`);
+        //  throw new Error('checking hiveRelistings');
         if (hiveRelistings && Object.keys(hiveRelistings)?.length > 1) {
             for (const [relistingType, hiveTransactions] of Object.entries(
                 hiveRelistings
@@ -167,7 +179,11 @@ const filterRentalDetailsBySellTrxId = ({ rentalDetailsObj }) => {
         );
         const rentalDetailSellTrx = {};
         for (const [uid, rentalDetail] of Object.entries(rentalDetailsObj)) {
+            const { last_sell_trx_id } = rentalDetail;
+            rentalDetailSellTrx[last_sell_trx_id] = uid;
         }
+
+        return rentalDetailSellTrx;
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/rentalDetails/filterRentalDetailsBySellTrxId error: ${err.message}`,

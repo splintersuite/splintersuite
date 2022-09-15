@@ -60,12 +60,12 @@ const startRentalBot = async ({
         });
 
         // updates rentalDetails
-        await updateRentalsStore({
-            username,
-            rentalDetailsObj,
-            activeListingsObj,
-            activeRentals: activeRentals.activeRentalsBySellTrxId,
-        });
+        // await updateRentalsStore({
+        //     username,
+        //     rentalDetailsObj,
+        //     activeListingsObj,
+        //     activeRentals: activeRentals.activeRentalsBySellTrxId,
+        // });
 
         const groupedRentalListObj =
             await splinterlandsService.getAllGroupedRentalsByLevel();
