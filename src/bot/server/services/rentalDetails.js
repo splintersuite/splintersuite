@@ -18,17 +18,19 @@ const updateRentalsStore = async ({
         // console.log(`activeListingsObj: ${JSON.stringify(activeListingsObj)}`);
         // console.log(`activeRentals: ${JSON.stringify(activeRentals)}`);
 
-        const hiveRelistings = await hive.getPostedSuiteRelistings({
-            username,
-            lastCreatedTime,
-        });
-        console.log(`hiveRelistings: ${JSON.stringify(hiveRelistings)}`);
-        throw new Error('checking');
-        const activeListingsHiveObj = await addInHiveRelistingData({
+        // const hiveRelistings = await hive.getPostedSuiteRelistings({
+        //     username,
+        //     lastCreatedTime,
+        // });
+        // console.log(`hiveRelistings: ${JSON.stringify(hiveRelistings)}`);
+        // console.log(`activeListingsObj: ${JSON.stringify(activeListingsObj)}`);
+
+        const activeListingsHiveObj = await addInHiveData({
             username,
             activeListingsObj,
             lastCreatedTime,
         });
+        throw new Error('checking');
         if (!rentalDetailsObj) {
             const rentalDetails = buildNewRentalDetailsObj({
                 activeRentals,
@@ -57,9 +59,7 @@ const updateRentalsStore = async ({
     }
 };
 
-//const
-
-const addInHiveRelistingData = async ({
+const addInHiveData = async ({
     username,
     activeListingsObj,
     lastCreatedTime,
@@ -69,6 +69,71 @@ const addInHiveRelistingData = async ({
             username,
             lastCreatedTime,
         });
+        console.log(`hiveRelistings: ${JSON.stringify(hiveRelistings)}`);
+        throw new Error(`checking addInHiveData hiveRelistings`);
+        // const newActiveListingsObj = addInHiveRelistingData({
+        //     username,
+        //     activeListingsObj,
+        //     lastCreatedTime,
+        //     hiveRelistings: hiveRelistings?.relist,
+        //     hiveCancels: hiveRelistings?.cancel,
+        // });
+        //  return { relist, cancel };
+
+        //  const newActiveListingsObj = await addInHiveRelistingData({})
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/services/rentalDetails/addInHiveRelistingData error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
+const addInHiveRelistingData = ({
+    username,
+    activeListingsObj,
+    lastCreatedTime,
+    hiveRelistings,
+    hiveCancels,
+}) => {
+    try {
+        const listingsBySellId = activeListingsBySellTrxId({
+            activeListingsObj,
+        });
+        hiveRelistings.forEach((listingArr) => {
+            if (listingArr?.length > 0) {
+                if (listingArr?.length === 3) {
+                    const sell_id = listingArr[0];
+                    const buy_price = listingArr[1];
+                    const dateTime = listingArr[2];
+                    const uidRelevantToListing = listingsBySellId[sell_id];
+                    if (uidRelevantToListing) {
+                        const activeListing =
+                            activeListingsObj[uidRelevantToListing];
+                        const createdTime = new Date(
+                            activeListing?.market_created_date
+                        )?.getTime();
+                        if (dateTime > createdTime) {
+                            activeListingsObj[uidRelevantToListing]
+                                ?.listing_change_date;
+                        }
+                    }
+                } else {
+                    window.api.bot.log({
+                        message: `/bot/server/services/rentalDetails/addInHiveRelistingData listingArr does not have all data, listingArr: ${JSON.stringify(
+                            listingArr
+                        )}`,
+                    });
+                }
+            }
+        });
+
+        // hiveRelistings.forEach((hiveTransactions) => {
+        //     const market_id =
+        // })
+        // for (const [uid, details] of Object.entries(activeListingsObj)) {
+
+        // }
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/rentalDetails/addInHiveRelistingData error: ${err.message}`,
@@ -236,6 +301,26 @@ const buildNewRentalDetailsObj = ({
     }
 };
 
+const activeListingsBySellTrxId = ({ activeListingsObj }) => {
+    try {
+        console.log(
+            `/bot/server/services/rentalDetails/activeListingsBySellTrxId start`
+        );
+
+        const activeListingSellTrx = {};
+        for (const [uid, listing] of activeListingsObj) {
+            const { market_id } = listing;
+            activeListingSellTrx[market_id] = uid;
+        }
+        return activeListingSellTrx;
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/services/rentalDetails/activeListingsBySellTrxId error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
 const filterRentalDetailsBySellTrxId = ({ rentalDetailsObj }) => {
     try {
         console.log(
@@ -307,4 +392,13 @@ activeListingsObj:
 hive relistings:
 
 hiveRelistings: {"relist":[{"id":"57d0f907019acb6a4fa720832872ee53207d0644","block_id":"040bee99b6856c4842655995672d894564ac32a8","prev_block_id":"040bee98280bbcd818f8387c171bb6ad2ff1a9dd","type":"update_rental_price","player":"xdww","affected_player":"xdww","data":"{\"items\":[[\"bd4cb81bacfb27afde63da132dc6f6420ea90799-6\",1.106],[\"dd998bc29079abcab71de53f195f9ea55942e0da-50\",36.231030000000004],[\"439dff493cd95380cd6189b0a6e118e76149d1f4-21\",18.03353],[\"a0ea371597d66713f4febbad5b84901edcff3d5e-26\",21.28203]],\"agent\":\"splintersuite\",\"suite_action\":\"relist\",\"required_posting_auths\":[\"xdww\"],\"required_auths\":[]}","success":true,"error":null,"block_num":67890841,"created_date":"2022-09-14T03:56:51.000Z","result":"{\"success\":true}","steem_price":null,"sbd_price":null},{"id":"e54ae5ed855238a260d75c90d4fc3a2c4804bce3","block_id":"040bdbd25feb9bbc26e9e30c06543001fa1a84cf","prev_block_id":"040bdbd109df990e9a0dabaf0aeff2c6814a5d53","type":"update_rental_price","player":"xdww","affected_player":"xdww","data":"{\"items\":[[\"dd998bc29079abcab71de53f195f9ea55942e0da-49\",70.68996],[\"dd998bc29079abcab71de53f195f9ea55942e0da-96\",79.55442000000001],[\"a0ea371597d66713f4febbad5b84901edcff3d5e-3\",164.73203999999998],[\"a0ea371597d66713f4febbad5b84901edcff3d5e-26\",21.496859999999998]],\"agent\":\"splintersuite\",\"suite_action\":\"relist\",\"required_posting_auths\":[\"xdww\"],\"required_auths\":[]}","success":true,"error":null,"block_num":67886034,"created_date":"2022-09-13T23:55:57.000Z","result":"{\"success\":true}","steem_price":null,"sbd_price":null},{"id":"072a3785cd672476af268e9cc1349d6167e6ac0f","block_id":"040bda9373a5dface48fc38a9b50ae62b3314a12","prev_block_id":"040bda92f338dd7a51c4e620725a84b27fb3404e","type":"update_rental_price","player":"xdww","affected_player":"xdww","data":"{\"items\":[[\"dd998bc29079abcab71de53f195f9ea55942e0da-49\",71.40375],[\"dd998bc29079abcab71de53f195f9ea55942e0da-96\",80.3583],[\"a0ea371597d66713f4febbad5b84901edcff3d5e-3\",180.86508],[\"a0ea371597d66713f4febbad5b84901edcff3d5e-13\",7.8891335],[\"a0ea371597d66713f4febbad5b84901edcff3d5e-26\",21.71367]],\"agent\":\"splintersuite\",\"suite_action\":\"relist\",\"required_posting_auths\":[\"xdww\"],\"required_auths\":[]}","success":true,"error":null,"block_num":67885715,"created_date":"2022-09-13T23:39:57.000Z","result":"{\"success\":true}","steem_price":null,"sbd_price":null},{"id":"a565b544fb8e7a7eb9c2dc727beca5f398c93f1a","block_id":"040bc86c8761b0eccfacb8cc02561728f8f31aaf","prev_block_id":"040bc86b1ef74239bdc6c4a9a533b1b9871df5d6","type":"update_rental_price","player":"xdww","affected_player":"xdww","data":"{\"items\":[[\"dd998bc29079abcab71de53f195f9ea55942e0da-8\",4.643152],[\"dd998bc29079abcab71de53f195f9ea55942e0da-32\",4.95],[\"dd998bc29079abcab71de53f195f9ea55942e0da-34\",4.95],[\"dd998bc29079abcab71de53f195f9ea55942e0da-46\",1.38],[\"dd998bc29079abcab71de53f195f9ea55942e0da-48\",6.93099],[\"dd998bc29079abcab71de53f195f9ea55942e0da-64\",6.336],[\"dd998bc29079abcab71de53f195f9ea55942e0da-65\",9.7515],[\"dd998bc29079abcab71de53f195f9ea55942e0da-79\",4.514399999999999],[\"dd998bc29079abcab71de53f195f9ea55942e0da-84\",3.635],[\"a0ea371597d66713f4febbad5b84901edcff3d5e-1\",17.545769999999997],[\"a0ea371597d66713f4febbad5b84901edcff3d5e-22\",43.543169999999996],[\"a0ea371597d66713f4febbad5b84901edcff3d5e-30\",98.01]],\"agent\":\"splintersuite\",\"suite_action\":\"relist\",\"required_posting_auths\":[\"xdww\"],\"required_auths\":[]}","success":true,"error":null,"block_num":67881068,"created_date":"2022-09-13T19:47:18.000Z","result":"{\"success\":true}","steem_price":null,"sbd_price":null},{"id":"d9eac44d45fad676468f71a8d4e763b0deea6eb5","block_id":"040b9a6a1c6cb110133f9b1eeb3e4c05fcb9856b","prev_block_id":"040b9a69ddad0a621e46705aa5e24db17035ab75","type":"update_rental_price","player":"xdww","affected_player":"xdww","data":"{\"items\":[[\"a0ea371597d66713f4febbad5b84901edcff3d5e-24\",80.47314],[\"a0ea371597d66713f4febbad5b84901edcff3d5e-31\",118.19313]],\"agent\":\"splintersuite\",\"suite_action\":\"relist\",\"required_posting_auths\":[\"xdww\"],\"required_auths\":[]}","success":true,"error":null,"block_num":67869290,"created_date":"2022-09-13T09:57:21.000Z","result":"{\"success\":true}","steem_price":null,"sbd_price":null},{"id":"452943ffd43b383dfea9819c797f031b74f01691","block_id":"040b9a5f441957a1987740e54c3133aa93241669","prev_block_id":"040b9a5ebace20844c72183b12fc67e71621aff7","type":"update_rental_price","player":"xdww","affected_player":"xdww","data":"{\"items\":[[\"a0ea371597d66713f4febbad5b84901edcff3d5e-24\",81.28593],[\"a0ea371597d66713f4febbad5b84901edcff3d5e-31\",119.38707000000001]],\"agent\":\"splintersuite\",\"suite_action\":\"relist\",\"required_posting_auths\":[\"xdww\"],\"required_auths\":[]}","success":true,"error":null,"block_num":67869279,"created_date":"2022-09-13T09:56:48.000Z","result":"{\"success\":true}","steem_price":null,"sbd_price":null}
+*/
+
+/*
+
+activeListingsObj: {"G4-176-580RKPBRM8":{"player":"xdww","uid":"G4-176-580RKPBRM8","card_detail_id":176,"xp":1,"gold":true,"edition":4,"market_id":"dd998bc29079abcab71de53f195f9ea55942e0da-33","buy_price":"13.289","market_listing_type":"RENT","market_listing_status":0,"market_created_date":"2022-09-03T14:35:27.000Z","last_used_block":67634850,"last_used_player":"nonte","last_used_date":"2022-09-05T06:11:24.221Z","last_transferred_block":null,"last_transferred_date":null,"alpha_xp":null,"delegated_to":null,"delegation_tx":"sm_rental_payments_67949640","skin":null,"delegated_to_display_name":null,"display_name":null,"lock_days":3,"unlock_date":null,"level":2},"C3-242-014BSEFUG0":{"player":"xdww","uid":"C3-242-
+
+
+
+hiveRelistings: {"relist":[["dd998bc29079abcab71de53f195f9ea55942e0da-50",28.536749999999998,1663323597000],["dd998bc29079abcab71de53f195f9ea55942e0da-53",2.1681428,1663323597000],["dd998bc29079abcab71de53f195f9ea55942e0da-57",71.2305,1663323597000],["dd998bc29079abcab71de53f195f9ea55942e0da-61",10.89,1663323597000],["dd998bc29079abcab71de53f195f9ea55942e0da-65",7.74,1663323597000],["dd998bc29079abcab71de53f195f9ea55942e0da-76",38.016,1663323597000],["657170b1f707167af65f77b8b16a807003f6ddd3-7",65.58849000000001,1663323597000],["a0ea371597d66713f4febbad5b84901edcff3d5e-26",12.191,1663323597000],["a0ea371597d66713f4febbad5b84901edcff3d5e-30",78.408,1663323597000],["a0ea371597d66713f4febbad5b84901edcff3d5e-40",49.3515,1663323597000],["dd998bc29079abcab71de53f195f9ea55942e0da-34",3.267,1663293144000],["dd998bc29079abcab71de53f195f9ea55942e0da-46",1.176,1663293144000],["dd998bc29079abcab71de53f195f9ea55942e0da-47",1.50183,1663293144000],["bd4cb81bacfb27afde63da132dc6f6420ea90799-3",0.26532,1663293144000],["dd998bc29079abcab71de53f195f9ea55942e0da-49",33.18579,1663293144000],["dd998bc29079abcab71de53f195f9ea55942e0da-55",0.5,1663293144000],["dd998bc29079abcab71de53f195f9ea55942e0da-58",9.609,1663293144000],["dd998bc29079abcab71de53f195f9ea55942e0da-60",51.611670000000004,1663293144000],
 */
