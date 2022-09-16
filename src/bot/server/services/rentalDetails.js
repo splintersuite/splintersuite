@@ -7,6 +7,7 @@ const updateRentalsStore = async ({
     username,
     rentalDetailsObj,
     activeListingsObj,
+    lastCreatedTime,
     activeRentals,
     // price update object?
 }) => {
@@ -17,11 +18,17 @@ const updateRentalsStore = async ({
         // console.log(`activeListingsObj: ${JSON.stringify(activeListingsObj)}`);
         // console.log(`activeRentals: ${JSON.stringify(activeRentals)}`);
 
-        // const hiveRelistings = await hive.getPostedSuiteRelistings({
-        //     username,
-        // });
-        // console.log(`hiveRelistings: ${JSON.stringify(hiveRelistings)}`);
-        // throw new Error('checking');
+        const hiveRelistings = await hive.getPostedSuiteRelistings({
+            username,
+            lastCreatedTime,
+        });
+        console.log(`hiveRelistings: ${JSON.stringify(hiveRelistings)}`);
+        throw new Error('checking');
+        const activeListingsHiveObj = await addInHiveRelistingData({
+            username,
+            activeListingsObj,
+            lastCreatedTime,
+        });
         if (!rentalDetailsObj) {
             const rentalDetails = buildNewRentalDetailsObj({
                 activeRentals,
@@ -50,8 +57,18 @@ const updateRentalsStore = async ({
     }
 };
 
-const addInHiveRelistingData = async ({ username, activeListingsObj }) => {
+//const
+
+const addInHiveRelistingData = async ({
+    username,
+    activeListingsObj,
+    lastCreatedTime,
+}) => {
     try {
+        const hiveRelistings = await hive.getPostedSuiteRelistings({
+            username,
+            lastCreatedTime,
+        });
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/rentalDetails/addInHiveRelistingData error: ${err.message}`,

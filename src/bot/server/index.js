@@ -60,7 +60,7 @@ const startRentalBot = async ({
             collection,
         });
         window.api.bot.log({
-            message: `/bot/server/index/startRentalBot lastCreatedTime: ${activeListingsObj?.lastCreatedTime}`,
+            message: `/bot/server/index/startRentalBot lastCreatedTime: ${activeListingsObject?.lastCreatedTime}`,
         });
         // updates rentalDetails
         await updateRentalsStore({

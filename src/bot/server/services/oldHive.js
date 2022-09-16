@@ -134,30 +134,26 @@ const getPostedSuiteRelistings = async ({ username, lastCreatedTime }) => {
         });
         //  console.log(`relistings: ${JSON.stringify(relistings)}`);
 
-        // const postedRelistings = getSuccessfulTransactions({
-        //     transactions: relistings,
-        // });
-
-        // //  console.log(`postedRelistings: ${JSON.stringify(postedRelistings)}`);
-        // const postedSuiteRelistings = getSplinterSuiteTransactions({
-        //     transactions: postedRelistings,
-        // });
-
-        // window.api.bot.log({
-        //     message: `/bot/server/services/hive/getPostedSuiteRelistings`,
-        // });
-        // window.api.bot.log({
-        //     message: `Relistings: ${postedSuiteRelistings?.length}`,
-        // });
-
-        const postedSuiteRelistingsByType = getRelistingType({
+        const postedRelistings = getSuccessfulTransactions({
             transactions: relistings,
         });
-        console.log(
-            `postedSuiteRelistingsByType: ${JSON.stringify(
-                postedSuiteRelistingsByType
-            )}`
-        );
+
+        //  console.log(`postedRelistings: ${JSON.stringify(postedRelistings)}`);
+        const postedSuiteRelistings = getSplinterSuiteTransactions({
+            transactions: postedRelistings,
+        });
+
+        window.api.bot.log({
+            message: `/bot/server/services/hive/getPostedSuiteRelistings`,
+        });
+        window.api.bot.log({
+            message: `Relistings: ${postedSuiteRelistings?.length}`,
+        });
+
+        const postedSuiteRelistingsByType = getRelistingType({
+            transactions: postedSuiteRelistings,
+        });
+
         return postedSuiteRelistingsByType;
     } catch (err) {
         window.api.bot.log({
@@ -325,18 +321,15 @@ const getRelistingType = ({ transactions }) => {
             if (jsonData?.suite_action === 'cancel') {
                 //cancel.push(hiveTransaction);
                 // cancel.push(jsonData?.items);
-                // cancel.push(transactionData);
-                cancel.push(...transactionData);
+                cancel.push(transactionData);
             } else if (jsonData?.suite_action === 'relist') {
                 // relist.push(hiveTransaction);
                 // relist.push(jsonData?.items);
-                //    relist.push(transactionData);
-                relist.push(...transactionData);
+                relist.push(transactionData);
             } else {
                 // notSpecified.push(hiveTransaction);
                 // notSpecified.push(jsonData?.items);
-                //notSpecified.push(transactionData);
-                notSpecified.push(...transactionData);
+                notSpecified.push(transactionData);
             }
         });
 
