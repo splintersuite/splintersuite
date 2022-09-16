@@ -24,10 +24,11 @@ axiosRetry(axiosInstance, {
         if (
             error?.response?.status === 504 ||
             error?.response?.status === 502 ||
-            error?.response?.status === 503
+            error?.response?.status === 503 ||
+            !error?.response?.status
         ) {
             console.error(`response status is: ${error?.response?.status}`);
-            return 100000;
+            return 10000;
         } else {
             return 500000;
         }

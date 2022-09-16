@@ -17,10 +17,10 @@ const updateRentalsStore = async ({
         // console.log(`activeListingsObj: ${JSON.stringify(activeListingsObj)}`);
         // console.log(`activeRentals: ${JSON.stringify(activeRentals)}`);
 
-        const hiveRelistings = await hive.getPostedSuiteRelistings({
-            username,
-        });
-        console.log(`hiveRelistings: ${JSON.stringify(hiveRelistings)}`);
+        // const hiveRelistings = await hive.getPostedSuiteRelistings({
+        //     username,
+        // });
+        // console.log(`hiveRelistings: ${JSON.stringify(hiveRelistings)}`);
         // throw new Error('checking');
         if (!rentalDetailsObj) {
             const rentalDetails = buildNewRentalDetailsObj({
@@ -50,49 +50,62 @@ const updateRentalsStore = async ({
     }
 };
 
+const addInHiveRelistingData = async ({ username, activeListingsObj }) => {
+    try {
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/services/rentalDetails/addInHiveRelistingData error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
 // this is for when the rentalDetailObject is not populated, either because the store got cleared or its the first usage.
 // we also need input of the relisting actions, so we can see when we last changed the price for the activeListingsObj
 const buildNewRentalDetailsObj = ({
     activeRentals,
     activeListingsObj,
     hiveRelistings,
+    rentalDetailsObj,
 }) => {
     try {
-        const rentalDetailsObj = {};
+        // const rentalDetailsObj = {};
+        const updateRentalDetails = {};
+        const newRentalDetails = {};
         console.log(
             `/bot/server/services/rentalDetails/buildNewRentalDetailsObj start`
         );
 
         for (const [tx_id, rental] of Object.entries(activeRentals)) {
-            if (rentalDetailsObj[rental.card_id] == null) {
-                console.log(
-                    `/bot/server/services/rentalDetails/buildNewRentalDetailsObj rental: ${JSON.stringify(
-                        rental
-                    )}, Object.keys(activeRentals): ${JSON.stringify(
-                        Object.keys(activeRentals)
-                    )}`
-                );
-                //   throw new Error('checking for last_sell_trx_id');
-                const { next_rental_payment, buy_price, sell_trx_id } = rental;
-                console.log(
-                    `/bot/server/services/rentalDetails/buildNewRentalDetailsObj next_rental_payment : ${next_rental_payment}, buy_price: ${buy_price}, rental: ${JSON.stringify(
-                        rental
-                    )}`
-                );
-                const _next_rental_payment = new Date(next_rental_payment);
-                const oneDayBefore = datesUtil.getNumDaysAgo({
-                    numberOfDaysAgo: 1,
-                    date: _next_rental_payment,
-                });
-                if (
-                    oneDayBefore ||
-                    oneDayBefore?.daysAgo ||
-                    oneDayBefore?.msDaysAgo
-                ) {
-                    const last_rental_payment = oneDayBefore.daysAgo;
-                    const last_rental_payment_time = oneDayBefore.msDaysAgo;
-
-                    rentalDetailsObj[rental.card_id] = {
+            //     if (rentalDetailsObj[rental.card_id] == null) {
+            console.log(
+                `/bot/server/services/rentalDetails/buildNewRentalDetailsObj rental: ${JSON.stringify(
+                    rental
+                )}, Object.keys(activeRentals): ${JSON.stringify(
+                    Object.keys(activeRentals)
+                )}`
+            );
+            //   throw new Error('checking for last_sell_trx_id');
+            const { next_rental_payment, buy_price, sell_trx_id } = rental;
+            console.log(
+                `/bot/server/services/rentalDetails/buildNewRentalDetailsObj next_rental_payment : ${next_rental_payment}, buy_price: ${buy_price}, rental: ${JSON.stringify(
+                    rental
+                )}`
+            );
+            const _next_rental_payment = new Date(next_rental_payment);
+            const oneDayBefore = datesUtil.getNumDaysAgo({
+                numberOfDaysAgo: 1,
+                date: _next_rental_payment,
+            });
+            if (
+                oneDayBefore ||
+                oneDayBefore?.daysAgo ||
+                oneDayBefore?.msDaysAgo
+            ) {
+                const last_rental_payment = oneDayBefore.daysAgo;
+                const last_rental_payment_time = oneDayBefore.msDaysAgo;
+                if (rentalDetailsObj[rental.card_id] == null) {
+                    newRentalDetails[rental.card_id] = {
                         is_rented: true,
                         last_rental_payment,
                         last_rental_payment_time,
@@ -100,31 +113,64 @@ const buildNewRentalDetailsObj = ({
                         buy_price,
                         last_sell_trx_id: sell_trx_id,
                     };
+                    // rentalDetailsObj[rental.card_id] = {
+                    //     is_rented: true,
+                    //     last_rental_payment,
+                    //     last_rental_payment_time,
+                    //     last_price_update: null,
+                    //     buy_price,
+                    //     last_sell_trx_id: sell_trx_id,
                 } else {
-                    console.log(
-                        `/bot/server/services/rentalDetails/buildNewRentalDetailsObj issue with oneDayBefore: ${JSON.stringify(
-                            oneDayBefore
-                        )}`
-                    );
+                    updateRentalDetails[rental.card_id] = {
+                        is_rented: true,
+                        last_rental_payment,
+                        last_rental_payment_time,
+                        last_price_update:
+                            buy_price !==
+                            rentalDetailsObj[rental.card_id].buy_price
+                                ? last_rental_payment
+                                : null,
+                        buy_price,
+                        last_sell_trx_id: sell_trx_id,
+                    };
+                    // rentalDetailsObj[rental.card_id] = {
+                    //     is_rented: true,
+                    //     last_rental_payment,
+                    //     last_rental_payment_time,
+                    //     last_price_update:
+                    //         buy_price !==
+                    //         rentalDetailsObj[rental.card_id].buy_price
+                    //             ? last_rental_payment
+                    //             : null,
+                    //     buy_price,
+                    //     last_sell_trx_id: sell_trx_id,
+                    // };
                 }
             } else {
-                window.api.bot.log({
-                    message: `/bot/server/services/rentalDetails/buildNewRentalDetailsObj rentalDetailsObj[rental.card_uid] wasnt empty: ${JSON.stringify(
-                        rentalDetailsObj[rental.card_uid]
-                    )}`,
-                });
-                throw new Error(
-                    `/bot/server/services/rentalDetails/buildNewRentalDetailsObj rentalDetailsObj[rental.card_uid] wasnt empty: ${JSON.stringify(
-                        rentalDetailsObj[rental.card_uid]
+                console.log(
+                    `/bot/server/services/rentalDetails/buildNewRentalDetailsObj issue with oneDayBefore: ${JSON.stringify(
+                        oneDayBefore
                     )}`
                 );
             }
+            // } else {
+            //     window.api.bot.log({
+            //         message: `/bot/server/services/rentalDetails/buildNewRentalDetailsObj rentalDetailsObj[rental.card_uid] wasnt empty: ${JSON.stringify(
+            //             rentalDetailsObj[rental.card_uid]
+            //         )}`,
+            //     });
+            //     throw new Error(
+            //         `/bot/server/services/rentalDetails/buildNewRentalDetailsObj rentalDetailsObj[rental.card_uid] wasnt empty: ${JSON.stringify(
+            //             rentalDetailsObj[rental.card_uid]
+            //         )}`
+            //     );
+            // }
         }
 
         for (const listing of Object.keys(activeListingsObj)) {
-            if (rentalDetailsObj[listing.uid] == null) {
-                const { market_created_date, buy_price } = listing;
-                rentalDetailsObj[listing.uid] = {
+            const { market_created_date, buy_price, uid } = listing;
+            if (rentalDetailsObj[uid] == null) {
+                rentalDetailsObj[uid] = {
                     is_rented: false,
                     last_rental_payment: null,
                     last_rental_payment_time: null,
@@ -132,6 +178,9 @@ const buildNewRentalDetailsObj = ({
                     buy_price,
                     last_sell_trx_id: null,
                 };
+            } else {
+                //  updateRentalDetails[uid].buy_price = buy_price;
+                // this will be handled in the hive relistings data add in, will just taint the data if we add it here imo (relisting data gives us the date + buy_price)
             }
         }
 

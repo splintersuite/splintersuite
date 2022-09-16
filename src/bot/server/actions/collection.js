@@ -1,5 +1,6 @@
 'use strict';
 
+const _ = require('lodash');
 const { isOnCooldown } = require('./_helpers.js');
 
 const sortCollectionArrayByLevel = ({ collection }) => {
@@ -326,6 +327,7 @@ const filterCollectionArraysByLevelLimitThresholds = ({
 const getActiveListingsObj = async ({ collection }) => {
     try {
         const activeListingsObj = {};
+        const createdList = [];
         collection.forEach((card) => {
             if (
                 card?.market_listing_type === 'RENT' &&
@@ -333,9 +335,17 @@ const getActiveListingsObj = async ({ collection }) => {
                 card?.delegated_to === null
             ) {
                 activeListingsObj[card.uid] = { ...card };
+                if (card?.market_created_date) {
+                    const createdTime = new Date(
+                        card?.market_created_date
+                    ).getTime();
+                    createdList.push(createdTime);
+                }
             }
         });
-        return activeListingsObj;
+
+        const lastCreatedTime = _.min(createdList);
+        return { activeListingsObj, lastCreatedTime };
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/actions/collection/getActiveListingsObj, error: ${err.message}`,

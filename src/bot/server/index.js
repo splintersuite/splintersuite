@@ -55,18 +55,22 @@ const startRentalBot = async ({
         const activeRentals = await getActiveRentalsByRentalId(username);
 
         // listings...
-        const activeListingsObj = await getActiveListingsObj({
+        //  return { activeListingsObj, lastCreatedTime };
+        const activeListingsObject = await getActiveListingsObj({
             collection,
         });
-
+        window.api.bot.log({
+            message: `/bot/server/index/startRentalBot lastCreatedTime: ${activeListingsObj?.lastCreatedTime}`,
+        });
         // updates rentalDetails
-        // await updateRentalsStore({
-        //     username,
-        //     rentalDetailsObj,
-        //     activeListingsObj,
-        //     activeRentals: activeRentals.activeRentalsBySellTrxId,
-        // });
-
+        await updateRentalsStore({
+            username,
+            rentalDetailsObj,
+            activeListingsObj: activeListingsObject?.activeListingsObj,
+            lastCreatedTime: activeListingsObject?.lastCreatedTime,
+            activeRentals: activeRentals?.activeRentalsBySellTrxId,
+        });
+        // throw new Error('checking last created time');
         const groupedRentalListObj =
             await splinterlandsService.getAllGroupedRentalsByLevel();
 
