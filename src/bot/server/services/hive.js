@@ -27,11 +27,11 @@ const getPostedSuiteRelistings = async ({ username, lastCreatedTime }) => {
             lastCreatedTime,
         });
 
-        const postedSuiteRelistingsByType = getRelistingType({
+        const { relist, cancel } = getRelistingType({
             transactions: relistings,
         });
 
-        return postedSuiteRelistingsByType;
+        return { relist, cancel };
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/hive/getPostedSuiteRelistings error: ${err.message}`,
