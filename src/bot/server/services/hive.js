@@ -2,6 +2,44 @@
 
 const { axiosInstance } = require('../requests/axiosGetInstance');
 
+const getHiveRelistings = async ({ username }) => {
+    try {
+        const url = `https://api2.splinterlands.com/players/history?username=${username}&from_block=-1&limit=250&types=update_rental_price`;
+        const res = await axiosInstance(url);
+
+        const results = res.data;
+
+        return results;
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/services/hive/getHiveRelistings error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
+const getPostedSuiteRelistings = async ({ username, lastCreatedTime }) => {
+    try {
+        //   console.log(`/bot/server/services/hive/getPostedSuiteRelistings`);
+
+        const relistings = await getRecentHiveRelistings({
+            username,
+            lastCreatedTime,
+        });
+
+        const postedSuiteRelistingsByType = getRelistingType({
+            transactions: relistings,
+        });
+
+        return postedSuiteRelistingsByType;
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/services/hive/getPostedSuiteRelistings error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
 const getRecentHiveRelistings = async ({ username, lastCreatedTime }) => {
     try {
         const hiveRelistings = [];
@@ -51,44 +89,6 @@ const getRecentHiveRelistings = async ({ username, lastCreatedTime }) => {
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/hive/getRecentHiveRelistings error: ${err.message}`,
-        });
-        throw err;
-    }
-};
-
-const getHiveRelistings = async ({ username }) => {
-    try {
-        const url = `https://api2.splinterlands.com/players/history?username=${username}&from_block=-1&limit=250&types=update_rental_price`;
-        const res = await axiosInstance(url);
-
-        const results = res.data;
-
-        return results;
-    } catch (err) {
-        window.api.bot.log({
-            message: `/bot/server/services/hive/getHiveRelistings error: ${err.message}`,
-        });
-        throw err;
-    }
-};
-
-const getPostedSuiteRelistings = async ({ username, lastCreatedTime }) => {
-    try {
-        //   console.log(`/bot/server/services/hive/getPostedSuiteRelistings`);
-
-        const relistings = await getRecentHiveRelistings({
-            username,
-            lastCreatedTime,
-        });
-
-        const postedSuiteRelistingsByType = getRelistingType({
-            transactions: relistings,
-        });
-
-        return postedSuiteRelistingsByType;
-    } catch (err) {
-        window.api.bot.log({
-            message: `/bot/server/services/hive/getPostedSuiteRelistings error: ${err.message}`,
         });
         throw err;
     }
@@ -238,10 +238,6 @@ const buildHiveListingsObj = ({ transactions }) => {
                 type = 'n';
             }
             const created_time = new Date(created_date).getTime();
-            console.log(
-                `buildHiveListingsObj created_time: ${created_time}, created_date: ${created_date}`
-            );
-
             items?.forEach((item) => {
                 tx = tx + 1;
                 const sell_id = item[0];
