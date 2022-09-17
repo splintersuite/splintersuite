@@ -281,19 +281,83 @@ const isSplintersuite = ({ hiveTransaction }) => {
     }
 };
 
+const seperateByListingType = ({ hiveListingsObj }) => {
+    try {
+        const relist = {};
+        const cancel = {};
+        let none = 0;
+        let listingCatch = 0;
+        let total = 0;
+        // const none = [];
+        // const listingCatch = [];
+        // if (jsonData?.suite_action === 'cancel') {
+        //   type = 'c';
+        // } else if (jsonData?.suite_action === 'relist') {
+        //     type = 'rl';
+        // } else {
+        //     type = 'n';
+        // }
+        for (const [sell_id, listing] of Object.entries(hiveListingsObj)) {
+            total = total + 1;
+            const { type } = listing;
+            if (type === 'rl') {
+                relist[sell_id] = listing;
+            } else if (type === 'c') {
+                cancel[sell_id] = listing;
+            } else if (type === 'n') {
+                none = none + 1;
+            } else {
+                listingCatch = listingCatch + 1;
+            }
+        }
+        window.api.bot.log({
+            message: `/bot/server/services/hive/seperateByListingType`,
+        });
+        window.api.bot.log({
+            message: `Relistings: ${Object.keys(relist)?.length}`,
+        });
+        window.api.bot.log({
+            message: `Cancelled: ${Object.keys(cancel)?.length}`,
+        });
+        window.api.bot.log({
+            message: `No SS_Action: ${none}`,
+        });
+        window.api.bot.log({
+            message: `Catch: ${listingCatch}`,
+        });
+        window.api.bot.log({
+            message: `Check: ${
+                total ===
+                listingCatch +
+                    none +
+                    Object.keys(relist)?.length +
+                    Object.keys(cancel)?.length
+            }`,
+        });
+        return { relist, cancel };
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/services/hive/seperateByListingType error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
 const getRelistingType = ({ transactions }) => {
     try {
         console.log(`getRelistingType start`);
-        const relist = [];
-        const cancel = [];
-        const relistObj = {};
-        const cancelObj = {};
+        // const relist = [];
+        // const cancel = [];
+        // const relistObj = {};
+        // const cancelObj = {};
         // const notSpecified = [];
-        let notSpecified = 0;
+        //  let notSpecified = 0;
 
         const hiveListingsObj = buildHiveListingsObj({ transactions });
-
+        const { relist, cancel } = seperateByListingType({ hiveListingsObj });
         console.log(`hiveListingsObj: ${JSON.stringify(hiveListingsObj)}`);
+        console.log(`relist: ${JSON.stringify(relist)}`);
+        console.log(`cancel: ${JSON.stringify(cancel)}`);
         throw new Error('checking listings Obj');
         // transactions.forEach((hiveTransaction) => {
         //     // const jsonHiveTransaction = JSON.parse(
@@ -674,4 +738,11 @@ hiveListingsObj: {"dd998bc29079abcab71de53f195f9ea55942e0da-51":{"sell_id":"dd99
 
 hiveListingsObj: {"dd998bc29079abcab71de53f195f9ea55942e0da-51":{"sell_id":"dd998bc29079abcab71de53f195f9ea55942e0da-51","buy_price":24.01443,"created_time":1663367529000,"type":"rl"},"dd998bc29079abcab71de53f195f9ea55942e0da-54":{"sell_id":"dd998bc29079abcab71de53f195f9ea55942e0da-54","buy_price":53.31546,"created_time":1663367529000,"type":"rl"},"dd998bc29079abcab71de53f195f9ea55942e0da-73":
 
+*/
+
+/*
+final result:
+
+relist: {"dd998bc29079abcab71de53f195f9ea55942e0da-51":{"sell_id":"dd998bc29079abcab71de53f195f9ea55942e0da-51","buy_price":24.01443,"created_time":1663367529000,"type":"rl"},"dd998bc29079abcab71de53f195f9ea55942e0da-54":{"sell_id":"dd998bc29079abcab71de53f195f9ea55942e0da-54","buy_price":53.31546,"created_time":1663367529000,"type":"rl"},"dd998bc29079abcab71de53f195f9ea55942e0da-73":{"sell_id":"dd998bc29079abcab71de53f195f9ea55942e0da-73","buy_price":96.49035,"created_time":1663367529000,"type":"rl"},"dd998bc29079abcab71de53f195f9ea55942e0da-90":{"sell_id":"dd998bc29079abcab71de53f195f9ea55942e0da-90","buy_price":9.40302,"created_time":1663367529000,"type":"rl"},"dd998bc29079abcab71de53f195f9ea55942e0da-93":{"sell_id":"dd998bc29079abcab71de53f195f9ea55942e0da-93","buy_price":25.50141,"created_time":1663367529000,"type":"rl"},"439dff493cd95380cd6189b0a6e118e76149d1f4-60":
+cancel: {"e3e05a71a04ee01eca8cbbba8f708c1d93967fd6-0":{"sell_id":"e3e05a71a04ee01eca8cbbba8f708c1d93967fd6-0","buy_price":67.011,"created_time":1663365939000,"type":"c"},"657170b1f707167af65f77b8b16a807003f6ddd3-4":{"sell_id":"657170b1f707167af65f77b8b16a807003f6ddd3-4","buy_price":40,"created_time":1663365939000,"type":"c"},"a0ea371597d66713f4febbad5b84901edcff3d5e-39":{"sell_id":"a0ea371597d66713f4febbad5b84901edcff3d5e-39","buy_price":107.483,"created_time":1663127811000,"type":"c"},"0b6509d4dd372da3616ce4ecc11e86144fa96a2c-9":{"sell_id":"0b6509d4dd372da3616ce4ecc11e86144fa96a2c-9","buy_price":0.188,"created_time":1663112397000,"type":"c"},"0b6509d4dd372da3616ce4ecc11e86144fa96a2c-8":{"sell_id":"0b6509d4dd372da3616ce4ecc11e86144fa96a2c-8","buy_price":0.188,"created_time":1663112397000,"type":"c"},"0b6509d4dd372da3616ce4ecc11e86144fa96a2c-10":{"sell_id":"0b6509d4dd372da3616ce4ecc11e86144fa96a2c-10","buy_price":0.188,"created_time":1663112397000,"type":"c"},"1a7e1dcccd7875c36dca164bb4764a82da943915-1":{"sell_id":"1a7e1dcccd7875c36dca164bb4764a82da943915-1","buy_price":0.26569927,"created_time":1663112397000,"type":"c"},"84934f264c83cffd9c410ec29815c7c5813b4772-0":{"sell_id":"84934f264c83cffd9c410ec29815c7c5813b4772-0","buy_price":0.2,"created_time":1663112397000,"type":"c"},"dd998bc29079abcab71de53f195f9ea55942e0da-35":
 */
