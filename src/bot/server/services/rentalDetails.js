@@ -1,5 +1,5 @@
 'use strict';
-const { filter } = require('lodash');
+
 const datesUtil = require('../../util/dates');
 const hive = require('./hive');
 
@@ -65,21 +65,23 @@ const addInHiveData = async ({
     lastCreatedTime,
 }) => {
     try {
-        const hiveRelistings = await hive.getPostedSuiteRelistings({
+        console.log(`addInHiveData start`);
+        const { relist, cancel } = await hive.getPostedSuiteRelistings({
             username,
             lastCreatedTime,
         });
-        console.log(`hiveRelistings: ${JSON.stringify(hiveRelistings)}`);
-        throw new Error(`checking addInHiveData hiveRelistings`);
-        // const newActiveListingsObj = addInHiveRelistingData({
-        //     username,
-        //     activeListingsObj,
-        //     lastCreatedTime,
-        //     hiveRelistings: hiveRelistings?.relist,
-        //     hiveCancels: hiveRelistings?.cancel,
-        // });
-        //  return { relist, cancel };
+        console.log(`relist: ${JSON.stringify(relist)}`);
+        console.log(`cancel: ${JSON.stringify(cancel)}`);
 
+        const newActiveListingsObj = addInHiveRelistingData({
+            activeListingsObj,
+            hiveRelistings: relist,
+        });
+        console.log(`activeListingsObj: ${JSON.stringify(activeListingsObj)}`);
+        console.log(
+            `newActiveListingsObj: ${JSON.stringify(newActiveListingsObj)}`
+        );
+        throw new Error(`checking addInHiveData hiveRelistings`);
         //  const newActiveListingsObj = await addInHiveRelistingData({})
     } catch (err) {
         window.api.bot.log({
@@ -89,51 +91,62 @@ const addInHiveData = async ({
     }
 };
 
-const addInHiveRelistingData = ({
-    username,
-    activeListingsObj,
-    lastCreatedTime,
-    hiveRelistings,
-    hiveCancels,
-}) => {
+const addInHiveRelistingData = ({ activeListingsObj, hiveRelistings }) => {
     try {
-        const listingsBySellId = activeListingsBySellTrxId({
-            activeListingsObj,
-        });
-        hiveRelistings.forEach((listingArr) => {
-            if (listingArr?.length > 0) {
-                if (listingArr?.length === 3) {
-                    const sell_id = listingArr[0];
-                    const buy_price = listingArr[1];
-                    const dateTime = listingArr[2];
-                    const uidRelevantToListing = listingsBySellId[sell_id];
-                    if (uidRelevantToListing) {
-                        const activeListing =
-                            activeListingsObj[uidRelevantToListing];
-                        const createdTime = new Date(
-                            activeListing?.market_created_date
-                        )?.getTime();
-                        if (dateTime > createdTime) {
-                            activeListingsObj[uidRelevantToListing]
-                                ?.listing_change_date;
-                        }
-                    }
+        const newActiveListingsObj = JSON.parse(
+            JSON.stringify(activeListingsObj)
+        );
+
+        let numOfChanges = 0;
+        for (const [uid, listing] of Object.entries(activeListingsObj)) {
+            const { market_id } = listing;
+            const newInfo = hiveRelistings[market_id];
+            if (newInfo) {
+                numOfChanges = numOfChanges + 1;
+                const listing_created_time = new Date(
+                    listing?.market_created_date
+                )?.getTime();
+                const hive_created_time = newInfo?.created_time;
+                console.log(
+                    `addInHiveRelistingData listing_created_time: ${listing_created_time}, hive_created_time: ${hive_created_time}`
+                );
+                if (hive_created_time > listing_created_time) {
+                    console.log(
+                        'hive_created_time greater than listing, need to update'
+                    );
+                    // create something completely new here
+                    newActiveListingsObj[uid] = {
+                        sell_id: newInfo?.sell_id,
+                        buy_price: newInfo?.buy_price,
+                        created_time: hive_created_time,
+                        uid,
+                    };
                 } else {
-                    window.api.bot.log({
-                        message: `/bot/server/services/rentalDetails/addInHiveRelistingData listingArr does not have all data, listingArr: ${JSON.stringify(
-                            listingArr
-                        )}`,
-                    });
+                    // keep what we already have, just trim it down a little
+                    newActiveListingsObj[uid] = {
+                        sell_id: listing?.sell_trx_id,
+                        buy_price: listing?.buy_price,
+                        created_time: listing_created_time,
+                        uid,
+                    };
                 }
             }
+        }
+        window.api.bot.log({
+            message: `/bot/server/services/rentalDetails/addInHiveRelistingData`,
         });
-
-        // hiveRelistings.forEach((hiveTransactions) => {
-        //     const market_id =
-        // })
-        // for (const [uid, details] of Object.entries(activeListingsObj)) {
-
-        // }
+        window.api.bot.log({
+            message: `Active Listings: ${
+                Object.keys(activeListingsObj)?.length
+            }`,
+        });
+        window.api.bot.log({
+            message: `Hive Relistings: ${Object.keys(hiveRelistings)?.length}`,
+        });
+        window.api.bot.log({
+            message: `Num Changes: ${numOfChanges}`,
+        });
+        return newActiveListingsObj;
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/rentalDetails/addInHiveRelistingData error: ${err.message}`,
