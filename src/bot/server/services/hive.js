@@ -140,13 +140,13 @@ const seperateByListingType = ({ hiveListingsObj }) => {
         let none = 0;
         let listingCatch = 0;
         let total = 0;
-        for (const [sell_id, listing] of Object.entries(hiveListingsObj)) {
+        for (const [sell_trx_id, listing] of Object.entries(hiveListingsObj)) {
             total = total + 1;
             const { type } = listing;
             if (type === 'rl') {
-                relist[sell_id] = listing;
+                relist[sell_trx_id] = listing;
             } else if (type === 'c') {
-                cancel[sell_id] = listing;
+                cancel[sell_trx_id] = listing;
             } else if (type === 'n') {
                 none = none + 1;
             } else {
@@ -240,21 +240,21 @@ const buildHiveListingsObj = ({ transactions }) => {
             const created_time = new Date(created_date).getTime();
             items?.forEach((item) => {
                 tx = tx + 1;
-                const sell_id = item[0];
+                const sell_trx_id = item[0];
                 const buy_price = item[1];
 
-                if (listings[sell_id]) {
-                    const existingTx = listings[sell_id];
+                if (listings[sell_trx_id]) {
+                    const existingTx = listings[sell_trx_id];
                     if (existingTx?.created_time < created_time) {
-                        listings[sell_id] = {
-                            sell_id,
+                        listings[ssell_trx_id] = {
+                            sell_trx_id,
                             buy_price,
                             created_time,
                             type,
                         };
                     } else {
                         const txInfo = {
-                            sell_id,
+                            sell_trx_id,
                             buy_price,
                             created_time,
                             type,
@@ -262,9 +262,9 @@ const buildHiveListingsObj = ({ transactions }) => {
                         oldTxs.push(txInfo);
                     }
                 } else {
-                    // there is no existing sell_id in listings
-                    listings[sell_id] = {
-                        sell_id,
+                    // there is no existing sell_trx_id in listings
+                    listings[sell_trx_id] = {
+                        sell_trx_id,
                         buy_price,
                         created_time,
                         type,
