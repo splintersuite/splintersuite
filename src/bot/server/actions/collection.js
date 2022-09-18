@@ -328,6 +328,7 @@ const getActiveListingsObj = async ({ collection }) => {
     try {
         const activeListingsObj = {};
         const createdList = [];
+        // const sellTrxToUid = {};
         collection.forEach((card) => {
             if (
                 card?.market_listing_type === 'RENT' &&
@@ -342,9 +343,13 @@ const getActiveListingsObj = async ({ collection }) => {
                     createdList.push(createdTime);
                 }
             }
+            // if (card?.market_listing_type === 'RENT' && card?.market_id) {
+            //     sellTrxToUid[card?.uid] = card?.market_id;
+            // }
         });
 
         const lastCreatedTime = _.min(createdList);
+        //return { activeListingsObj, lastCreatedTime, sellTrxToUid };
         return { activeListingsObj, lastCreatedTime };
     } catch (err) {
         window.api.bot.log({

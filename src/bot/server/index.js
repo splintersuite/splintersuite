@@ -69,6 +69,7 @@ const startRentalBot = async ({
             activeListingsObj: activeListingsObject?.activeListingsObj,
             lastCreatedTime: activeListingsObject?.lastCreatedTime,
             activeRentals: activeRentals?.activeRentalsBySellTrxId,
+            // sellTrxToUid: activeListingsObject?.sellTrxToUid,
         });
         // throw new Error('checking last created time');
         const groupedRentalListObj =

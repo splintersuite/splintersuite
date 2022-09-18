@@ -73,6 +73,8 @@ const addInHiveData = async ({
         console.log(
             `newActiveListingsObj: ${JSON.stringify(newActiveListingsObj)}`
         );
+        console.log(`activeRentals: ${JSON.stringify(activeRentals)}`);
+
         throw new Error(`checking addInHiveData hiveRelistings`);
 
         // TNT TODO: make addInHiveActiveRentalsData with the cancel part of postedSuiteRelistings
@@ -80,6 +82,89 @@ const addInHiveData = async ({
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/rentalDetails/addInHiveRelistingData error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
+const addInHiveCancelData = ({ activeRentals, hiveCancels }) => {
+    try {
+        const newActiveRentals = JSON.parse(JSON.stringify(activeRentals));
+        let numOfChanges = 0;
+        let noMatch = 0;
+
+        for (const [sell_trx_id, rental] of Object.entries(activeRentals)) {
+            const {
+                rental_date,
+                buy_price,
+                card_id,
+                next_rental_payment,
+                rental_days,
+            } = rental;
+
+            const rental_date_time = new Date(rental_date).getTime();
+            const newInfo = hiveCancels[sell_trx_id];
+            if (newInfo) {
+                numOfChanges = numOfChanges + 1;
+
+                const hive_created_time = newInfo?.created_time;
+                if (hive_created_time > rental_date_time) {
+                    // we need to update the activeRentalsObj
+                    newActiveRentals[card_id] = {
+                        sell_trx_id,
+                        buy_price,
+                        price_change_time: hive_created_time,
+                        created_time: rental_date_time,
+                        uid: card_id,
+                        next_rental_payment,
+                        rental_days,
+                    };
+                } else {
+                    newActiveRentals[card_id] = {
+                        sell_trx_id,
+                        buy_price,
+                        price_change_time: null,
+                        created_time: rental_date_time,
+                        uid: card_id,
+                        next_rental_payment,
+                        rental_days,
+                    };
+                }
+            } else {
+                noMatch = noMatch + 1;
+                newActiveRentals[card_id] = {
+                    sell_trx_id,
+                    buy_price,
+                    price_change_time: null,
+                    created_time: rental_date_time,
+                    uid: card_id,
+                    next_rental_payment,
+                    rental_days,
+                };
+            }
+        }
+
+        window.api.bot.log({
+            message: `/bot/server/services/rentalDetails/addInHiveCancelData`,
+        });
+
+        window.api.bot.log({
+            message: `Active Rentals: ${Object.keys(activeRentals)?.length}`,
+        });
+        window.api.bot.log({
+            message: `Hive Cancels: ${Object.keys(hiveCancels)?.length}`,
+        });
+        window.api.bot.log({
+            message: `Num Changes: ${numOfChanges}`,
+        });
+        window.api.bot.log({
+            message: `No Match: ${noMatch}`,
+        });
+
+        return newActiveRentals;
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/services/rentalDetails/addInHiveCancelData error: ${err.message}`,
         });
         throw err;
     }
