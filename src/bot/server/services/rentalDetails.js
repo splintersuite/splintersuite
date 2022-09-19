@@ -15,25 +15,26 @@ const updateRentalsStore = async ({
         // continue with adding here...
         console.log(`/bot/server/services/rentalDetails/updateRentalStore`);
 
-        const activeListingsHiveObj = await addInHiveData({
-            username,
-            activeListingsObj,
-            lastCreatedTime,
-            activeRentals,
-        });
-        throw new Error('checking');
+        const { newActiveListingsObj, newActiveRentalsObj } =
+            await addInHiveData({
+                username,
+                activeListingsObj,
+                lastCreatedTime,
+                activeRentals,
+            });
+        // throw new Error('checking');
         if (!rentalDetailsObj) {
             const rentalDetails = buildNewRentalDetailsObj({
-                activeRentals,
-                activeListingsObj,
-                hiveRelistings,
+                newActiveRentals,
+                newActiveListingsObj,
+                rentalDetailsObj,
             });
             // console.log(
             //     `rentalDetails after we build new one: ${JSON.stringify(
             //         rentalDetails
             //     )}`
             // );
-            await window.api.bot.updateRentalDetails({ rentalDetails });
+            //   await window.api.bot.updateRentalDetails({ rentalDetails });
             return;
         } else {
             window.api.bot.log({
@@ -75,10 +76,17 @@ const addInHiveData = async ({
         );
         console.log(`activeRentals: ${JSON.stringify(activeRentals)}`);
 
-        throw new Error(`checking addInHiveData hiveRelistings`);
+        const newActiveRentalsObj = addInHiveCancelData({
+            activeRentals,
+            hiveCancels: cancel,
+        });
+        console.log(
+            `'newActiveRentalsObj: ${JSON.stringify(newActiveRentalsObj)}`
+        );
+        //    throw new Error(`checking addInHiveCancelData`);
 
         // TNT TODO: make addInHiveActiveRentalsData with the cancel part of postedSuiteRelistings
-        return { newActiveListingsObj };
+        return { newActiveListingsObj, newActiveRentalsObj };
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/rentalDetails/addInHiveRelistingData error: ${err.message}`,
@@ -110,21 +118,21 @@ const addInHiveCancelData = ({ activeRentals, hiveCancels }) => {
                 const hive_created_time = newInfo?.created_time;
                 if (hive_created_time > rental_date_time) {
                     // we need to update the activeRentalsObj
-                    newActiveRentals[card_id] = {
-                        sell_trx_id,
-                        buy_price,
+                    newActiveRentals[sell_trx_id] = {
+                        sell_trx_id: newInfo?.sell_trx_id,
+                        buy_price: newInfo?.buy_price,
                         price_change_time: hive_created_time,
-                        created_time: rental_date_time,
+                        rental_created_time: rental_date_time,
                         uid: card_id,
                         next_rental_payment,
                         rental_days,
                     };
                 } else {
-                    newActiveRentals[card_id] = {
+                    newActiveRentals[sell_trx_id] = {
                         sell_trx_id,
                         buy_price,
                         price_change_time: null,
-                        created_time: rental_date_time,
+                        rental_created_time: rental_date_time,
                         uid: card_id,
                         next_rental_payment,
                         rental_days,
@@ -132,11 +140,11 @@ const addInHiveCancelData = ({ activeRentals, hiveCancels }) => {
                 }
             } else {
                 noMatch = noMatch + 1;
-                newActiveRentals[card_id] = {
+                newActiveRentals[sell_trx_id] = {
                     sell_trx_id,
                     buy_price,
                     price_change_time: null,
-                    created_time: rental_date_time,
+                    rental_created_time: rental_date_time,
                     uid: card_id,
                     next_rental_payment,
                     rental_days,
@@ -251,9 +259,8 @@ const addInHiveRelistingData = ({ activeListingsObj, hiveRelistings }) => {
 // this is for when the rentalDetailObject is not populated, either because the store got cleared or its the first usage.
 // we also need input of the relisting actions, so we can see when we last changed the price for the activeListingsObj
 const buildNewRentalDetailsObj = ({
-    activeRentals,
-    activeListingsObj,
-    hiveRelistings,
+    newActiveRentals,
+    newActiveListingsObj,
     rentalDetailsObj,
 }) => {
     try {
