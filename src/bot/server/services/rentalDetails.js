@@ -25,9 +25,9 @@ const updateRentalsStore = async ({
         // throw new Error('checking');
         if (!rentalDetailsObj) {
             const rentalDetails = buildNewRentalDetailsObj({
-                newActiveRentals,
+                newActiveRentals: newActiveRentalsObj,
                 newActiveListingsObj,
-                rentalDetailsObj,
+                // rentalDetailsObj,
             });
             // console.log(
             //     `rentalDetails after we build new one: ${JSON.stringify(
@@ -102,13 +102,8 @@ const addInHiveCancelData = ({ activeRentals, hiveCancels }) => {
         let noMatch = 0;
 
         for (const [sell_trx_id, rental] of Object.entries(activeRentals)) {
-            const {
-                rental_date,
-                buy_price,
-                card_id,
-                next_rental_payment,
-                rental_days,
-            } = rental;
+            const { rental_date, buy_price, card_id, next_rental_payment } =
+                rental;
 
             const rental_date_time = new Date(rental_date).getTime();
             const newInfo = hiveCancels[sell_trx_id];
@@ -124,8 +119,9 @@ const addInHiveCancelData = ({ activeRentals, hiveCancels }) => {
                         price_change_time: hive_created_time,
                         rental_created_time: rental_date_time,
                         uid: card_id,
-                        next_rental_payment,
-                        rental_days,
+                        next_rental_payment_time: new Date(
+                            next_rental_payment
+                        ).getTime(),
                     };
                 } else {
                     newActiveRentals[sell_trx_id] = {
@@ -134,8 +130,9 @@ const addInHiveCancelData = ({ activeRentals, hiveCancels }) => {
                         price_change_time: null,
                         rental_created_time: rental_date_time,
                         uid: card_id,
-                        next_rental_payment,
-                        rental_days,
+                        next_rental_payment_time: new Date(
+                            next_rental_payment
+                        ).getTime(),
                     };
                 }
             } else {
@@ -146,8 +143,9 @@ const addInHiveCancelData = ({ activeRentals, hiveCancels }) => {
                     price_change_time: null,
                     rental_created_time: rental_date_time,
                     uid: card_id,
-                    next_rental_payment,
-                    rental_days,
+                    next_rental_payment_time: new Date(
+                        next_rental_payment
+                    ).getTime(),
                 };
             }
         }
@@ -256,20 +254,117 @@ const addInHiveRelistingData = ({ activeListingsObj, hiveRelistings }) => {
     }
 };
 
+/*
+   properties: {
+                    is_rented: {
+                        type: 'boolean',
+                    },
+                    last_rental_payment: {
+                        type: 'date',
+                    },
+                    last_rental_payment_time: { rental_end_time:
+                        type: 'number',
+                        minimum: 3045572900,
+                    },
+                    last_price_update: {
+                        type: 'date',
+                    },
+                    buy_price: {
+                        type: 'number',
+                        minimum: 0.1,
+                    },
+                    last_sell_trx_id: {
+                        type: 'string',
+                    },
+*/
+
 // this is for when the rentalDetailObject is not populated, either because the store got cleared or its the first usage.
 // we also need input of the relisting actions, so we can see when we last changed the price for the activeListingsObj
 const buildNewRentalDetailsObj = ({
     newActiveRentals,
     newActiveListingsObj,
-    rentalDetailsObj,
 }) => {
     try {
         const updateRentalDetails = {};
         const newRentalDetails = {};
+        const oneDayTime = 1000 * 60 * 60 * 24 * 1;
+        const twoDayTime = 1000 * 60 * 60 * 24 * 2;
         // console.log(
         //     `/bot/server/services/rentalDetails/buildNewRentalDetailsObj start`
         // );
 
+        for (const [uid, listing] of Object.entries(newActiveListingsObj)) {
+            const { sell_trx_id, buy_price, created_time } = listing;
+
+            newRentalDetails[uid] = {
+                is_rented: false,
+                last_price_update: created_time,
+                rental_end_time: null,
+                buy_price,
+                last_sell_trx_id: sell_trx_id,
+            };
+        }
+
+        for (const [sell_trx_id, rental] of Object.entries(newActiveRentals)) {
+            const {
+                buy_price,
+                price_change_time,
+                rental_created_time,
+                uid,
+                next_rental_payment_time,
+            } = rental;
+
+            let rental_end_time;
+            const nowTime = new Date().getTime();
+            if (rental_created_time + oneDayTime > nowTime) {
+                // means not even 24 hours have passed since beginning of rental contract, if we cancelled its 2 days after start of contract.
+                rental_end_time = rental_created_time + twoDayTime;
+            }
+            const daysAgo = datesUtil.roundedDownDaysAgo({
+                pastTime: rental_created_time,
+            });
+
+            if (daysAgo % 2 === 0) {
+                // its been at least a day, and if this is even (therefore equation solves to 0), then we need to add 2 days to the last_rental_payment
+                // or just add 1 more day to the next_rental_payment
+                rental_end_time = next_rental_payment_time + oneDayTime;
+                console.log(
+                    `rental_end_time: ${rental_end_time} is date: ${new Date(
+                        rental_end_time
+                    )}, that is also next_rental_payment_time: ${next_rental_payment_time} date: ${new Date(
+                        next_rental_payment_time
+                    )} plus a day to get when rental ends`
+                );
+            } else {
+                // otherwise, add 24 hours to the last_rental_payment to get (or just assume its the next rental payment!)
+                rental_end_time = next_rental_payment_time;
+                console.log(
+                    `rental_end_time: ${rental_end_time} is date: ${new Date(
+                        rental_end_time
+                    )}, that is also next_rental_payment_time: ${next_rental_payment_time} date: ${new Date(
+                        next_rental_payment_time
+                    )}`
+                );
+            }
+            if (price_change_time) {
+            }
+            const last_rental_payment_time =
+                next_rental_payment_time - oneDayTime;
+            newRentalDetails[uid] = {
+                is_rented: true,
+                rental_end_time,
+                buy_price,
+                last_rental_payment_time,
+                last_price_update: price_change_time,
+                last_sell_trx_id: sell_trx_id,
+            };
+            // we need to calc when the rental actually expires, need to see how many days ago the creation was
+            // need to calculate the last_rental_payment_time, prob ditch the last_rental_payment
+        }
+
+        console.log(`newRentalDetails: ${JSON.stringify(newRentalDetails)}`);
+        throw new Error('checking newRentalDetails');
+        /*
         for (const [tx_id, rental] of Object.entries(activeRentals)) {
             console.log(
                 `/bot/server/services/rentalDetails/buildNewRentalDetailsObj rental: ${JSON.stringify(
@@ -372,6 +467,7 @@ const buildNewRentalDetailsObj = ({
         // console.log(
         //     `rentalDetailsBySellTrx: ${JSON.stringify(rentalDetailsBySellTrx)}`
         // );
+        */
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/rentalDetails/buildNewRentalDetailsObj error: ${err.message}`,
