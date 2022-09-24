@@ -24,18 +24,27 @@ const updateRentalsStore = async ({
             });
         // throw new Error('checking');
         if (!rentalDetailsObj) {
-            const rentalDetails = buildNewRentalDetailsObj({
-                newActiveRentals: newActiveRentalsObj,
-                newActiveListingsObj,
-                // rentalDetailsObj,
-            });
+            // const rentalDetailsObj = buildNewRentalDetailsObj({
+            const { newRentalDetailsObj, updateRentalDetailsObj } =
+                buildNewRentalDetailsObj({
+                    newActiveRentals: newActiveRentalsObj,
+                    newActiveListingsObj,
+                    // rentalDetailsObj,
+                });
             // console.log(
             //     `rentalDetails after we build new one: ${JSON.stringify(
             //         rentalDetails
             //     )}`
             // );
             //   await window.api.bot.updateRentalDetails({ rentalDetails });
-            return;
+            // const rentalDetails = prepareRentalDetailsForServer({
+            const { newRentalDetails, updateRentalDetails } =
+                prepareRentalDetailsForServer({
+                    newRentalDetailsObj,
+                    updateRentalDetailsObj,
+                });
+            // return rentalDetails;
+            return { newRentalDetails, updateRentalDetails };
         } else {
             window.api.bot.log({
                 message: `/bot/server/services/rentalDetails/updateRentalStore found a rentalDetailsObj of :${JSON.stringify(
@@ -285,8 +294,8 @@ const buildNewRentalDetailsObj = ({
     newActiveListingsObj,
 }) => {
     try {
-        const updateRentalDetails = {};
-        const newRentalDetails = {};
+        const updateRentalDetailsObj = {};
+        const newRentalDetailsObj = {};
         const oneDayTime = 1000 * 60 * 60 * 24 * 1;
         const twoDayTime = 1000 * 60 * 60 * 24 * 2;
         // console.log(
@@ -296,9 +305,9 @@ const buildNewRentalDetailsObj = ({
         for (const [uid, listing] of Object.entries(newActiveListingsObj)) {
             const { sell_trx_id, buy_price, created_time } = listing;
 
-            newRentalDetails[uid] = {
+            newRentalDetailsObj[uid] = {
                 is_rented: false,
-                last_price_update: created_time,
+                last_price_update_time: created_time,
                 rental_end_time: null,
                 buy_price,
                 last_sell_trx_id: sell_trx_id,
@@ -350,12 +359,13 @@ const buildNewRentalDetailsObj = ({
             }
             const last_rental_payment_time =
                 next_rental_payment_time - oneDayTime;
-            newRentalDetails[uid] = {
+
+            newRentalDetailsObj[uid] = {
                 is_rented: true,
                 rental_end_time,
                 buy_price,
                 last_rental_payment_time,
-                last_price_update: price_change_time,
+                last_price_update_time: price_change_time,
                 last_sell_trx_id: sell_trx_id,
             };
             // we need to calc when the rental actually expires, need to see how many days ago the creation was
@@ -493,6 +503,36 @@ const filterRentalDetailsBySellTrxId = ({ rentalDetailsObj }) => {
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/rentalDetails/filterRentalDetailsBySellTrxId error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
+const prepareRentalDetailsForServer = ({
+    newRentalDetailsObj,
+    updateRentalDetailsObj,
+}) => {
+    try {
+        // conv object to array
+        const newRentalDetails = [];
+        const updateRentalDetails = [];
+        if (Object.entries(newRentalDetails).length > 0) {
+            for (const [uid, listing] of Object.entries(newRentalDetailsObj)) {
+                newRentalDetails.push(...listing, uid);
+            }
+        }
+        if (Object.entries(updateRentalDetailsObj)) {
+            for (const [uid, listing] of Object.entries(
+                updateRentalDetailsObj
+            )) {
+                updateRentalDetails.push(...listing, uid);
+            }
+        }
+
+        return { newRentalDetails, updateRentalDetails };
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/services/rentalDetails/prepareRentalDetailsForServer error: ${err.message}`,
         });
         throw err;
     }

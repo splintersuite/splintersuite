@@ -63,13 +63,13 @@ const startRentalBot = async ({
             message: `/bot/server/index/startRentalBot lastCreatedTime: ${activeListingsObject?.lastCreatedTime}`,
         });
         // updates rentalDetails
-        await updateRentalsStore({
-            username,
-            rentalDetailsObj,
-            activeListingsObj: activeListingsObject?.activeListingsObj,
-            lastCreatedTime: activeListingsObject?.lastCreatedTime,
-            activeRentals: activeRentals?.activeRentalsBySellTrxId,
-        });
+        // await updateRentalsStore({
+        //     username,
+        //     rentalDetailsObj,
+        //     activeListingsObj: activeListingsObject?.activeListingsObj,
+        //     lastCreatedTime: activeListingsObject?.lastCreatedTime,
+        //     activeRentals: activeRentals?.activeRentalsBySellTrxId,
+        // });
         // throw new Error('checking last created time');
         const groupedRentalListObj =
             await splinterlandsService.getAllGroupedRentalsByLevel();
