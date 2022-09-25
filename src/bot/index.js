@@ -36,7 +36,7 @@ window.api.bot.start(async (event) => {
             marketPrices = marketRes.data.marketPrices;
         }
 
-        let rentalDetailsObj = await window.api.bot.getRentalDetails();
+        //  let rentalDetailsObj = await window.api.bot.getRentalDetails();
         // ---
         // Get cards
         // ------------------------------------
@@ -53,7 +53,6 @@ window.api.bot.start(async (event) => {
                 username,
                 settings,
                 marketPrices,
-                rentalDetailsObj,
                 nextBotLoopTime,
             });
         // ---

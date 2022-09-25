@@ -2,10 +2,11 @@
 
 const datesUtil = require('../../util/dates');
 const hive = require('./hive');
+const fileService = require('./rentalDetailsFile');
 
 const updateRentalsStore = async ({
     username,
-    rentalDetailsObj,
+    //   rentalDetailsObj,
     activeListingsObj,
     lastCreatedTime,
     activeRentals,
@@ -23,14 +24,15 @@ const updateRentalsStore = async ({
                 activeRentals,
             });
         // throw new Error('checking');
-        if (!rentalDetailsObj) {
-            // const rentalDetailsObj = buildNewRentalDetailsObj({
-            const { newRentalDetailsObj, updateRentalDetailsObj } =
-                buildNewRentalDetailsObj({
-                    newActiveRentals: newActiveRentalsObj,
-                    newActiveListingsObj,
-                    // rentalDetailsObj,
-                });
+        const rentalDetailsObj = fileService.getRentalDetails();
+        if (!rentalDetailsObj || Object.entries(rentalDetailsObj) === 0) {
+            const rentalDetails = buildNewRentalDetailsObj({
+                // const { newRentalDetailsObj, updateRentalDetailsObj } =
+                //  buildNewRentalDetailsObj({
+                newActiveRentals: newActiveRentalsObj,
+                newActiveListingsObj,
+                // rentalDetailsObj,
+            });
             // console.log(
             //     `rentalDetails after we build new one: ${JSON.stringify(
             //         rentalDetails
@@ -38,13 +40,13 @@ const updateRentalsStore = async ({
             // );
             //   await window.api.bot.updateRentalDetails({ rentalDetails });
             // const rentalDetails = prepareRentalDetailsForServer({
-            const { newRentalDetails, updateRentalDetails } =
-                prepareRentalDetailsForServer({
-                    newRentalDetailsObj,
-                    updateRentalDetailsObj,
-                });
+            // const { newRentalDetails, updateRentalDetails } =
+            //     prepareRentalDetailsForServer({
+            //         newRentalDetailsObj,
+            //         updateRentalDetailsObj,
+            //     });
             // return rentalDetails;
-            return { newRentalDetails, updateRentalDetails };
+            return rentalDetails;
         } else {
             window.api.bot.log({
                 message: `/bot/server/services/rentalDetails/updateRentalStore found a rentalDetailsObj of :${JSON.stringify(
@@ -294,7 +296,7 @@ const buildNewRentalDetailsObj = ({
     newActiveListingsObj,
 }) => {
     try {
-        const updateRentalDetailsObj = {};
+        // const updateRentalDetailsObj = {};
         const newRentalDetailsObj = {};
         const oneDayTime = 1000 * 60 * 60 * 24 * 1;
         const twoDayTime = 1000 * 60 * 60 * 24 * 2;
@@ -373,7 +375,8 @@ const buildNewRentalDetailsObj = ({
         }
 
         console.log(`newRentalDetails: ${JSON.stringify(newRentalDetails)}`);
-        throw new Error('checking newRentalDetails');
+        return newRentalDetailsObj;
+        //throw new Error('checking newRentalDetails');
         /*
         for (const [tx_id, rental] of Object.entries(activeRentals)) {
             console.log(

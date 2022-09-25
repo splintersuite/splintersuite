@@ -38,7 +38,6 @@ const startRentalBot = async ({
     username,
     settings,
     marketPrices,
-    rentalDetailsObj,
     nextBotLoopTime,
 }) => {
     try {
@@ -63,9 +62,8 @@ const startRentalBot = async ({
             message: `/bot/server/index/startRentalBot lastCreatedTime: ${activeListingsObject?.lastCreatedTime}`,
         });
         // updates rentalDetails
-        // await updateRentalsStore({
+        // const rentalDetails = await updateRentalsStore({
         //     username,
-        //     rentalDetailsObj,
         //     activeListingsObj: activeListingsObject?.activeListingsObj,
         //     lastCreatedTime: activeListingsObject?.lastCreatedTime,
         //     activeRentals: activeRentals?.activeRentalsBySellTrxId,
