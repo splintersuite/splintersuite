@@ -1,30 +1,30 @@
-const updateRentalsStore = ({
-    rentalDetailsObj,
-    activeListingsObj,
-    activeRentals,
-    // price update object?
-}) => {
-    try {
-        // continue with adding here...
-        activeRentals.forEach((rental) => {
-            if (rentalDetailsObj[rental.card_uid] === undefined) {
-                rentalDetailsObj[rental.card_uid] = { is_rented: true };
-            }
-        });
+// const updateRentalsStore = ({
+//     rentalDetailsObj,
+//     activeListingsObj,
+//     activeRentals,
+//     // price update object?
+// }) => {
+//     try {
+//         // continue with adding here...
+//         activeRentals.forEach((rental) => {
+//             if (rentalDetailsObj[rental.card_uid] === undefined) {
+//                 rentalDetailsObj[rental.card_uid] = { is_rented: true };
+//             }
+//         });
 
-        window.api.bot.updateRentalDetails(rentalDetailsObj);
-        // no return if we don't want,  will update the object by reference
-    } catch (err) {
-        window.api.bot.log({
-            message: `/bot/server/actions/rentalDetails/updateRentals error: ${err.message}`,
-        });
-        throw err;
-    }
-};
+//         // window.api.bot.updateRentalDetails(rentalDetailsObj);
+//         // no return if we don't want,  will update the object by reference
+//     } catch (err) {
+//         window.api.bot.log({
+//             message: `/bot/server/actions/rentalDetails/updateRentals error: ${err.message}`,
+//         });
+//         throw err;
+//     }
+// };
 
-module.exports = {
-    updateRentalsStore,
-};
+// module.exports = {
+//     updateRentalsStore,
+// };
 
 // is_rented: {
 //     type: 'boolean',

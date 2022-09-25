@@ -24,8 +24,20 @@ const updateRentalsStore = async ({
                 activeRentals,
             });
         // throw new Error('checking');
-        const rentalDetailsObj = fileService.getRentalDetails();
-        if (!rentalDetailsObj || Object.entries(rentalDetailsObj) === 0) {
+        //  const rentalDetailsObj = fileService.getRentalDetails();
+        const rentalDetailsObj = window.api.rentaldetails.getRentalDetails();
+        window.api.bot.log({
+            message: `got rental details done, about to see if we should buildNewRentalDetailsObj`,
+        });
+        //  console.log(`rentalDetailsObj: ${JSON.stringify(rentalDetailsObj)}`);
+        if (
+            !rentalDetailsObj ||
+            Object.entries(rentalDetailsObj)?.length === 0
+        ) {
+            window.api.bot.log({
+                message: `about to buildNewRentalDetailsObj`,
+            });
+            //console.log(`we should be calling buildNewRentalDetailsObj now`);
             const rentalDetails = buildNewRentalDetailsObj({
                 // const { newRentalDetailsObj, updateRentalDetailsObj } =
                 //  buildNewRentalDetailsObj({
@@ -33,6 +45,10 @@ const updateRentalsStore = async ({
                 newActiveListingsObj,
                 // rentalDetailsObj,
             });
+            window.api.bot.log({
+                message: `we have the rentalDetails, now about to call updateRentalDetails`,
+            });
+            window.api.rentaldetails.updateRentalDetails({ rentalDetails });
             // console.log(
             //     `rentalDetails after we build new one: ${JSON.stringify(
             //         rentalDetails
@@ -46,7 +62,9 @@ const updateRentalsStore = async ({
             //         updateRentalDetailsObj,
             //     });
             // return rentalDetails;
-            return rentalDetails;
+            //return rentalDetails;
+            return;
+            throw new Error('checking to see if updateRentalDetails worked');
         } else {
             window.api.bot.log({
                 message: `/bot/server/services/rentalDetails/updateRentalStore found a rentalDetailsObj of :${JSON.stringify(
@@ -374,8 +392,10 @@ const buildNewRentalDetailsObj = ({
             // need to calculate the last_rental_payment_time, prob ditch the last_rental_payment
         }
 
-        console.log(`newRentalDetails: ${JSON.stringify(newRentalDetails)}`);
-        return newRentalDetailsObj;
+        console.log(
+            `newRentalDetailsObj: ${JSON.stringify(newRentalDetailsObj)}`
+        );
+        return JSON.stringify(newRentalDetailsObj);
         //throw new Error('checking newRentalDetails');
         /*
         for (const [tx_id, rental] of Object.entries(activeRentals)) {

@@ -1,5 +1,4 @@
 import moment from 'moment';
-import fs from 'fs';
 import store from '../../store';
 
 const start = async () => {};

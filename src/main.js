@@ -8,6 +8,7 @@ const market = require('./api/controllers/market').default;
 const bot = require('./api/controllers/bot').default;
 const hive = require('./api/controllers/hive').default;
 const invoice = require('./api/controllers/invoice').default;
+const rentaldetails = require('./api/controllers/rentaldetails').default;
 const middlewareWrapper = require('./api/middleware').default;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -95,14 +96,14 @@ app.on('ready', () => {
         bot.updateLoading(event, payload);
         mainWindow.webContents.send('bot:updateLoading', payload);
     });
-    ipcMain.handle(
-        'bot:getRentalDetails',
-        middlewareWrapper(bot.getRentalDetails, 'bot:getRentalDetails')
-    );
-    ipcMain.handle('bot:updateRentalDetails', (event, payload) => {
-        bot.updateRentalDetails(event, payload);
-        mainWindow.webContents.send('bot:updateRentalDetails', payload);
-    });
+    // ipcMain.handle(
+    //     'bot:getRentalDetails',
+    //     middlewareWrapper(bot.getRentalDetails, 'bot:getRentalDetails')
+    // );
+    // ipcMain.handle('bot:updateRentalDetails', (event, payload) => {
+    //     bot.updateRentalDetails(event, payload);
+    //     mainWindow.webContents.send('bot:updateRentalDetails', payload);
+    // });
     ipcMain.handle('bot:log', bot.log);
     ipcMain.handle(
         'market:getMarketPrices',
@@ -138,6 +139,21 @@ app.on('ready', () => {
         middlewareWrapper(invoice.confirm, 'invoice:confirm')
     );
 
+    ipcMain.handle(
+        'rentaldetails:getRentalDetails',
+        middlewareWrapper(
+            rentaldetails.getRentalDetails,
+            'rentaldetails:getRentalDetails'
+        )
+    );
+
+    ipcMain.handle(
+        'rentaldetails:updateRentalDetails',
+        middlewareWrapper(
+            rentaldetails.updateRentalDetails,
+            'rentaldetails:updateRentalDetails'
+        )
+    );
     // ---
     // Auto-Update
     // ------------------------------------

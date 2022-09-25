@@ -18,11 +18,11 @@ contextBridge.exposeInMainWorld('api', {
         updateLoading: (payload) =>
             ipcRenderer.invoke('bot:updateLoading', payload),
         log: (payload) => ipcRenderer.invoke('bot:log', payload),
-        updateRentalDetails: (payload) =>
-            ipcRenderer.invoke('bot:updateRentalDetails', payload),
-        getRentalDetails: () => {
-            ipcRenderer.invoke('bot:getRentalDetails');
-        },
+        // updateRentalDetails: (payload) =>
+        //     ipcRenderer.invoke('bot:updateRentalDetails', payload),
+        // getRentalDetails: () => {
+        //     ipcRenderer.invoke('bot:getRentalDetails', payload);
+        // },
     },
     hive: {
         createRentals: (payload) =>
@@ -33,5 +33,11 @@ contextBridge.exposeInMainWorld('api', {
             ipcRenderer.invoke('hive:deleteRentals', payload),
         relistActiveRentals: (payload) =>
             ipcRenderer.invoke('hive:relistActiveRentals', payload),
+    },
+    rentaldetails: {
+        getRentalDetails: (payload) =>
+            ipcRenderer.invoke('rentaldetails:getRentalDetails', payload),
+        updateRentalDetails: (payload) =>
+            ipcRenderer.invoke('rentaldetails:updateRentalDetails', payload),
     },
 });
