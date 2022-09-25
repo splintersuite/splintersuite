@@ -28,7 +28,6 @@ const { getCardDetailObj } = require('./actions/_helpers');
 
 const { getActiveRentalsByRentalId } = require('./services/activeRentals');
 
-//const { updateRentalsStore } = require('./actions/rentalDetails');
 const { updateRentalsStore } = require('./services/rentalDetails');
 
 const splinterlandsService = require('./services/splinterlands');
@@ -54,7 +53,6 @@ const startRentalBot = async ({
         const activeRentals = await getActiveRentalsByRentalId(username);
 
         // listings...
-        //  return { activeListingsObj, lastCreatedTime };
         const activeListingsObject = await getActiveListingsObj({
             collection,
         });
@@ -68,7 +66,7 @@ const startRentalBot = async ({
             lastCreatedTime: activeListingsObject?.lastCreatedTime,
             activeRentals: activeRentals?.activeRentalsBySellTrxId,
         });
-        // throw new Error('checking last created time');
+
         const groupedRentalListObj =
             await splinterlandsService.getAllGroupedRentalsByLevel();
 

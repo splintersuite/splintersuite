@@ -96,31 +96,6 @@ const schema = {
                     },
                 },
             },
-            rentalDetails: {
-                type: 'object',
-                properties: {
-                    is_rented: {
-                        type: 'boolean',
-                    },
-                    last_rental_payment: {
-                        type: 'date',
-                    },
-                    last_rental_payment_time: {
-                        type: 'number',
-                        minimum: 3045572900,
-                    },
-                    last_price_update: {
-                        type: 'date',
-                    },
-                    buy_price: {
-                        type: 'number',
-                        minimum: 0.1,
-                    },
-                    last_sell_trx_id: {
-                        type: 'string',
-                    },
-                },
-            },
         },
     },
 };
@@ -157,7 +132,6 @@ const defaults = {
             endedAt: '',
             numListed: 0,
         },
-        rentalDetails: {},
     },
 };
 

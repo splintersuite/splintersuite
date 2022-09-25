@@ -62,19 +62,6 @@ const updateLoading = async (event, payload) => {
     return util.success();
 };
 
-const getRentalDetails = async (event) => {
-    console.log('/src/api/services/getRentalDetails');
-    const rentalDetails = await botService.getRentalDetails();
-    return util.success({ rentalDetails });
-};
-
-const updateRentalDetails = async (event, payload) => {
-    const { rentalDetails } = payload;
-    botService.setRentalDetails(rentalDetails);
-
-    return util.success();
-};
-
 const log = (event, payload) => {
     const { message } = payload;
     const now = moment().format('DD/MM/YYYY HH:mm:ss Z');
@@ -91,7 +78,5 @@ export default {
     updateStats,
     getLoading,
     updateLoading,
-    getRentalDetails,
-    updateRentalDetails,
     log,
 };

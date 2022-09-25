@@ -30,15 +30,6 @@ const setStats = (stats) => {
     return store.set('bot.stats', stats);
 };
 
-const getRentalDetails = () => {
-    console.log('/src/api/services/getRentalDetails');
-    return store.get('bot.getRentalDetails');
-};
-
-const setRentalDetails = (rentalDetails) => {
-    return store.set('bot.setRentalDetails', rentalDetails);
-};
-
 const getLoading = () => {
     return store.get('bot.isLoading');
 };
@@ -58,6 +49,4 @@ export default {
     setStats,
     getLoading,
     setLoading,
-    getRentalDetails,
-    setRentalDetails,
 };
