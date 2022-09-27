@@ -20,7 +20,7 @@ const calculateRelistingPrice = async ({
         const cardsNotWorthRelisting = [];
         const nullPrice = [];
         const cardCatch = [];
-
+        const rentalDetailsObj = window.api.rentaldetails.getRentalDetails();
         const minRentalSetting = 0.11;
 
         for (const level of Object.keys(collectionObj)) {

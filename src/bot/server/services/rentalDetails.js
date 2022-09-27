@@ -2,7 +2,6 @@
 
 const datesUtil = require('../../util/dates');
 const hive = require('./hive');
-const fileService = require('./rentalDetailsFile');
 
 const updateRentalsStore = async ({
     username,
@@ -11,9 +10,12 @@ const updateRentalsStore = async ({
     activeRentals,
 }) => {
     try {
-        // continue with adding here...
         console.log(`/bot/server/services/rentalDetails/updateRentalStore`);
-
+        // console.log(`activeListingsObj: ${JSON.stringify(activeListingsObj)}`);
+        // throw new Error('checking');
+        /*
+activeListingsObj: {"C3-242-014BSEFUG0":{"player":"xdww","uid":"C3-242-014BSEFUG0","card_detail_id":242,"xp":31,"gold":false,"edition":3,"market_id":"dd998bc29079abcab71de53f195f9ea55942e0da-52","buy_price":"16.148","market_listing_type":"RENT","market_listing_status":0,"market_created_date":"2022-09-03T14:35:27.000Z","last_used_block":68244366,"last_used_player":"zexn","last_used_date":"2022-09-26T10:57:02.563Z","last_transferred_block":null,"last_transferred_date":null,"alpha_xp":0,"delegated_to":null,"delegation_tx":"sm_rental_payments_68263420","skin":null,"delegated_to_display_name":null,"display_name":null,"lock_days":3,"unlock_date":"2022-07-25T15:51:15.000Z","level":4},"C3-333-UHHINJICGW":{"player":"xdww","uid":"C3-333-UHHINJICGW","card_detail_id":333,"xp":1,"gold":false,"edition":3,"market_id":"8478644fd5909e198e971b8062a02400a1a72873-0","buy_price":"0.200","market_listing_type":"RENT","market_listing_status":0,"market_created_date":"2022-09-
+*/
         const { newActiveListingsObj, newActiveRentalsObj } =
             await addInHiveData({
                 username,
@@ -22,22 +24,13 @@ const updateRentalsStore = async ({
                 activeRentals,
             });
         const rentalDetailsObj = window.api.rentaldetails.getRentalDetails();
-        window.api.bot.log({
-            message: `got rental details done, about to see if we should buildNewRentalDetailsObj`,
-        });
         if (
             !rentalDetailsObj ||
             Object.entries(rentalDetailsObj)?.length === 0
         ) {
-            window.api.bot.log({
-                message: `about to buildNewRentalDetailsObj`,
-            });
             const rentalDetails = buildNewRentalDetailsObj({
                 newActiveRentals: newActiveRentalsObj,
                 newActiveListingsObj,
-            });
-            window.api.bot.log({
-                message: `we have the rentalDetails, now about to call updateRentalDetails`,
             });
             window.api.rentaldetails.updateRentalDetails({ rentalDetails });
             return;
@@ -63,31 +56,22 @@ const addInHiveData = async ({
     activeRentals,
 }) => {
     try {
-        console.log(`addInHiveData start`);
+        //     console.log(`addInHiveData start`);
         const { relist, cancel } = await hive.getPostedSuiteRelistings({
             username,
             lastCreatedTime,
         });
         console.log(`relist: ${JSON.stringify(relist)}`);
         console.log(`cancel: ${JSON.stringify(cancel)}`);
-
         const newActiveListingsObj = addInHiveRelistingData({
             activeListingsObj,
             hiveRelistings: relist,
         });
-        console.log(`activeListingsObj: ${JSON.stringify(activeListingsObj)}`);
-        console.log(
-            `newActiveListingsObj: ${JSON.stringify(newActiveListingsObj)}`
-        );
-        console.log(`activeRentals: ${JSON.stringify(activeRentals)}`);
 
         const newActiveRentalsObj = addInHiveCancelData({
             activeRentals,
             hiveCancels: cancel,
         });
-        console.log(
-            `'newActiveRentalsObj: ${JSON.stringify(newActiveRentalsObj)}`
-        );
 
         return { newActiveListingsObj, newActiveRentalsObj };
     } catch (err) {
@@ -188,40 +172,66 @@ const addInHiveRelistingData = ({ activeListingsObj, hiveRelistings }) => {
         let numOfChanges = 0;
         let noMatch = 0;
         for (const [uid, listing] of Object.entries(activeListingsObj)) {
-            const { market_id } = listing;
+            const { market_id } = listing; // this is the sell_trx_id, sell_trx_id is just the listing id once its been converted to an actual rental (would show as sell_trx_id in activeRentals)
             const listing_created_time = new Date(
                 listing?.market_created_date
             )?.getTime();
-            const newInfo = hiveRelistings[market_id];
-            if (newInfo) {
+            const hiveInfo = hiveRelistings[market_id];
+            //
+            console.log(`uid: ${uid}, listing: ${JSON.stringify(listing)}`);
+            if (hiveInfo && Object.entries(hiveInfo)?.length > 0) {
                 numOfChanges = numOfChanges + 1;
-
-                const hive_created_time = newInfo?.created_time;
+                console.log(`hiveInfo: ${JSON.stringify(hiveInfo)}`);
+                const hive_created_time = hiveInfo?.created_time;
                 if (hive_created_time > listing_created_time) {
                     // create something completely new here
                     newActiveListingsObj[uid] = {
-                        sell_trx_id: newInfo?.sell_trx_id,
-                        buy_price: newInfo?.buy_price,
+                        sell_trx_id: hiveInfo?.sell_trx_id,
+                        buy_price: hiveInfo?.buy_price,
                         created_time: hive_created_time,
                         uid,
                     };
+                    console.log(
+                        `newActiveListingsObj[uid]: ${JSON.stringify(
+                            newActiveListingsObj[uid]
+                        )}`
+                    );
+                    throw new Error(
+                        `checking newActiveListingsObj after hive_created_time WAS greater than listing_created_time`
+                    );
                 } else {
                     // keep what we already have, just trim it down a little
                     newActiveListingsObj[uid] = {
-                        sell_trx_id: listing?.sell_trx_id,
+                        sell_trx_id: market_id,
                         buy_price: listing?.buy_price,
                         created_time: listing_created_time,
                         uid,
                     };
+                    console.log(
+                        `newActiveListingsObj[uid]: ${JSON.stringify(
+                            newActiveListingsObj[uid]
+                        )}`
+                    );
+                    throw new Error(
+                        `checking newActiveListingsObj after hive_created_time was not greater than listing_created_time`
+                    );
                 }
             } else {
                 noMatch = noMatch + 1;
                 newActiveListingsObj[uid] = {
-                    sell_trx_id: listing?.sell_trx_id,
+                    sell_trx_id: market_id,
                     buy_price: listing?.buy_price,
                     created_time: listing_created_time,
                     uid,
                 };
+                console.log(
+                    `newActiveListingsObj[uid]: ${JSON.stringify(
+                        newActiveListingsObj[uid]
+                    )}`
+                );
+                throw new Error(
+                    `checking newActiveListingsObj after no hiveInfo`
+                );
             }
         }
 
@@ -261,6 +271,7 @@ const addInHiveRelistingData = ({ activeListingsObj, hiveRelistings }) => {
 const buildNewRentalDetailsObj = ({
     newActiveRentals,
     newActiveListingsObj,
+    rentalDetailsObj,
 }) => {
     try {
         const newRentalDetailsObj = {};
@@ -269,14 +280,31 @@ const buildNewRentalDetailsObj = ({
 
         for (const [uid, listing] of Object.entries(newActiveListingsObj)) {
             const { sell_trx_id, buy_price, created_time } = listing;
-
-            newRentalDetailsObj[uid] = {
-                is_rented: false,
-                last_price_update_time: created_time,
-                rental_end_time: null,
-                buy_price,
-                last_sell_trx_id: sell_trx_id,
-            };
+            if (newRentalDetailsObj[uid] == null) {
+                newRentalDetailsObj[uid] = {
+                    is_rented: false,
+                    last_price_update_time: created_time,
+                    rental_end_time: null,
+                    buy_price,
+                    last_sell_trx_id: sell_trx_id,
+                };
+            }
+            //  } else {
+            // const currentData = newRentalDetailsObj[uid];
+            // if (currentData?.last_price_update_time >= created_time) {
+            //     // this would mean that nothing has changed at all since the last price update
+            //     newRentalDetailsObj[uid] = {
+            //         is_rented: false,
+            //         rental_end_time: currentData?.rental_end_time,
+            //         buy_price: currentData?.buy_price,
+            //         last_rental_payment_time:
+            //             currentData?.last_rental_payment_time,
+            //         last_price_update_time:
+            //             currentData?.last_price_update_time,
+            //         last_sell_trx_id: currentData?.last_sell_trx_id, // this is really the only thing that could change, since something could be cancelled
+            //     };
+            // }
+            //  }
         }
 
         for (const [sell_trx_id, rental] of Object.entries(newActiveRentals)) {
@@ -348,3 +376,10 @@ const buildNewRentalDetailsObj = ({
 module.exports = {
     updateRentalsStore,
 };
+
+/*
+
+newActiveListingsObj: {"C3-242-014BSEFUG0":{"buy_price":"16.148","created_time":1662215727000,"uid":"C3-242-014BSEFUG0"},"C3-333-UHHINJICGW":{"buy_price":"0.200","created_time":1663016235000,"uid":"C3-333-UHHINJICGW"},"C3-333-J3C1YJ3Q0G":{"buy_price":"0.153","created_time":1662319128000,"uid":"C3-333-J3C1YJ3Q0G"},"C3-333-6P729I5PR4":{"buy_price":"0.153","created_time":1662319128000,"uid":"C3-333-6P729I5PR4"},"C3-333-WVOXP9ND28":{"buy_price":"0.153","created_time":1662319128000,"uid":"C3-333-WVOXP9ND28"},"C3-333-Q7X8CJYD5S":{"buy_price":"0.153","created_time":1662319128000,"uid":"C3-333-Q7X8CJYD5S"},"C3-333-8HPUBH8TO0":{"buy_price":"0.200","created_time":1662222948000,"uid":"C3-333-8HPUBH8TO0"},"C3-333-JD3R25YQE8":{"buy_price":"0.200","created_time":1662319128000,"uid":"C3-333-JD3R25YQE8"},"C3-333-WXGDEIQFVK":{"buy_price":"0.200","created_time":1662319128000,"uid":"C3-333-WXGDEIQFVK"},"C3-333-2IC4PT42WG":{"buy_price":"0.200","created_time":1662319128000,"uid":"C3-333-2IC4PT42WG"},"C3-333-T1QK2O4L4G":{"buy_price":"0.200","created_time":1662319128000,"uid":"C3-333-T1QK2O4L4G"},"C3-333-LQW2T9AHV4":{"buy_price":"0.200","created_time":1662846486000,"uid":"C3-333-LQW2T9AHV4"},"C3-333-L0SUP9QNCG":{"buy_price":"0.200","created_time":1662319128000,"uid":"C3-333-L0SUP9QNCG"},"C3-333-EMS0QXT3WW":{"buy_price":"0.200","created_time":1662222948000,"uid":"C3-333-EMS0QXT3WW"},"C3-333-1TZOK5YDF4":{"buy_price":"0.200","created_time":1662319128000,"uid":"C3-333-1TZOK5YDF4"},"C3-333-M1AA96FPSG":{"buy_price":"0.200","created_time":1662846486000,"uid":"C3-333-M1AA96FPSG"},"C3-333-RN6356A38G":{"buy_price":"0.200","created_time":1662846486000,"uid":"C3-333-RN6356A38G"},"C3-333-75MSKR99SG":{"buy_price":"0.200","created_time":1662319128000,"uid":"C3-333-75MSKR99SG"},"C3-333-KSLINKQ50G":{"buy_price":"0.200","created_time":1662846486000,"uid":"C3-333-KSLINKQ50G"},"C3-333-XWXNSJS03K":{"buy_price":"0.153","created_time":1662319128000,"uid":"C3-333-XWXNSJS03K"},"C3-333-LODLX5YAWW":{"buy_price":"0.153","created_time":1662222948000,"uid":"C3-333-LODLX5YAWW"},"C3-333-F7DT0JQQM8":{"buy_price":"0.200","created_time":1662319128000,"uid":"C3-333-F7DT0JQQM8"},"C3-333-0GIOLLO2PC":{"buy_price":"0.200","created_time":1662319128000,"uid":"C3-333-0GIOLLO2PC"},"C3-333-3ZNKOB5MUO":{"buy_price":"0.200","created_time":1662319128000,"uid":"C3-333-3ZNKOB5MUO"},"C3-333-PLO0HDV1HC":{"buy_price":"0.153","created_time":1662222948000,"uid":"C3-333-PLO0HDV1HC"},"C3-333-65QO9KU4TS":{"buy_price":"0.200","created_time":1662222948000,"uid":"C3-333-65QO9KU4TS"},"C3-333-ADH9STMDHS":{"buy_price":"0.200","created_time":1662222948000,"uid":"C3-333-ADH9STMDHS"},"C3-333-3HWD46B174":{"buy_price":"0.200","created_time":1662222948000,"uid":"C3-333-3HWD46B174"},"C3-333-E332LF70GG":{"buy_price":"0.200","created_time":1662319128000,"uid":"C3-
+
+newActiveRentals: {"bd4cb81bacfb27afde63da132dc6f6420ea90799-8":{"sell_trx_id":"bd4cb81bacfb27afde63da132dc6f6420ea90799-8","buy_price":"0.451","price_change_time":null,"rental_created_time":1662589473000,"uid":"G7-398-FQRBFL0YPC","next_rental_payment_time":1664317473000},"7c61a722bdc6987076b5594aed04157c0f785030-64":{"sell_trx_id":"7c61a722bdc6987076b5594aed04157c0f785030-64","buy_price":"0.472","price_change_time":null,"rental_created_time":1662668061000,"uid":"C7-389-QFZ87OEC4W","next_rental_payment_time":1664309661000},"7c61a722bdc6987076b5594aed04157c0f785030-62":{"sell_trx_id":"7c61a722bdc6987076b5594aed04157c0f785030-62","buy_price":"0.472","price_change_time":null,"rental_created_time":1662668061000,"uid":"C7-389-PNTTW3SFPC","next_rental_payment_time":1664309661000},"7c61a722bdc6987076b5594aed04157c0f785030-68":{"sell_trx_id":"7c61a722bdc6987076b5594aed04157c0f785030-68","buy_price":"0.472","price_change_time":null,"rental_created_time":1662668061000,"uid":"C7-389-EUUF1CPYZ4","next_rental_payment_time":1664309661000},"7c61a722bdc6987076b5594aed04157c0f785030-65":{"sell_trx_id":"7c61a722bdc6987076b5594aed04157c0f785030-65","buy_price":"0.472","price_change_time":null,"rental_created_time":1662668061000,"uid":"C7-389-IA88APPIKW","next_rental_payment_time":1664309661000},"7c61a722bdc6987076b5594aed04157c0f785030-60":{"sell_trx_id":"7c61a722bdc6987076b5594aed04157c0f785030-60","buy_price":"0.472","price_change_time":null,"rental_created_time":1662668064000,"uid":"C7-389-I83H4CPHI8","next_rental_payment_time":1664309664000},"7c61a722bdc6987076b5594aed04157c0f785030-59":{"sell_trx_id":"7c61a722bdc6987076b5594aed04157c0f785030-59","buy_price":"0.472","price_change_time":null,"rental_created_time":1662668064000,"uid":"C7-389-Q9R7254LY8","next_rental_payment_time":1664309664000},"7c61a722bdc6987076b5594aed04157c0f785030-63":{"sell_trx_id":"7c61a722bdc6987076b5594aed04157c0f785030-63","buy_price":"0.472","price_change_time":null,"rental_created_time":1662668064000,"uid":"C7-389-0Q62G0KP80","next_rental_payment_time":1664309664000},"7c61a722bdc6987076b5594aed04157c0f785030-67":{"sell_trx_id":"7c61a722bdc6987076b5594aed04157c0f785030-67","buy_price":"0.472","price_change_time":null,"rental_created_time":1662668064000,"uid":"C7-389-13822XCD1S","next_rental_payment_time":1664309664000},"7c61a722bdc6987076b5594aed04157c0f785030-66":{"sell_trx_id":"7c61a722bdc6987076b5594aed04157c0f785030-66","buy_price":"0.472","price_change_time":null,"rental_created_time":1662668082000,"uid":"C7-389-
+*/

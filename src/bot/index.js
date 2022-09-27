@@ -99,14 +99,14 @@ window.api.bot.start(async (event) => {
             if (hiveTransactions % 4 === 0) {
                 await sleep(4000);
             }
-            if (relistActiveGroup.length > 0) {
-                await window.api.hive.relistActiveRentals({
-                    cards: relistActiveGroup,
-                });
+            // if (relistActiveGroup.length > 0) {
+            //     await window.api.hive.relistActiveRentals({
+            //         cards: relistActiveGroup,
+            //     });
 
-                hiveTransactions = hiveTransactions + 1;
-                numListed += relistActiveGroup.length;
-            }
+            //     hiveTransactions = hiveTransactions + 1;
+            //     numListed += relistActiveGroup.length;
+            // }
         }
         listingsNum = numListed - listingsNum;
         window.api.bot.log({
