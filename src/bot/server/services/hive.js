@@ -141,11 +141,6 @@ const seperateByListingType = ({ hiveListingsObj }) => {
         let listingCatch = 0;
         let total = 0;
         for (const [sell_trx_id, listing] of Object.entries(hiveListingsObj)) {
-            // console.log(
-            //     `sell_trx_id: ${sell_trx_id}, listing: ${JSON.stringify(
-            //         listing
-            //     )}`
-            // );
             // sell_trx_id: 439dff493cd95380cd6189b0a6e118e76149d1f4-0, listing: {"sell_trx_id":"439dff493cd95380cd6189b0a6e118e76149d1f4-0","buy_price":3.6187568,"created_time":1664225058000,"type":"c"}
             total = total + 1;
             const { type } = listing;
