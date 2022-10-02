@@ -96,14 +96,13 @@ window.api.bot.start(async (event) => {
         numListed = 0;
 
         for (const relistActiveGroup of relistActive) {
-            if (hiveTransactions % 4 === 0) {
-                await sleep(4000);
-            }
+            // if (hiveTransactions % 4 === 0) {
+            //     await sleep(4000);
+            // }
             // if (relistActiveGroup.length > 0) {
             //     await window.api.hive.relistActiveRentals({
             //         cards: relistActiveGroup,
             //     });
-
             //     hiveTransactions = hiveTransactions + 1;
             //     numListed += relistActiveGroup.length;
             // }

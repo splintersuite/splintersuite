@@ -10,9 +10,9 @@ const updateRentalsStore = async ({
     activeRentals,
 }) => {
     try {
+        // TNT TODO: make activeListingsObj not have so much excess data, we don't need most of it so can lower RAM usage since it can be quite a lot of extra BS
         console.log(`/bot/server/services/rentalDetails/updateRentalStore`);
         // console.log(`activeListingsObj: ${JSON.stringify(activeListingsObj)}`);
-        // throw new Error('checking');
         /*
 activeListingsObj: {"C3-242-014BSEFUG0":{"player":"xdww","uid":"C3-242-014BSEFUG0","card_detail_id":242,"xp":31,"gold":false,"edition":3,"market_id":"dd998bc29079abcab71de53f195f9ea55942e0da-52","buy_price":"16.148","market_listing_type":"RENT","market_listing_status":0,"market_created_date":"2022-09-03T14:35:27.000Z","last_used_block":68244366,"last_used_player":"zexn","last_used_date":"2022-09-26T10:57:02.563Z","last_transferred_block":null,"last_transferred_date":null,"alpha_xp":0,"delegated_to":null,"delegation_tx":"sm_rental_payments_68263420","skin":null,"delegated_to_display_name":null,"display_name":null,"lock_days":3,"unlock_date":"2022-07-25T15:51:15.000Z","level":4},"C3-333-UHHINJICGW":{"player":"xdww","uid":"C3-333-UHHINJICGW","card_detail_id":333,"xp":1,"gold":false,"edition":3,"market_id":"8478644fd5909e198e971b8062a02400a1a72873-0","buy_price":"0.200","market_listing_type":"RENT","market_listing_status":0,"market_created_date":"2022-09-
 */
@@ -23,6 +23,18 @@ activeListingsObj: {"C3-242-014BSEFUG0":{"player":"xdww","uid":"C3-242-014BSEFUG
                 lastCreatedTime,
                 activeRentals,
             });
+        /*
+        console.log(
+            `newActiveListingsObj: ${JSON.stringify(newActiveListingsObj)}`
+        );
+            newActiveListingsObj: {"C3-242-014BSEFUG0":{"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-52","buy_price":13.06305,"created_time":1664479305000,"uid":"C3-242-014BSEFUG0"},"C5-273-3QPDTEMU4G":{"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-53","buy_price":2.5244999999999997,"created_time":1664650299000,"uid":"C5-273-3QPDTEMU4G"},"G3-333-E8IWMRTC74":{"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-34","buy_price":2.871,"created_time":1664650299000,"uid":"G3-333-E8IWMRTC74"},"C3-333-ESIARZJMHC":{"sell_trx_id":"0b6509d4dd372da3616ce4ecc11e86144fa96a2c-5","buy_price":"0.131","created_time":1662222948000,"uid":"C3-333-ESIARZJMHC"},"C3-334-0EIEZ6HY34":{"sell_trx_id":"439dff493cd95380cd6189b0a6e118e76149d1f4-78","buy_price":2.8,"created_time":1664479305000,"uid":"C3-334-0EIEZ6HY34"},"G3-337-178IKKV7S0":{"sell_trx_id":"a0ea371597d66713f4febbad5b84901edcff3d5e-
+        */
+        /*
+        console.log(
+            `newActiveRentalsObj: ${JSON.stringify(newActiveRentalsObj)}`
+        );
+        newActiveRentalsObj: {"7c61a722bdc6987076b5594aed04157c0f785030-18":{"sell_trx_id":"7c61a722bdc6987076b5594aed04157c0f785030-18","buy_price":"0.223","price_change_time":null,"rental_created_time":1662997611000,"uid":"C7-364-7UGBLACFGW","next_rental_payment_time":1664725611000},"bd4cb81bacfb27afde63da132dc6f6420ea90799-6":{"sell_trx_id":"bd4cb81bacfb27afde63da132dc6f6420ea90799-6","buy_price":"1.106","price_change_time":null,"rental_created_time":1663127901000,"uid":"G7-382-558VKHEPC0","next_rental_payment_time":1664683101000},"bd4cb81bacfb27afde63da132dc6f6420ea90799-5":{"sell_trx_id":"bd4cb81bacfb27afde63da132dc6f6420ea90799-5","buy_price":"0.684","price_change_time":null,"rental_created_time":1663318824000,"uid":"G7-381-
+        */
         const rentalDetailsObj = window.api.rentaldetails.getRentalDetails();
         if (
             !rentalDetailsObj ||
@@ -31,6 +43,7 @@ activeListingsObj: {"C3-242-014BSEFUG0":{"player":"xdww","uid":"C3-242-014BSEFUG
             const rentalDetails = buildNewRentalDetailsObj({
                 newActiveRentals: newActiveRentalsObj,
                 newActiveListingsObj,
+                rentalDetailsObj: null,
             });
             window.api.rentaldetails.updateRentalDetails({ rentalDetails });
             return;
@@ -61,17 +74,35 @@ const addInHiveData = async ({
             username,
             lastCreatedTime,
         });
-        console.log(`relist: ${JSON.stringify(relist)}`);
-        console.log(`cancel: ${JSON.stringify(cancel)}`);
+        // console.log(`relist: ${JSON.stringify(relist)}`);
+        // console.log(`cancel: ${JSON.stringify(cancel)}`);
         const newActiveListingsObj = addInHiveRelistingData({
             activeListingsObj,
             hiveRelistings: relist,
         });
+        // console.log(
+        //     `newActiveListingsObj: ${JSON.stringify(newActiveListingsObj)}`
+        // );
+        /*
+        newActiveListingsObj: {"C1-39-3WO78X7TIO":{"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-44","buy_price":0.432,"created_time":1664650299000,"uid":"C1-39-3WO78X7TIO"},"C3-242-014BSEFUG0":{"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-52","buy_price":13.06305,"created_time":1664479305000,"uid":"C3-242-014BSEFUG0"},"G3-246-3E7P9B3MNK":{"sell_trx_id":"260c53e56822c69d14edcdd487194a5c655fd5d0-0","buy_price":0.54747,"created_time":1664650299000,"uid":"G3-246-3E7P9B3MNK"},"C5-273-3QPDTEMU4G":{"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-53","buy_price":2.5244999999999997,"created_time":1664650299000,"uid":"C5-273-3QPDTEMU4G"},"C3-287-52YF6MTLUO":{"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-
+        */
+        // throw new Error('checking newActiveListingsObj');
 
         const newActiveRentalsObj = addInHiveCancelData({
             activeRentals,
             hiveCancels: cancel,
         });
+        // console.log(
+        //     `newActiveRentalsObj: ${JSON.stringify(newActiveListingsObj)}`
+        // );
+        /*
+        newActiveRentalsObj: {"C1-39-3WO78X7TIO":{"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-44","buy_price":0.432,"created_time":1664650299000,"uid":"C1-39-3WO78X7TIO"},"C3-242-014BSEFUG0":{"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-52","buy_price":13.06305,"created_time":1664479305000,"uid":"C3-242-014BSEFUG0"},"G3-246-3E7P9B3MNK":{"sell_trx_id":"260c53e56822c69d14edcdd487194a5c655fd5d0-0","buy_price":0.54747,"created_time":1664650299000,"uid":"G3-246-3E7P9B3MNK"},"C5-273-3QPDTEMU4G":{"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-53","buy_price":2.5244999999999997,"created_time":1664650299000,"uid":"C5-273-3QPDTEMU4G"},"C3-287-52YF6MTLUO":{"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-66","buy_price":7.0879,"created_time":1664650299000,"uid":"C3-287-52YF6MTLUO"},"C3-333-066DKVJI0W":{"sell_trx_id":"5bfd138a349e7cad9af495900d4b91d2b9a76fcf-
+        */
+        // throw new Error(
+        //     `checking new activeRentalsObj: ${JSON.stringify(
+        //         newActiveRentalsObj
+        //     )}`
+        // );
 
         return { newActiveListingsObj, newActiveRentalsObj };
     } catch (err) {
@@ -179,6 +210,7 @@ const addInHiveRelistingData = ({ activeListingsObj, hiveRelistings }) => {
             const hiveInfo = hiveRelistings[market_id];
             //
             console.log(`uid: ${uid}, listing: ${JSON.stringify(listing)}`);
+            // uid: C3-242-014BSEFUG0, listing: {"player":"xdww","uid":"C3-242-014BSEFUG0","card_detail_id":242,"xp":31,"gold":false,"edition":3,"market_id":"dd998bc29079abcab71de53f195f9ea55942e0da-52","buy_price":"16.148","market_listing_type":"RENT","market_listing_status":0,"market_created_date":"2022-09-03T14:35:27.000Z","last_used_block":68244366,"last_used_player":"zexn","last_used_date":"2022-09-26T10:57:02.563Z","last_transferred_block":null,"last_transferred_date":null,"alpha_xp":0,"delegated_to":null,"delegation_tx":"sm_rental_payments_68263420","skin":null,"delegated_to_display_name":null,"display_name":null,"lock_days":3,"unlock_date":"2022-07-25T15:51:15.000Z","level":4}
             if (hiveInfo && Object.entries(hiveInfo)?.length > 0) {
                 numOfChanges = numOfChanges + 1;
                 console.log(`hiveInfo: ${JSON.stringify(hiveInfo)}`);
@@ -191,14 +223,16 @@ const addInHiveRelistingData = ({ activeListingsObj, hiveRelistings }) => {
                         created_time: hive_created_time,
                         uid,
                     };
+                    // newActiveListingsObj[uid]: {"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-44","buy_price":0.432,"created_time":1664650299000,"uid":"C1-39-3WO78X7TIO"}
+
                     console.log(
                         `newActiveListingsObj[uid]: ${JSON.stringify(
                             newActiveListingsObj[uid]
                         )}`
                     );
-                    throw new Error(
-                        `checking newActiveListingsObj after hive_created_time WAS greater than listing_created_time`
-                    );
+                    // throw new Error(
+                    //     `checking newActiveListingsObj after hive_created_time WAS greater than listing_created_time`
+                    // );
                 } else {
                     // keep what we already have, just trim it down a little
                     newActiveListingsObj[uid] = {
@@ -224,14 +258,15 @@ const addInHiveRelistingData = ({ activeListingsObj, hiveRelistings }) => {
                     created_time: listing_created_time,
                     uid,
                 };
+                // newActiveListingsObj[uid]: {"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-52","buy_price":"16.148","created_time":1662215727000,"uid":"C3-242-014BSEFUG0"}
                 console.log(
                     `newActiveListingsObj[uid]: ${JSON.stringify(
                         newActiveListingsObj[uid]
                     )}`
                 );
-                throw new Error(
-                    `checking newActiveListingsObj after no hiveInfo`
-                );
+                // throw new Error(
+                //     `checking newActiveListingsObj after no hiveInfo`
+                // );
             }
         }
 
