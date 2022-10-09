@@ -10,17 +10,22 @@ const handleListingsTooHigh = ({
 }) => {
     try {
         // https://stackoverflow.com/questions/2559318/how-to-check-for-an-undefined-or-null-variable-in-javascript
+        if (!listingPrice) {
+            return null;
+        }
+
         if (isClBcxModern) {
             return listingPrice;
         }
-        if (currentPriceStats || listingPrice) {
-            return null;
+
+        if (!currentPriceStats) {
+            return listingPrice;
         }
 
         const allOpenTrades = currentPriceStats[ALL_OPEN_TRADES];
         const recentTrades = currentPriceStats[TRADES_DURING_PERIOD];
 
-        const maxHigh = _.max([allOpenTrades.high, recentTrades.high]);
+        const maxHigh = _.max([allOpenTrades?.high, recentTrades?.high]);
         const ceilingPrice = _.min([maxHigh, listingPrice]);
 
         return ceilingPrice;

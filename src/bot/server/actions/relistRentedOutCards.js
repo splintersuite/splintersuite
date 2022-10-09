@@ -4,7 +4,6 @@ const {
     convertForRentGroupOutputToSearchableObject,
 } = require('../services/splinterlands');
 const { getLowBCXModernCardsByUid } = require('../services/collection');
-const { getListingPrice } = require('./calculateRentalPriceToList');
 const listingsService = require('../services/listings');
 const _ = require('lodash');
 const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
@@ -25,6 +24,7 @@ const calculateRelistActiveRentalPrices = async ({
         const cardsUnableToFindPriceFor = [];
         const cardsNotWorthChangingPrice = [];
         const outOfLoop = [];
+        const nullPrice = [];
         const cardCatch = [];
 
         for (const level of Object.keys(collectionObj)) {
@@ -56,6 +56,7 @@ const calculateRelistActiveRentalPrices = async ({
                     endOfSeasonSettings,
                     isClBcxModern: lowBcxModerns[card.uid] !== undefined,
                 });
+
                 if (relistPriceForMarketId[0] === 'MD') {
                     // missing data
                     cardsUnableToFindPriceFor.push(card);
@@ -63,6 +64,8 @@ const calculateRelistActiveRentalPrices = async ({
                     cardsNotWorthChangingPrice.push(card);
                 } else if (relistPriceForMarketId[0] === 'T') {
                     outOfLoop.push(card);
+                } else if (relistPriceForMarketId[0] === 'E') {
+                    nullPrice.push(card);
                 } else if (relistPriceForMarketId[0] == null) {
                     cardsUnableToFindPriceFor.push(card);
                 } else {
@@ -91,6 +94,9 @@ const calculateRelistActiveRentalPrices = async ({
         });
         window.api.bot.log({
             message: `Unable to price: ${cardsUnableToFindPriceFor?.length}`,
+        });
+        window.api.bot.log({
+            message: `Null Price: ${nullPrice?.length}`,
         });
         window.api.bot.log({
             message: `Catch: ${cardCatch?.length}`,
@@ -167,6 +173,10 @@ const addActiveMarketIdsForRelisting = ({
             const allTrades = marketPrices[marketKey][TRADES_DURING_PERIOD];
             const maxHigh = _.max([openTrades.high, allTrades.high]);
             const relistingPrice = [market_id, parseFloat(maxHigh)];
+            if (!relistingPrice || !relistingPrice[0] || !relistingPrice[1]) {
+                const rentalNotFound = ['E', market_id];
+                return rentalNotFound;
+            }
             return relistingPrice;
         }
         listingPrice = listingsService.getListingPrice({
@@ -189,7 +199,10 @@ const addActiveMarketIdsForRelisting = ({
 
         const lowBcxModernFactor = isLowBcxModern ? 5.0 : 1.0;
 
-        if (
+        if (!listingPrice) {
+            const rentalNotFound = ['E', market_id];
+            return rentalNotFound;
+        } else if (
             nextBotLoopTime > nextRentalPaymentTime &&
             (listingPrice - buy_price) / listingPrice >
                 endOfSeasonSettings?.cancellationThreshold * lowBcxModernFactor
@@ -202,6 +215,15 @@ const addActiveMarketIdsForRelisting = ({
                     market_id,
                     parseFloat(listingPrice),
                 ];
+
+                if (
+                    !rentalRelistingPriceForMarketId ||
+                    !rentalRelistingPriceForMarketId[0] ||
+                    !rentalRelistingPriceForMarketId[1]
+                ) {
+                    const rentalNotFound = ['E', market_id];
+                    return rentalNotFound;
+                }
                 return rentalRelistingPriceForMarketId;
             }
         } else {

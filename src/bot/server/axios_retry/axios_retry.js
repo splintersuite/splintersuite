@@ -66,12 +66,27 @@ const isIdempotentRequestError = (error) => {
 };
 
 const isSplinterlandsServerError = (error) => {
-    return (
-        error?.code === 'ERR_NETWORK' &&
-        (error?.response?.status === 502 ||
-            error?.response?.status === 504 ||
-            error?.response?.status === 503)
+    console.error(`isSplinterlandsServerError error: ${JSON.stringify(error)}`);
+    console.error(`isSplinterlandsServerError error.code: ${error?.code}`);
+    console.error(
+        `isSplinterlandsServerError error?.response: ${error?.response}`
     );
+    console.error(`isSplinterlandsServerError error?.status: ${error?.status}`);
+
+    if (
+        error?.code === 'ERR_NETWORK' ||
+        error?.response?.status === 502 ||
+        error?.response?.status === 504 ||
+        error?.response?.status === 503 ||
+        error?.response?.status == null ||
+        error?.response?.status === 0
+    ) {
+        console.error(`isSplinterlandsServerError return true`);
+        return true;
+    } else {
+        console.error(`isSplinterlandsServerError return false`);
+        return false;
+    }
 };
 
 const gotRateLimited = (error) => {

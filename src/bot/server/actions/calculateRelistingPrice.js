@@ -18,8 +18,9 @@ const calculateRelistingPrice = async ({
         const relistingPriceForEachMarketId = [];
         const cardsUnableToFindPriceFor = [];
         const cardsNotWorthRelisting = [];
+        const nullPrice = [];
         const cardCatch = [];
-
+        //  const rentalDetailsObj = window.api.rentaldetails.getRentalDetails();
         const minRentalSetting = 0.11;
 
         for (const level of Object.keys(collectionObj)) {
@@ -53,6 +54,8 @@ const calculateRelistingPrice = async ({
                     cardsUnableToFindPriceFor.push(rentalPriceForMarketId);
                 } else if (rentalPriceForMarketId[0] === 'C') {
                     cardsNotWorthRelisting.push(rentalPriceForMarketId);
+                } else if (rentalPriceForMarketId[0] === 'E') {
+                    nullPrice.push(rentalPriceForMarketId);
                 } else {
                     if (
                         parseFloat(rentalPriceForMarketId[1]) < minRentalSetting
@@ -82,6 +85,9 @@ const calculateRelistingPrice = async ({
         });
         window.api.bot.log({
             message: `Unable to price: ${cardsUnableToFindPriceFor?.length}`,
+        });
+        window.api.bot.log({
+            message: `Null Price: ${nullPrice?.length}`,
         });
         window.api.bot.log({
             message: `Catch: ${cardCatch?.length}`,
@@ -138,6 +144,14 @@ const addPriceRelistInformationForEachCardByMarketId = ({
                 const allTrades = marketPrices[marketKey][TRADES_DURING_PERIOD];
                 const maxHigh = _.max([openTrades?.high, allTrades?.high]);
                 const relistingPrice = [market_id, parseFloat(maxHigh)];
+                if (
+                    !relistingPrice ||
+                    !relistingPrice[0] ||
+                    !relistingPrice[1]
+                ) {
+                    const rentalNotFoundForCard = ['E', uid, market_id];
+                    return rentalNotFoundForCard;
+                }
                 return relistingPrice;
             } else {
                 const rentalNotFoundForCard = ['N', uid, market_id];
@@ -154,6 +168,7 @@ const addPriceRelistInformationForEachCardByMarketId = ({
                 currentPriceStats: marketPrices[marketKey],
                 isClBcxModern,
             });
+
             listingPrice = listingsService.handleListingsTooHigh({
                 currentPriceStats: marketPrices[marketKey],
                 listingPrice,
@@ -164,7 +179,10 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             return rentalNotFoundForCard;
         }
 
-        if (
+        if (!listingPrice) {
+            const rentalNotFoundForCard = ['E', uid, market_id];
+            return rentalNotFoundForCard;
+        } else if (
             listingPrice < buy_price
             // &&
             // (buy_price - listingPrice) / buy_price > 0.15 * lowBcxModernFactor
@@ -188,6 +206,15 @@ const addPriceRelistInformationForEachCardByMarketId = ({
                 market_id,
                 parseFloat(listingPrice),
             ];
+
+            if (
+                !rentalRelistingPriceForMarketId ||
+                !rentalRelistingPriceForMarketId[0] ||
+                !rentalRelistingPriceForMarketId[1]
+            ) {
+                const rentalNotFoundForCard = ['E', uid, market_id];
+                return rentalNotFoundForCard;
+            }
 
             return rentalRelistingPriceForMarketId;
         } else {

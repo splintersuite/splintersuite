@@ -1,5 +1,4 @@
 import moment from 'moment';
-
 import store from '../../store';
 
 const start = async () => {};

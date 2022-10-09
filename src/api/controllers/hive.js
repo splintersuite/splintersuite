@@ -17,6 +17,12 @@ const updateRentals = async (event, payload) => {
     return util.success(res);
 };
 
+const relistActiveRentals = async (event, payload) => {
+    const { cards, price } = payload;
+    const res = await hiveService.relistActiveRentals(cards, price);
+    return util.success(res);
+};
+
 const deleteRentals = async (event, payload) => {
     const { cards } = payload;
 
@@ -29,4 +35,5 @@ export default {
     createRentals,
     updateRentals,
     deleteRentals,
+    relistActiveRentals,
 };

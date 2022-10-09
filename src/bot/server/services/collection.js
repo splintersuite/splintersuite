@@ -12,6 +12,7 @@ const filterCollectionByEdition = ({ collection }) => {
         const dice = [];
         const rewardCards = [];
         const promoCards = [];
+        const riftwatchers = [];
         collection.forEach((card) => {
             const { edition, tier, rarity } = card;
 
@@ -39,6 +40,9 @@ const filterCollectionByEdition = ({ collection }) => {
                     break;
                 case 7:
                     chaosLegion.push(card);
+                    break;
+                case 8:
+                    riftwatchers.push(card);
                     break;
                 default:
                     throw new Error(

@@ -26,5 +26,13 @@ contextBridge.exposeInMainWorld('api', {
             ipcRenderer.invoke('hive:updateRentals', payload),
         deleteRentals: (payload) =>
             ipcRenderer.invoke('hive:deleteRentals', payload),
+        relistActiveRentals: (payload) =>
+            ipcRenderer.invoke('hive:relistActiveRentals', payload),
+    },
+    rentaldetails: {
+        getRentalDetails: (payload) =>
+            ipcRenderer.invoke('rentaldetails:getRentalDetails', payload),
+        updateRentalDetails: (payload) =>
+            ipcRenderer.invoke('rentaldetails:updateRentalDetails', payload),
     },
 });

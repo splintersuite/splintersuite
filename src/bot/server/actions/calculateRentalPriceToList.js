@@ -19,6 +19,7 @@ const calculateRentalPriceToList = async ({
         const rentalPriceForEachCardUid = [];
         const cardsUnableToFindPriceFor = [];
         const cardsNotWorthListing = [];
+        const nullPrice = [];
         const cardCatch = [];
 
         const minRentalSetting = 0.11;
@@ -52,6 +53,8 @@ const calculateRentalPriceToList = async ({
                     });
                 if (rentalPriceForUid[1] === 'N') {
                     cardsUnableToFindPriceFor.push(rentalPriceForUid);
+                } else if (rentalPriceForUid[1] === 'E') {
+                    nullPrice.push(rentalPriceForUid);
                 } else {
                     if (parseFloat(rentalPriceForUid[1]) < minRentalSetting) {
                         cardsNotWorthListing.push(rentalPriceForUid);
@@ -76,6 +79,9 @@ const calculateRentalPriceToList = async ({
         });
         window.api.bot.log({
             message: `Unable to price: ${cardsUnableToFindPriceFor?.length}`,
+        });
+        window.api.bot.log({
+            message: `Null Price: ${nullPrice?.length}`,
         });
         window.api.bot.log({
             message: `Catch: ${cardCatch?.length}`,
@@ -122,6 +128,10 @@ const addPriceListInformationForEachCardByUid = ({
                 const allTrades = marketPrices[marketKey][TRADES_DURING_PERIOD];
                 const maxHigh = _.max([openTrades.high, allTrades.high]);
                 const rentalPrice = [uid, parseFloat(maxHigh)];
+                if (!rentalPrice || !rentalPrice[0] || !rentalPrice[1]) {
+                    const rentalNotFound = [uid, 'E'];
+                    return rentalNotFound;
+                }
                 return rentalPrice;
             } else {
                 const rentalNotFoundForCard = [uid, 'N'];
@@ -144,12 +154,26 @@ const addPriceListInformationForEachCardByUid = ({
                 listingPrice,
                 isClBcxModern,
             });
+
+            if (!listingPrice) {
+                const rentalNotFound = [uid, 'E'];
+                return rentalNotFound;
+            }
         } else {
             const rentalNotFoundForCard = [uid, 'N'];
             return rentalNotFoundForCard;
         }
 
         const rentalPriceForUid = [uid, parseFloat(listingPrice)];
+
+        if (
+            !rentalPriceForUid ||
+            !rentalPriceForUid[0] ||
+            !rentalPriceForUid[1]
+        ) {
+            const rentalNotFound = [uid, 'E'];
+            return rentalNotFound;
+        }
 
         return rentalPriceForUid;
     } catch (err) {

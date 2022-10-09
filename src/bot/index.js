@@ -36,6 +36,7 @@ window.api.bot.start(async (event) => {
             marketPrices = marketRes.data.marketPrices;
         }
 
+        //  let rentalDetailsObj = await window.api.bot.getRentalDetails();
         // ---
         // Get cards
         // ------------------------------------
@@ -54,7 +55,6 @@ window.api.bot.start(async (event) => {
                 marketPrices,
                 nextBotLoopTime,
             });
-
         // ---
         // List, relist, cancel
         // ------------------------------------
@@ -100,7 +100,7 @@ window.api.bot.start(async (event) => {
                 await sleep(4000);
             }
             if (relistActiveGroup.length > 0) {
-                await window.api.hive.updateRentals({
+                await window.api.hive.relistActiveRentals({
                     cards: relistActiveGroup,
                 });
                 hiveTransactions = hiveTransactions + 1;

@@ -1,6 +1,7 @@
 'use strict';
 const {
     filterCollectionArraysForPotentialRentalCards,
+    getActiveListingsObj,
 } = require('./actions/collection');
 
 const {
@@ -27,6 +28,8 @@ const { getCardDetailObj } = require('./actions/_helpers');
 
 const { getActiveRentalsByRentalId } = require('./services/activeRentals');
 
+const { updateRentalsStore } = require('./services/rentalDetails');
+
 const splinterlandsService = require('./services/splinterlands');
 const _ = require('lodash');
 
@@ -48,6 +51,22 @@ const startRentalBot = async ({
         // grab the card_details endpoint
         const cardDetailObj = await getCardDetailObj();
         const activeRentals = await getActiveRentalsByRentalId(username);
+
+        // listings...
+        // const activeListingsObject = await getActiveListingsObj({
+        //     collection,
+        // });
+        // window.api.bot.log({
+        //     message: `/bot/server/index/startRentalBot lastCreatedTime: ${activeListingsObject?.lastCreatedTime}`,
+        // });
+        // updates rentalDetails
+        // const rentalDetails = await updateRentalsStore({
+        //     username,
+        //     activeListingsObj: activeListingsObject?.activeListingsObj,
+        //     lastCreatedTime: activeListingsObject?.lastCreatedTime,
+        //     activeRentals: activeRentals?.activeRentalsBySellTrxId,
+        // });
+
         const groupedRentalListObj =
             await splinterlandsService.getAllGroupedRentalsByLevel();
 
