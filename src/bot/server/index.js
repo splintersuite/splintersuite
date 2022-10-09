@@ -53,19 +53,19 @@ const startRentalBot = async ({
         const activeRentals = await getActiveRentalsByRentalId(username);
 
         // listings...
-        const activeListingsObject = await getActiveListingsObj({
-            collection,
-        });
-        window.api.bot.log({
-            message: `/bot/server/index/startRentalBot lastCreatedTime: ${activeListingsObject?.lastCreatedTime}`,
-        });
+        // const activeListingsObject = await getActiveListingsObj({
+        //     collection,
+        // });
+        // window.api.bot.log({
+        //     message: `/bot/server/index/startRentalBot lastCreatedTime: ${activeListingsObject?.lastCreatedTime}`,
+        // });
         // updates rentalDetails
-        const rentalDetails = await updateRentalsStore({
-            username,
-            activeListingsObj: activeListingsObject?.activeListingsObj,
-            lastCreatedTime: activeListingsObject?.lastCreatedTime,
-            activeRentals: activeRentals?.activeRentalsBySellTrxId,
-        });
+        // const rentalDetails = await updateRentalsStore({
+        //     username,
+        //     activeListingsObj: activeListingsObject?.activeListingsObj,
+        //     lastCreatedTime: activeListingsObject?.lastCreatedTime,
+        //     activeRentals: activeRentals?.activeRentalsBySellTrxId,
+        // });
 
         const groupedRentalListObj =
             await splinterlandsService.getAllGroupedRentalsByLevel();
