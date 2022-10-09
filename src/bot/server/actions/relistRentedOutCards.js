@@ -213,7 +213,6 @@ const addActiveMarketIdsForRelisting = ({
             } else {
                 const rentalRelistingPriceForMarketId = [
                     market_id,
-                    // parseFloat(`${listingPrice}`),
                     parseFloat(listingPrice),
                 ];
 
