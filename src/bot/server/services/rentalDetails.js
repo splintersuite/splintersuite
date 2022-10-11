@@ -4,7 +4,7 @@ const datesUtil = require('../../util/dates');
 const hive = require('./hive');
 const fileService = require('./rentalDetailsFile');
 
-const updateRentalsStore = async ({
+const getAndUpdateRentalsStore = async ({
     username,
     //   rentalDetailsObj,
     activeListingsObj,
@@ -29,49 +29,48 @@ const updateRentalsStore = async ({
         window.api.bot.log({
             message: `got rental details done, about to see if we should buildNewRentalDetailsObj`,
         });
+        window.api.bot.log({
+            message: `about to buildNewRentalDetailsObj`,
+        });
+
+        console.log('begin', new Date());
+        const rentalDetails = buildNewRentalDetailsObj({
+            newActiveRentals: newActiveRentalsObj,
+            newActiveListingsObj,
+            rentalDetailsObj:
+                !rentalDetailsObj ||
+                Object.entries(rentalDetailsObj)?.length === 0
+                    ? {}
+                    : rentalDetailsObj,
+        });
+        console.log('finished', new Date());
+        process.exit();
         //  console.log(`rentalDetailsObj: ${JSON.stringify(rentalDetailsObj)}`);
-        if (
-            !rentalDetailsObj ||
-            Object.entries(rentalDetailsObj)?.length === 0
-        ) {
-            window.api.bot.log({
-                message: `about to buildNewRentalDetailsObj`,
-            });
-            //console.log(`we should be calling buildNewRentalDetailsObj now`);
-            const rentalDetails = buildNewRentalDetailsObj({
-                // const { newRentalDetailsObj, updateRentalDetailsObj } =
-                //  buildNewRentalDetailsObj({
-                newActiveRentals: newActiveRentalsObj,
-                newActiveListingsObj,
-                // rentalDetailsObj,
-            });
-            window.api.bot.log({
-                message: `we have the rentalDetails, now about to call updateRentalDetails`,
-            });
-            window.api.rentaldetails.updateRentalDetails({ rentalDetails });
-            // console.log(
-            //     `rentalDetails after we build new one: ${JSON.stringify(
-            //         rentalDetails
-            //     )}`
-            // );
-            //   await window.api.bot.updateRentalDetails({ rentalDetails });
-            // const rentalDetails = prepareRentalDetailsForServer({
-            // const { newRentalDetails, updateRentalDetails } =
-            //     prepareRentalDetailsForServer({
-            //         newRentalDetailsObj,
-            //         updateRentalDetailsObj,
-            //     });
-            // return rentalDetails;
-            //return rentalDetails;
-            return;
-            throw new Error('checking to see if updateRentalDetails worked');
-        } else {
-            window.api.bot.log({
-                message: `/bot/server/services/rentalDetails/updateRentalStore found a rentalDetailsObj of :${JSON.stringify(
-                    rentalDetailsObj
-                )}`,
-            });
-        }
+
+        window.api.bot.log({
+            message: `about to buildNewRentalDetailsObj`,
+        });
+
+        window.api.bot.log({
+            message: `we have the rentalDetails, now about to call updateRentalDetails`,
+        });
+        window.api.rentaldetails.updateRentalDetails({ rentalDetails });
+        // console.log(
+        //     `rentalDetails after we build new one: ${JSON.stringify(
+        //         rentalDetails
+        //     )}`
+        // );
+        //   await window.api.bot.updateRentalDetails({ rentalDetails });
+        // const rentalDetails = prepareRentalDetailsForServer({
+        // const { newRentalDetails, updateRentalDetails } =
+        //     prepareRentalDetailsForServer({
+        //         newRentalDetailsObj,
+        //         updateRentalDetailsObj,
+        //     });
+        // return rentalDetails;
+        //return rentalDetails;
+        return;
+        throw new Error('checking to see if updateRentalDetails worked');
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/rentalDetails/updateRentalStore error: ${err.message}`,
@@ -562,7 +561,7 @@ const prepareRentalDetailsForServer = ({
 };
 
 module.exports = {
-    updateRentalsStore,
+    getAndUpdateRentalsStore,
 };
 
 // is_rented: {

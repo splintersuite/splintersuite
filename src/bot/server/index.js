@@ -29,7 +29,7 @@ const { getCardDetailObj } = require('./actions/_helpers');
 const { getActiveRentalsByRentalId } = require('./services/activeRentals');
 
 //const { updateRentalsStore } = require('./actions/rentalDetails');
-const { updateRentalsStore } = require('./services/rentalDetails');
+const { getAndUpdateRentalsStore } = require('./services/rentalDetails');
 
 const splinterlandsService = require('./services/splinterlands');
 const _ = require('lodash');
@@ -62,12 +62,13 @@ const startRentalBot = async ({
             message: `/bot/server/index/startRentalBot lastCreatedTime: ${activeListingsObject?.lastCreatedTime}`,
         });
         // updates rentalDetails
-        const rentalDetails = await updateRentalsStore({
+        const rentalDetails = await getAndUpdateRentalsStore({
             username,
             activeListingsObj: activeListingsObject?.activeListingsObj,
             lastCreatedTime: activeListingsObject?.lastCreatedTime,
             activeRentals: activeRentals?.activeRentalsBySellTrxId,
         });
+
         // throw new Error('checking last created time');
         const groupedRentalListObj =
             await splinterlandsService.getAllGroupedRentalsByLevel();
