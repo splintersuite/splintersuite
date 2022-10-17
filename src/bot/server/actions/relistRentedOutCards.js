@@ -18,6 +18,7 @@ const calculateRelistActiveRentalPrices = async ({
     activeRentalsBySellTrxId,
     endOfSeasonSettings,
     groupedRentalListObj,
+    listingDataByMarketKey,
 }) => {
     try {
         const relistingPriceForActiveMarketId = [];
@@ -55,6 +56,7 @@ const calculateRelistActiveRentalPrices = async ({
                     rentalTransaction: activeRentalsBySellTrxId[card.market_id],
                     endOfSeasonSettings,
                     isClBcxModern: lowBcxModerns[card.uid] !== undefined,
+                    listingDataByMarketKey,
                 });
 
                 if (relistPriceForMarketId[0] === 'MD') {
@@ -120,10 +122,10 @@ const addActiveMarketIdsForRelisting = ({
     rentalTransaction,
     endOfSeasonSettings,
     isLowBcxModern,
+    listingDataByMarketKey,
 }) => {
     try {
         // console.log('addActiveMarketIdsForRelistings');
-
         const {
             card_detail_id,
             gold,
@@ -207,7 +209,15 @@ const addActiveMarketIdsForRelisting = ({
             (listingPrice - buy_price) / listingPrice >
                 endOfSeasonSettings?.cancellationThreshold * lowBcxModernFactor
         ) {
-            if (listingPrice < 0.13) {
+            const currentlyListed = listingDataByMarketKey[marketKey];
+            if (
+                listingPrice < 0.13 ||
+                (currentlyListed !== undefined &&
+                    currentlyListed?.count > 3 &&
+                    currentlyListed?.avg < listingPrice)
+            ) {
+                console.log('currentlyListed', currentlyListed);
+                console.log('card here', card);
                 const shouldNotRelistRental = ['N'];
                 return shouldNotRelistRental;
             } else {
