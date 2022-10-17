@@ -29,11 +29,17 @@ const updateRentalsStore = async ({
 
         // newActiveRentalsObj: {"7c61a722bdc6987076b5594aed04157c0f785030-18":{"sell_trx_id":"7c61a722bdc6987076b5594aed04157c0f785030-18","buy_price":"0.223","price_change_time":null,"rental_created_time":1662997611000,"uid":"C7-364-7UGBLACFGW","next_rental_payment_time":1664725611000},"bd4cb81bacfb27afde63da132dc6f6420ea90799-6":{"sell_trx_id":"bd4cb81bacfb27afde63da132dc6f6420ea90799-6","buy_price":"1.106","price_change_time":null,"rental_created_time":1663127901000,"uid":"G7-382-558VKHEPC0","next_rental_payment_time":1664683101000},"bd4cb81bacfb27afde63da132dc6f6420ea90799-5":{"sell_trx_id":"bd4cb81bacfb27afde63da132dc6f6420ea90799-5","buy_price":"0.684","price_change_time":null,"rental_created_time":1663318824000,"uid":"G7-381-
 
-        const rentalDetailsObj = window.api.rentaldetails.getRentalDetails();
+        const rentalDetailsObj =
+            await window.api.rentaldetails.getRentalDetails();
+        console.log(
+            'here22',
+            JSON.parse(JSON.stringify(rentalDetailsObj?.data)).rentalDetails
+        );
         const rentalDetails = buildNewRentalDetailsObj({
             newActiveRentals: newActiveRentalsObj,
             newActiveListingsObj,
-            rentalDetailsObj: rentalDetailsObj,
+            rentalDetailsObj: JSON.parse(JSON.stringify(rentalDetailsObj?.data))
+                .rentalDetails,
         });
         window.api.rentaldetails.updateRentalDetails({
             rentalDetails: JSON.stringify(rentalDetails),

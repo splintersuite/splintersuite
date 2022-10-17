@@ -75,6 +75,8 @@ const startRentalBot = async ({
         });
 
         console.log('rentalDetails', rentalDetails);
+        console.log('here');
+        process.exit();
 
         const groupedRentalListObj =
             await splinterlandsService.getAllGroupedRentalsByLevel();

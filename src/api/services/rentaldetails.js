@@ -7,6 +7,7 @@ const getRentalDetails = () => {
     const detailsPath = path.join(userDataPath, fileName);
 
     const data = parseDataFile({ filePath: detailsPath });
+    console.log('data here', data);
     return data;
 };
 
