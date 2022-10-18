@@ -31,15 +31,27 @@ const updateRentalsStore = async ({
 
         const rentalDetailsObj =
             await window.api.rentaldetails.getRentalDetails();
-        console.log(
-            'here22',
-            JSON.parse(JSON.stringify(rentalDetailsObj?.data)).rentalDetails
-        );
+        // coming out as a string
+        console.log('rentalDetailsObj', rentalDetailsObj.data.rentalDetails);
+        // console.log(
+        //     'here22',
+        //     JSON.parse(JSON.stringify(rentalDetailsObj?.data)).rentalDetails
+        // );
+
+        if (
+            rentalDetailsObj?.code === 1 &&
+            rentalDetailsObj?.data?.rentalDetails
+        ) {
+            console.log('xdww');
+        }
         const rentalDetails = buildNewRentalDetailsObj({
-            newActiveRentals: newActiveRentalsObj,
+            newActiveRentalsObj,
             newActiveListingsObj,
-            rentalDetailsObj: JSON.parse(JSON.stringify(rentalDetailsObj?.data))
-                .rentalDetails,
+            rentalDetailsObj:
+                rentalDetailsObj?.code === 1 &&
+                rentalDetailsObj?.data?.rentalDetails
+                    ? rentalDetailsObj?.data?.rentalDetails
+                    : {},
         });
         window.api.rentaldetails.updateRentalDetails({
             rentalDetails: JSON.stringify(rentalDetails),
@@ -188,7 +200,7 @@ const addInHiveRelistingData = ({ activeListingsObj, hiveRelistings }) => {
 
             if (hiveInfo && Object.entries(hiveInfo)?.length > 0) {
                 numOfChanges = numOfChanges + 1;
-                console.log(`hiveInfo: ${JSON.stringify(hiveInfo)}`);
+                // console.log(`hiveInfo: ${JSON.stringify(hiveInfo)}`);
                 const hive_created_time = hiveInfo?.created_time;
                 if (hive_created_time > listing_created_time) {
                     // create something completely new here
@@ -208,11 +220,11 @@ const addInHiveRelistingData = ({ activeListingsObj, hiveRelistings }) => {
                         created_time: listing_created_time,
                         uid,
                     };
-                    console.log(
-                        `newActiveListingsObj[uid]: ${JSON.stringify(
-                            newActiveListingsObj[uid]
-                        )}`
-                    );
+                    // console.log(
+                    //     `newActiveListingsObj[uid]: ${JSON.stringify(
+                    //         newActiveListingsObj[uid]
+                    //     )}`
+                    // );
                     throw new Error(
                         `checking newActiveListingsObj after hive_created_time was not greater than listing_created_time`
                     );
@@ -263,7 +275,7 @@ const addInHiveRelistingData = ({ activeListingsObj, hiveRelistings }) => {
 
 // TODO: have this handle both existing and new ones imo
 const buildNewRentalDetailsObj = ({
-    newActiveRentals,
+    newActiveRentalsObj,
     newActiveListingsObj,
     rentalDetailsObj,
 }) => {
@@ -309,7 +321,9 @@ const buildNewRentalDetailsObj = ({
         }
 
         // new active rentals is actually all listings
-        for (const [sell_trx_id, rental] of Object.entries(newActiveRentals)) {
+        for (const [sell_trx_id, rental] of Object.entries(
+            newActiveRentalsObj
+        )) {
             const {
                 buy_price,
                 price_change_time,
@@ -333,23 +347,23 @@ const buildNewRentalDetailsObj = ({
                 // its been at least a day, and if this is even (therefore equation solves to 0), then we need to add 2 days to the last_rental_payment
                 // or just add 1 more day to the next_rental_payment
                 rental_end_time = next_rental_payment_time + oneDayTime;
-                console.log(
-                    `rental_end_time: ${rental_end_time} is date: ${new Date(
-                        rental_end_time
-                    )}, that is also next_rental_payment_time: ${next_rental_payment_time} date: ${new Date(
-                        next_rental_payment_time
-                    )} plus a day to get when rental ends`
-                );
+                // console.log(
+                //     `rental_end_time: ${rental_end_time} is date: ${new Date(
+                //         rental_end_time
+                //     )}, that is also next_rental_payment_time: ${next_rental_payment_time} date: ${new Date(
+                //         next_rental_payment_time
+                //     )} plus a day to get when rental ends`
+                // );
             } else {
                 // otherwise, add 24 hours to the last_rental_payment to get (or just assume its the next rental payment!)
                 rental_end_time = next_rental_payment_time;
-                console.log(
-                    `rental_end_time: ${rental_end_time} is date: ${new Date(
-                        rental_end_time
-                    )}, that is also next_rental_payment_time: ${next_rental_payment_time} date: ${new Date(
-                        next_rental_payment_time
-                    )}`
-                );
+                // console.log(
+                //     `rental_end_time: ${rental_end_time} is date: ${new Date(
+                //         rental_end_time
+                //     )}, that is also next_rental_payment_time: ${next_rental_payment_time} date: ${new Date(
+                //         next_rental_payment_time
+                //     )}`
+                // );
             }
 
             let this_price_change_time = price_change_time;
@@ -376,6 +390,21 @@ const buildNewRentalDetailsObj = ({
             // we need to calc when the rental actually expires, need to see how many days ago the creation was
             // need to calculate the last_rental_payment_time, prob ditch the last_rental_payment
         }
+
+        // delete old stuff not listed or rented
+        const uidsToPurge = [];
+        Object.keys(rentalDetailsObj).forEach((uid) => {
+            if (
+                newActiveListingsObj[uid] === undefined &&
+                newActiveRentalsObj[uid] === undefined
+            ) {
+                uidsToPurge.push(uid);
+            }
+        });
+
+        uidsToPurge.forEach((uid) => {
+            delete rentalDetailsObj[uid];
+        });
 
         return rentalDetailsObj;
     } catch (err) {

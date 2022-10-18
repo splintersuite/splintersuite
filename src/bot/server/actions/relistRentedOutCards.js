@@ -216,8 +216,8 @@ const addActiveMarketIdsForRelisting = ({
                     currentlyListed?.count > 3 &&
                     currentlyListed?.avg < listingPrice)
             ) {
-                console.log('currentlyListed', currentlyListed);
-                console.log('card here', card);
+                // console.log('currentlyListed', currentlyListed);
+                // console.log('card here', card);
                 const shouldNotRelistRental = ['N'];
                 return shouldNotRelistRental;
             } else {

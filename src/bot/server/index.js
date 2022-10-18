@@ -74,7 +74,7 @@ const startRentalBot = async ({
             activeListingsObj: activeListingsObject?.activeListingsObj,
         });
 
-        console.log('rentalDetails', rentalDetails);
+        // console.log('rentalDetails', rentalDetails);
         console.log('here');
         process.exit();
 
