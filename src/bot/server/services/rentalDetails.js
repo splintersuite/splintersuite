@@ -25,22 +25,8 @@ const updateRentalsStore = async ({
                 activeRentals,
             });
 
-        // newActiveListingsObj: {"C3-242-014BSEFUG0":{"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-52","buy_price":13.06305,"created_time":1664479305000,"uid":"C3-242-014BSEFUG0"},"C5-273-3QPDTEMU4G":{"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-53","buy_price":2.5244999999999997,"created_time":1664650299000,"uid":"C5-273-3QPDTEMU4G"},"G3-333-E8IWMRTC74":{"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-34","buy_price":2.871,"created_time":1664650299000,"uid":"G3-333-E8IWMRTC74"},"C3-333-ESIARZJMHC":{"sell_trx_id":"0b6509d4dd372da3616ce4ecc11e86144fa96a2c-5","buy_price":"0.131","created_time":1662222948000,"uid":"C3-333-ESIARZJMHC"},"C3-334-0EIEZ6HY34":{"sell_trx_id":"439dff493cd95380cd6189b0a6e118e76149d1f4-78","buy_price":2.8,"created_time":1664479305000,"uid":"C3-334-0EIEZ6HY34"},"G3-337-178IKKV7S0":{"sell_trx_id":"a0ea371597d66713f4febbad5b84901edcff3d5e-
-
-        // newActiveRentalsObj: {"7c61a722bdc6987076b5594aed04157c0f785030-18":{"sell_trx_id":"7c61a722bdc6987076b5594aed04157c0f785030-18","buy_price":"0.223","price_change_time":null,"rental_created_time":1662997611000,"uid":"C7-364-7UGBLACFGW","next_rental_payment_time":1664725611000},"bd4cb81bacfb27afde63da132dc6f6420ea90799-6":{"sell_trx_id":"bd4cb81bacfb27afde63da132dc6f6420ea90799-6","buy_price":"1.106","price_change_time":null,"rental_created_time":1663127901000,"uid":"G7-382-558VKHEPC0","next_rental_payment_time":1664683101000},"bd4cb81bacfb27afde63da132dc6f6420ea90799-5":{"sell_trx_id":"bd4cb81bacfb27afde63da132dc6f6420ea90799-5","buy_price":"0.684","price_change_time":null,"rental_created_time":1663318824000,"uid":"G7-381-
-
         const rentalDetailsObj =
             await window.api.rentaldetails.getRentalDetails();
-        // coming out as a string
-        console.log(
-            'rentalDetailsObj.data.rentalDetails',
-            rentalDetailsObj.data.rentalDetails
-        );
-        console.log(rentalDetailsObj.data.rentalDetails['C-062EC71JF4']);
-        // console.log(
-        //     'here22',
-        //     JSON.parse(JSON.stringify(rentalDetailsObj?.data)).rentalDetails
-        // );
 
         const rentalDetails = buildNewRentalDetailsObj({
             newActiveRentalsObj,
