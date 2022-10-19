@@ -21,7 +21,8 @@ const updateRentalDetails = ({ data }) => {
 
 const parseDataFile = ({ filePath }) => {
     try {
-        return JSON.parse(fs.readFileSync(filePath));
+        // https://stackoverflow.com/questions/42494823/json-parse-returns-string-instead-of-object
+        return JSON.parse(JSON.parse(fs.readFileSync(filePath)));
     } catch (err) {
         return {};
     }

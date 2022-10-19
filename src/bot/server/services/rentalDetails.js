@@ -32,24 +32,22 @@ const updateRentalsStore = async ({
         const rentalDetailsObj =
             await window.api.rentaldetails.getRentalDetails();
         // coming out as a string
-        console.log('rentalDetailsObj', rentalDetailsObj.data.rentalDetails);
+        console.log(
+            'rentalDetailsObj.data.rentalDetails',
+            rentalDetailsObj.data.rentalDetails
+        );
+        console.log(rentalDetailsObj.data.rentalDetails['C-062EC71JF4']);
         // console.log(
         //     'here22',
         //     JSON.parse(JSON.stringify(rentalDetailsObj?.data)).rentalDetails
         // );
 
-        if (
-            rentalDetailsObj?.code === 1 &&
-            rentalDetailsObj?.data?.rentalDetails
-        ) {
-            console.log('xdww');
-        }
         const rentalDetails = buildNewRentalDetailsObj({
             newActiveRentalsObj,
             newActiveListingsObj,
             rentalDetailsObj:
                 rentalDetailsObj?.code === 1 &&
-                rentalDetailsObj?.data?.rentalDetails
+                Object.keys(rentalDetailsObj?.data?.rentalDetails).length > 1
                     ? rentalDetailsObj?.data?.rentalDetails
                     : {},
         });
@@ -60,6 +58,9 @@ const updateRentalsStore = async ({
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/rentalDetails/updateRentalStore error: ${err.message}`,
+        });
+        window.api.bot.log({
+            message: err.stack,
         });
         throw err;
     }
