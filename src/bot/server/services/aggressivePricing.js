@@ -1,4 +1,4 @@
-'use strict';
+/*'use strict';
 
 const _ = require('lodash');
 const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
@@ -207,3 +207,4 @@ const getListingPrice = ({
 };
 
 module.exports = { handleListingsTooHigh, getListingPrice };
+*/
