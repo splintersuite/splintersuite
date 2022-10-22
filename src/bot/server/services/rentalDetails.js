@@ -89,7 +89,13 @@ const addInHiveData = async ({
 
 const addInHiveCancelData = ({ activeRentals, hiveCancels }) => {
     try {
-        const newActiveRentals = JSON.parse(JSON.stringify(activeRentals));
+        const newActiveRentals = {};
+        Object.keys(activeRentals).forEach((sell_trx_id) => {
+            newActiveRentals[activeRentals[sell_trx_id].card_id] = {
+                ...activeRentals[sell_trx_id],
+            };
+        });
+
         let numOfChanges = 0;
         let noMatch = 0;
 
@@ -105,7 +111,7 @@ const addInHiveCancelData = ({ activeRentals, hiveCancels }) => {
                 const hive_created_time = newInfo?.created_time;
                 if (hive_created_time > rental_date_time) {
                     // we need to update the activeRentalsObj
-                    newActiveRentals[sell_trx_id] = {
+                    newActiveRentals[card_id] = {
                         sell_trx_id: newInfo?.sell_trx_id,
                         buy_price: newInfo?.buy_price,
                         price_change_time: hive_created_time,
@@ -116,7 +122,7 @@ const addInHiveCancelData = ({ activeRentals, hiveCancels }) => {
                         ).getTime(),
                     };
                 } else {
-                    newActiveRentals[sell_trx_id] = {
+                    newActiveRentals[card_id] = {
                         sell_trx_id,
                         buy_price,
                         price_change_time: null,
@@ -129,7 +135,7 @@ const addInHiveCancelData = ({ activeRentals, hiveCancels }) => {
                 }
             } else {
                 noMatch = noMatch + 1;
-                newActiveRentals[sell_trx_id] = {
+                newActiveRentals[card_id] = {
                     sell_trx_id,
                     buy_price,
                     price_change_time: null,
@@ -308,15 +314,13 @@ const buildNewRentalDetailsObj = ({
         }
 
         // new active rentals is actually all listings
-        for (const [sell_trx_id, rental] of Object.entries(
-            newActiveRentalsObj
-        )) {
+        for (const [uid, rental] of Object.entries(newActiveRentalsObj)) {
             const {
                 buy_price,
                 price_change_time,
                 rental_created_time,
-                uid,
                 next_rental_payment_time,
+                sell_trx_id,
             } = rental;
 
             let rental_end_time;
@@ -373,6 +377,7 @@ const buildNewRentalDetailsObj = ({
                 last_rental_payment_time,
                 last_price_update_time: this_price_change_time,
                 last_sell_trx_id: sell_trx_id,
+                uid,
             };
             // we need to calc when the rental actually expires, need to see how many days ago the creation was
             // need to calculate the last_rental_payment_time, prob ditch the last_rental_payment
