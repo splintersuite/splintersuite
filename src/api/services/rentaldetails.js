@@ -11,7 +11,6 @@ const getRentalDetails = () => {
 };
 
 const updateRentalDetails = ({ data }) => {
-    console.log('/services/updateRentalDetails start');
     const userDataPath = app.getPath('userData');
     const fileName = 'listingdata.json';
     const detailsPath = path.join(userDataPath, fileName);

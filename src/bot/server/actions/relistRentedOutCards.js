@@ -213,7 +213,7 @@ const addActiveMarketIdsForRelisting = ({
             if (
                 listingPrice < 0.13 ||
                 (currentlyListed !== undefined &&
-                    currentlyListed?.count > 3 &&
+                    currentlyListed?.count >= 3 &&
                     currentlyListed?.avg < listingPrice)
             ) {
                 // console.log('currentlyListed', currentlyListed);

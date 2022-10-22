@@ -74,10 +74,6 @@ const startRentalBot = async ({
             activeListingsObj: activeListingsObject?.activeListingsObj,
         });
 
-        // console.log('rentalDetails', rentalDetails);
-        console.log('here');
-        process.exit();
-
         const groupedRentalListObj =
             await splinterlandsService.getAllGroupedRentalsByLevel();
 
@@ -126,8 +122,10 @@ const startRentalBot = async ({
                 collectionObj: collectionByLevelObjListedButNotRentedOut,
                 marketPrices,
                 groupedRentalListObj,
+                rentalDetails,
             }
         );
+
         const { relistingPriceForActiveMarketId } =
             await calculateRelistActiveRentalPrices({
                 collectionObj: collectionByLevelObjBeingRentedOut,
