@@ -87,6 +87,8 @@ const roundedDownDaysAgo = ({ pastTime }) => {
     try {
         const nowTime = new Date().getTime();
         const msInADay = 1000 * 60 * 60 * 24;
+        console.log('nowTime', nowTime);
+        console.log('pastTime', pastTime);
         const difference = nowTime - pastTime;
         const dividedFloat = difference / msInADay;
         const roundedDownDaysAgo = Math.floor(dividedFloat);

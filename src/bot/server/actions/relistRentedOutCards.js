@@ -142,17 +142,12 @@ const addActiveMarketIdsForRelisting = ({
             _gold = 'F';
         }
 
-        const now = new Date().getTime();
         const rentalDateInMs = new Date(rental_date).getTime();
-        if (rentalDateInMs + oneDayTime > now) {
-            // this is so we don't cancel a rental that hasn't lasted over 24 hours at least
-            const shouldNotRelistRental = ['T'];
-            return shouldNotRelistRental;
-        }
 
         const daysAgo = datesUtil.roundedDownDaysAgo({
             pastTime: rentalDateInMs,
         });
+
         if (daysAgo % 2 === 0) {
             // if it is even, we aren't close to it making sense to cancel, even if timer is 24 hours in the future.  No need to try and cancel here, once
             // days ago is a non even number, then we will have the cancel cycle coming up
