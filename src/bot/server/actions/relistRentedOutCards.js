@@ -133,6 +133,7 @@ const addActiveMarketIdsForRelisting = ({
             market_id,
             buy_price,
             rental_date,
+            next_rental_payment,
         } = card;
 
         let _gold = 'F';
@@ -144,11 +145,13 @@ const addActiveMarketIdsForRelisting = ({
 
         const rentalDateInMs = new Date(rental_date).getTime();
 
-        const daysAgo = datesUtil.roundedDownDaysAgo({
-            pastTime: rentalDateInMs,
-        });
+        // const daysAgo = datesUtil.roundedDownDaysAgo({
+        //     pastTime: rentalDateInMs,
+        // });
 
-        if (daysAgo % 2 === 0) {
+        const nrpTime = new Date(next_rental_payment).getTime();
+
+        if (((nrpTime - rentalDateInMs) / oneDayTime) % 2 === 1) {
             // if it is even, we aren't close to it making sense to cancel, even if timer is 24 hours in the future.  No need to try and cancel here, once
             // days ago is a non even number, then we will have the cancel cycle coming up
             const shouldNotRelistRental = ['T'];
