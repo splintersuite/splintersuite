@@ -8,7 +8,6 @@ const listingsService = require('../services/listings');
 const _ = require('lodash');
 const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
 const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';
-const datesUtil = require('../../util/dates');
 const oneDayTime = 1000 * 60 * 60 * 24 * 1;
 
 const calculateRelistActiveRentalPrices = async ({
@@ -145,10 +144,6 @@ const addActiveMarketIdsForRelisting = ({
 
         const rentalDateInMs = new Date(rental_date).getTime();
 
-        // const daysAgo = datesUtil.roundedDownDaysAgo({
-        //     pastTime: rentalDateInMs,
-        // });
-
         const nrpTime = new Date(next_rental_payment).getTime();
 
         if (((nrpTime - rentalDateInMs) / oneDayTime) % 2 === 1) {
@@ -219,6 +214,7 @@ const addActiveMarketIdsForRelisting = ({
         ) {
             const currentlyListed = listingDataByMarketKey[marketKey];
             if (
+                // TNT TODO: make the 0.13 a variable that we then get by a user setting
                 listingPrice < 0.13 ||
                 (currentlyListed !== undefined &&
                     currentlyListed?.count >= 3 &&

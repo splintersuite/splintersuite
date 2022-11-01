@@ -1,7 +1,5 @@
 'use strict';
 
-const { JsonInput } = require('@mantine/core');
-const datesUtil = require('../../util/dates');
 const hive = require('./hive');
 const _ = require('lodash');
 
@@ -218,9 +216,9 @@ const addInHiveRelistingData = ({ activeListingsObj, hiveRelistings }) => {
                     //         newActiveListingsObj[uid]
                     //     )}`
                     // );
-                    throw new Error(
-                        `checking newActiveListingsObj after hive_created_time was not greater than listing_created_time`
-                    );
+                    // throw new Error(
+                    //     `checking newActiveListingsObj after hive_created_time was not greater than listing_created_time`
+                    // );
                 }
             } else {
                 noMatch = noMatch + 1;
@@ -322,6 +320,7 @@ const buildNewRentalDetailsObj = ({
                 next_rental_payment_time,
                 sell_trx_id,
             } = rental;
+            // rental: {"sell_trx_id":"bb8278e009541da24c62bb720e30598876dd0c3b-0","buy_price":"0.564","price_change_time":null,"rental_created_time":1666824021000,"uid":"C7-362-U28MWK4ZE8","next_rental_payment_time":1667342421000}
 
             let rental_end_time;
             const nowTime = new Date().getTime();
@@ -330,31 +329,18 @@ const buildNewRentalDetailsObj = ({
                 // means not even 24 hours have passed since beginning of rental contract, if we cancelled its 2 days after start of contract.
                 rental_end_time = rental_created_time + twoDayTime;
             }
-            const daysAgo = datesUtil.roundedDownDaysAgo({
-                pastTime: rental_created_time,
-            });
 
-            if (daysAgo % 2 === 0) {
-                // its been at least a day, and if this is even (therefore equation solves to 0), then we need to add 2 days to the last_rental_payment
-                // or just add 1 more day to the next_rental_payment
+            if (
+                ((next_rental_payment_time - rental_created_time) /
+                    oneDayTime) %
+                    2 ===
+                1
+            ) {
+                // we need to add a day to the rental_end_time to account for the fact that the rental contracts last 2 days
                 rental_end_time = next_rental_payment_time + oneDayTime;
-                // console.log(
-                //     `rental_end_time: ${rental_end_time} is date: ${new Date(
-                //         rental_end_time
-                //     )}, that is also next_rental_payment_time: ${next_rental_payment_time} date: ${new Date(
-                //         next_rental_payment_time
-                //     )} plus a day to get when rental ends`
-                // );
             } else {
-                // otherwise, add 24 hours to the last_rental_payment to get (or just assume its the next rental payment!)
+                // otherwise, next_rental_payment is when the contract ends, unless there is further payment (but can still be cancelled up until then)
                 rental_end_time = next_rental_payment_time;
-                // console.log(
-                //     `rental_end_time: ${rental_end_time} is date: ${new Date(
-                //         rental_end_time
-                //     )}, that is also next_rental_payment_time: ${next_rental_payment_time} date: ${new Date(
-                //         next_rental_payment_time
-                //     )}`
-                // );
             }
 
             let this_price_change_time = price_change_time;
