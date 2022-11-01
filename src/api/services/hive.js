@@ -17,6 +17,7 @@ const createRentals = async (cards) => {
     const res = await client.broadcast.json(
         {
             required_posting_auths: [username],
+            // required_posting_auths: ['splintersuite'],
             required_auths: [],
             id: 'sm_market_list',
             json: JSON.stringify({
@@ -41,6 +42,7 @@ const updateRentals = async (cards) => {
     const res = await client.broadcast.json(
         {
             required_posting_auths: [username],
+            // required_posting_auths: ['splintersuite'],
             required_auths: [],
             id: 'sm_update_rental_price',
             json: JSON.stringify({
@@ -64,6 +66,7 @@ const relistActiveRentals = async (cards) => {
     const res = await client.broadcast.json(
         {
             required_posting_auths: [username],
+            // required_posting_auths: ['splintersuite'],
             required_auths: [],
             id: 'sm_update_rental_price',
             json: JSON.stringify({
@@ -87,6 +90,7 @@ const deleteRentals = async (cards) => {
     const res = await client.broadcast.json(
         {
             required_posting_auths: [username],
+            // required_posting_auths: ['splintersuite'],
             required_auths: [],
             id: 'sm_market_cancel_rental',
             json: JSON.stringify({
