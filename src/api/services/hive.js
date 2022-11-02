@@ -24,8 +24,6 @@ const createRentals = async (cards) => {
                 type: 'rent',
                 fee: 500,
                 agent: 'splintersuite',
-                required_posting_auths: [username],
-                required_auths: [],
             }),
         },
         key
@@ -47,8 +45,6 @@ const updateRentals = async (cards) => {
                 items: cards,
                 agent: 'splintersuite',
                 suite_action: 'relist',
-                required_posting_auths: [username],
-                required_auths: [],
             }),
         },
         key
@@ -70,8 +66,6 @@ const relistActiveRentals = async (cards) => {
                 items: cards,
                 agent: 'splintersuite',
                 suite_action: 'cancel',
-                required_posting_auths: [username],
-                required_auths: [],
             }),
         },
         key
@@ -93,8 +87,6 @@ const deleteRentals = async (cards) => {
                 items: cards,
                 agent: 'splintersuite',
                 suite_action: 'cancel',
-                required_posting_auths: [username],
-                required_auths: [],
             }),
         },
         key
