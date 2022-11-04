@@ -4,8 +4,24 @@ import userService from '../services/user';
 const login = async (event, payload) => {
     const { username, key } = payload;
 
-    await userService.setKey(username, key);
-    await userService.setUsername(username);
+    if (!key) {
+        // login with delegation authority
+        await userService.setUsername(username);
+        // check endpoint
+        const isDegelated = await userService.checkDelegationAuthority(
+            username
+        );
+        if (!isDegelated) {
+            return util.error('NOT_DELEGATED');
+        }
+    } else {
+        const isValidKey = await userService.isValidKey(key);
+        if (!isValidKey) {
+            return util.error('INVALID_KEY');
+        }
+        await userService.setKey(username, key);
+        await userService.setUsername(username);
+    }
 
     if (username) {
         await userService.fetchUser({ username });

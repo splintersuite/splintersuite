@@ -46,9 +46,9 @@ const config = {
         },
     ],
     plugins: [
-        [
-            '@electron-forge/plugin-webpack',
-            {
+        {
+            name: '@electron-forge/plugin-webpack',
+            config: {
                 mainConfig: './webpack.main.config.js',
                 devContentSecurityPolicy:
                     "connect-src 'self' https://api2.splinterlands.com 'unsafe-eval'",
@@ -70,7 +70,7 @@ const config = {
                     ],
                 },
             },
-        ],
+        },
     ],
 };
 

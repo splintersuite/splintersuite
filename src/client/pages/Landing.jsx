@@ -61,7 +61,7 @@ const Landing = () => {
             {username !== '' && <Navigate to="/app" />}
 
             <Box>
-                <Heading>Log In</Heading>
+                <Heading>Log In With Posting Key</Heading>
                 <Form onSubmit={form.onSubmit(handleSubmit)}>
                     <StyledLabel htmlFor={'username'}>Username</StyledLabel>
                     <Input
@@ -78,6 +78,24 @@ const Landing = () => {
                         style={{ width: '256px' }}
                         placeholder="1A30DM9L4JK5"
                         {...form.getInputProps('key')}
+                    />
+                    <Button
+                        type="submit"
+                        style={{ marginTop: '2em', alignSelf: 'flex-end' }}
+                    >
+                        Login
+                    </Button>
+                </Form>
+            </Box>
+            <Box>
+                <Heading>Log In With Authority Delegation</Heading>
+                <Form onSubmit={form.onSubmit(handleSubmit)}>
+                    <StyledLabel htmlFor={'username'}>Username</StyledLabel>
+                    <Input
+                        label="Username"
+                        style={{ width: '256px' }}
+                        placeholder="Username"
+                        {...form.getInputProps('username')}
                     />
                     <Button
                         type="submit"

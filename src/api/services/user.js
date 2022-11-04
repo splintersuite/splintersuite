@@ -88,6 +88,14 @@ const getStats = () => {
     return store.get('user.stats');
 };
 
+const checkDelegationAuthority = async (username) => {
+    return await hiveService.isPostingAuthDelegated({ username });
+};
+
+const isValidKey = async (key) => {
+    return await hiveService.isValidPostingKey(key);
+};
+
 const fetchUser = async (username) => {
     const { data } = await axios.get(
         `${process.env.API_URL}/api/users/${username}`
@@ -116,4 +124,6 @@ export default {
     fetchUser,
     getId,
     clear,
+    checkDelegationAuthority,
+    isValidKey,
 };
