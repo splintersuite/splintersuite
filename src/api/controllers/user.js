@@ -7,7 +7,6 @@ const login = async (event, payload) => {
     if (!key) {
         // login with delegation authority
         await userService.setUsername(username);
-        // check endpoint
         const isDegelated = await userService.checkDelegationAuthority(
             username
         );
