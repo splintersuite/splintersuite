@@ -1,22 +1,24 @@
 import util from '../util';
 import userService from '../services/user';
+const NOT_DELEGATED = 'not_delegated';
+const INVALID_POSTING_KEY = 'invalid_posting_key';
 
 const login = async (event, payload) => {
     const { username, key } = payload;
 
     if (!key) {
         // login with delegation authority
-        await userService.setUsername(username);
         const isDegelated = await userService.checkDelegationAuthority(
             username
         );
         if (!isDegelated) {
-            return util.error('NOT_DELEGATED');
+            return util.error(NOT_DELEGATED);
         }
+        await userService.setUsername(username);
     } else {
         const isValidKey = await userService.isValidKey(key);
         if (!isValidKey) {
-            return util.error('INVALID_KEY');
+            return util.error(INVALID_POSTING_KEY);
         }
         await userService.setKey(username, key);
         await userService.setUsername(username);

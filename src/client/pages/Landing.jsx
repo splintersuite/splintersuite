@@ -8,6 +8,7 @@ import Page from '../components/Page.jsx';
 import Label from '../components/Label.jsx';
 import hero from '../assets/images/hero.jpg';
 import { useUser } from '../contexts/UserContext.jsx';
+import Snackbar from '../components/Snackbar.jsx';
 
 const PageBackground = styled(Page)`
     background-image: url(${hero});
@@ -40,8 +41,11 @@ const StyledLabel = styled(Label)`
     margin-bottom: ${({ theme }) => theme.space(0.5)};
 `;
 
+const NOT_DELEGATED = 'not_delegated';
+const INVALID_POSTING_KEY = 'invalid_posting_key';
+
 const Landing = () => {
-    const { username, handleLogin } = useUser();
+    const { username, handleLogin, alert, handleCloseAlert } = useUser();
     const navigate = useNavigate();
 
     const form = useForm({
@@ -52,14 +56,18 @@ const Landing = () => {
     });
 
     const handleSubmit = async (values) => {
-        await handleLogin(values);
-        navigate('/app');
+        const res = await handleLogin(values);
+        if (res?.code === 1) {
+            navigate('/app');
+        }
     };
 
     return (
         <PageBackground>
-            {username !== '' && <Navigate to="/app" />}
-
+            {username !== '' && alert !== '' ? <Navigate to="/app" /> : null}
+            {alert !== '' ? (
+                <Snackbar alert={alert} handleCloseAlert={handleCloseAlert} />
+            ) : null}
             <Box>
                 <Heading>Log In With Posting Key</Heading>
                 <Form onSubmit={form.onSubmit(handleSubmit)}>

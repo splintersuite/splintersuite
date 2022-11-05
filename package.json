@@ -57,7 +57,7 @@
         "@mantine/core": "^4.2.8",
         "@mantine/form": "^4.2.8",
         "@mantine/hooks": "^4.2.8",
-        "@mantine/notifications": "^4.2.9",
+        "@mantine/notifications": "^4.2.12",
         "axios": "^0.27.2",
         "chart.js": "^3.8.0",
         "crypto": "^1.0.1",

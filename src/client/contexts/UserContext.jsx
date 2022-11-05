@@ -6,6 +6,7 @@ import hooks from '../hooks';
 const initialState = {
     username: '',
     invoices: [],
+    alert: '',
 };
 
 const ONE_HOUR = 3600000;
@@ -19,6 +20,7 @@ export const UserProvider = (props) => {
     const [username, setUsername] = useState('');
     const [invoices, setInvoices] = useState(initialState.invoices);
     const [userLoading, setUserLoading] = useState(true);
+    const [alert, setAlert] = useState('');
 
     const getUser = async () => {
         const res = await window.api.user.get();
@@ -39,6 +41,9 @@ export const UserProvider = (props) => {
         const res = await window.api.user.login({ username, key });
         if (res?.code === 1) {
             setUsername(username);
+            setAlert('');
+        } else if (res?.code === 0) {
+            setAlert(res.error);
         }
         await getUser();
         return res;
@@ -60,6 +65,8 @@ export const UserProvider = (props) => {
         }
     };
 
+    const handleCloseAlert = () => setAlert('');
+
     useEffect(() => {
         getUser().then(() => {
             setUserLoading(false);
@@ -77,10 +84,12 @@ export const UserProvider = (props) => {
                 user,
                 username,
                 invoices,
+                alert,
                 userLoading,
                 handleLogout,
                 handleLogin,
                 handleConfirmInvoice,
+                handleCloseAlert,
             }}
         >
             {props.children}
