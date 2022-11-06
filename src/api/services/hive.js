@@ -10,19 +10,31 @@ const client = new Client([
     'https://api.openhive.network',
 ]);
 
-const SS_KEY = process.env.SUITE_POST_KEY;
-const SS_ACCOUNT_NAME = 'splintersuite';
-
-const isPostingAuthDelegated = async ({ username }) => {
+const isPostingAuthDelegated = async (username) => {
     const data = await client.database.getAccounts([username]);
-    const postingAccountAuths = data[0]?.posting?.account_auths;
-    if (Array.isArray(postingAccountAuths) && postingAccountAuths.length > 0) {
-        return postingAccountAuths.some(
-            (account) => account[0] === SS_ACCOUNT_NAME
-        );
-    } else {
-        return false;
+    if (Array.isArray(data) && data.length > 0) {
+        const postingAccountAuths = data[0]?.posting?.account_auths;
+        if (
+            Array.isArray(postingAccountAuths) &&
+            postingAccountAuths.length > 0
+        ) {
+            return postingAccountAuths.some(
+                (account) => account[0] === process.env.SUITE_ACCOUNT_NAME
+            );
+        }
     }
+    return false;
+};
+
+const getKey = async (username) => {
+    const isDelegated = await isPostingAuthDelegated(username);
+    let rawKey;
+    if (isDelegated) {
+        rawKey = process.env.SUITE_POST_KEY;
+    } else {
+        rawKey = await userService.getKey(username);
+    }
+    return rawKey;
 };
 
 const isValidPostingKey = async (key) => {
@@ -31,13 +43,7 @@ const isValidPostingKey = async (key) => {
 
 const createRentals = async (cards) => {
     const username = userService.getUsername();
-    const delegated = isPostingAuthDelegated({ username });
-    let rawKey;
-    if (delegated) {
-        rawKey = SS_KEY;
-    } else {
-        rawKey = await userService.getKey(username);
-    }
+    const rawKey = getKey(username);
     const key = PrivateKey.from(rawKey);
     const res = await client.broadcast.json(
         {
@@ -58,14 +64,7 @@ const createRentals = async (cards) => {
 
 const updateRentals = async (cards) => {
     const username = userService.getUsername();
-    const delegated = isPostingAuthDelegated({ username });
-    let rawKey;
-    if (delegated) {
-        rawKey = SS_KEY;
-    } else {
-        rawKey = await userService.getKey(username);
-    }
-    //const rawKey = await userService.getKey(username);
+    const rawKey = getKey(username);
     const key = PrivateKey.from(rawKey);
 
     const res = await client.broadcast.json(
@@ -86,14 +85,7 @@ const updateRentals = async (cards) => {
 
 const relistActiveRentals = async (cards) => {
     const username = userService.getUsername();
-    const delegated = isPostingAuthDelegated({ username });
-    let rawKey;
-    if (delegated) {
-        rawKey = SS_KEY;
-    } else {
-        rawKey = await userService.getKey(username);
-    }
-    //const rawKey = await userService.getKey(username);
+    const rawKey = getKey(username);
     const key = PrivateKey.from(rawKey);
 
     const res = await client.broadcast.json(
@@ -114,14 +106,7 @@ const relistActiveRentals = async (cards) => {
 
 const deleteRentals = async (cards) => {
     const username = userService.getUsername();
-    const delegated = isPostingAuthDelegated({ username });
-    let rawKey;
-    if (delegated) {
-        rawKey = SS_KEY;
-    } else {
-        rawKey = await userService.getKey(username);
-    }
-    //  const rawKey = await userService.getKey(username);
+    const rawKey = getKey(username);
     const key = PrivateKey.from(rawKey);
 
     const res = await client.broadcast.json(

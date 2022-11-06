@@ -28,6 +28,7 @@ const Loading = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        console.log('userloading here', userLoading, username);
         if (!userLoading) {
             if (username !== '') {
                 navigate('/app');

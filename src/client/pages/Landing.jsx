@@ -3,12 +3,13 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { Button, Input } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { showNotification } from '@mantine/notifications';
 
+import { errors, alerts } from '../util/constants';
 import Page from '../components/Page.jsx';
 import Label from '../components/Label.jsx';
 import hero from '../assets/images/hero.jpg';
 import { useUser } from '../contexts/UserContext.jsx';
-import Snackbar from '../components/Snackbar.jsx';
 
 const PageBackground = styled(Page)`
     background-image: url(${hero});
@@ -42,7 +43,7 @@ const StyledLabel = styled(Label)`
 `;
 
 const Landing = () => {
-    const { username, handleLogin, alert, handleResetAlert } = useUser();
+    const { username, handleLogin } = useUser();
     const navigate = useNavigate();
 
     const form = useForm({
@@ -56,15 +57,22 @@ const Landing = () => {
         const res = await handleLogin(values);
         if (res?.code === 1) {
             navigate('/app');
+        } else if (typeof res.error === 'string') {
+            showNotification({
+                title: 'Error',
+                message:
+                    res.error === errors.NOT_DELEGATED
+                        ? alerts.delegation
+                        : alerts.postingKey,
+                color: 'red',
+                autoClose: false,
+            });
         }
     };
 
     return (
         <PageBackground>
-            {username !== '' && alert !== '' ? <Navigate to="/app" /> : null}
-            {alert !== '' ? (
-                <Snackbar alert={alert} handleResetAlert={handleResetAlert} />
-            ) : null}
+            {username !== '' && <Navigate to="/app" />}
             <Box>
                 <Heading>Log In With Posting Key</Heading>
                 <Form onSubmit={form.onSubmit(handleSubmit)}>
