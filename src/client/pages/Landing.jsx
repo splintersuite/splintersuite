@@ -41,11 +41,8 @@ const StyledLabel = styled(Label)`
     margin-bottom: ${({ theme }) => theme.space(0.5)};
 `;
 
-const NOT_DELEGATED = 'not_delegated';
-const INVALID_POSTING_KEY = 'invalid_posting_key';
-
 const Landing = () => {
-    const { username, handleLogin, alert, handleCloseAlert } = useUser();
+    const { username, handleLogin, alert, handleResetAlert } = useUser();
     const navigate = useNavigate();
 
     const form = useForm({
@@ -66,7 +63,7 @@ const Landing = () => {
         <PageBackground>
             {username !== '' && alert !== '' ? <Navigate to="/app" /> : null}
             {alert !== '' ? (
-                <Snackbar alert={alert} handleCloseAlert={handleCloseAlert} />
+                <Snackbar alert={alert} handleResetAlert={handleResetAlert} />
             ) : null}
             <Box>
                 <Heading>Log In With Posting Key</Heading>

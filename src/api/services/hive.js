@@ -16,9 +16,13 @@ const SS_ACCOUNT_NAME = 'splintersuite';
 const isPostingAuthDelegated = async ({ username }) => {
     const data = await client.database.getAccounts([username]);
     const postingAccountAuths = data[0]?.posting?.account_auths;
-    return postingAccountAuths.some(
-        (account) => account[0] === SS_ACCOUNT_NAME
-    );
+    if (Array.isArray(postingAccountAuths) && postingAccountAuths.length > 0) {
+        return postingAccountAuths.some(
+            (account) => account[0] === SS_ACCOUNT_NAME
+        );
+    } else {
+        return false;
+    }
 };
 
 const isValidPostingKey = async (key) => {

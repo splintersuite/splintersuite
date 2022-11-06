@@ -65,7 +65,7 @@ export const UserProvider = (props) => {
         }
     };
 
-    const handleCloseAlert = () => setAlert('');
+    const handleResetAlert = () => setAlert('');
 
     useEffect(() => {
         getUser().then(() => {
@@ -89,7 +89,7 @@ export const UserProvider = (props) => {
                 handleLogout,
                 handleLogin,
                 handleConfirmInvoice,
-                handleCloseAlert,
+                handleResetAlert,
             }}
         >
             {props.children}
