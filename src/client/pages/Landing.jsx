@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import styled from '@emotion/styled';
-import { Button, Input } from '@mantine/core';
+import { Button, Checkbox, Input } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
+import clsx from 'clsx';
 
 import { errors, alerts } from '../util/constants';
 import Page from '../components/Page.jsx';
@@ -28,6 +29,14 @@ const Box = styled.div`
     text-align: center;
 `;
 
+const LabelBox = styled.div`
+    display: flex;
+    justify-content: flex-start;
+    max-width: 456px;
+    align-items: center;
+    margin-top: 16px;
+`;
+
 const Heading = styled.h1`
     font-size: 32px;
     margin-bottom: ${({ theme }) => theme.space(3)};
@@ -42,9 +51,16 @@ const StyledLabel = styled(Label)`
     margin-bottom: ${({ theme }) => theme.space(0.5)};
 `;
 
+const styles = (theme) => ({
+    hidden: {
+        display: 'none',
+    },
+});
+
 const Landing = () => {
     const { username, handleLogin } = useUser();
     const navigate = useNavigate();
+    const [checked, setChecked] = useState(false);
 
     const form = useForm({
         initialValues: {
@@ -70,11 +86,13 @@ const Landing = () => {
         }
     };
 
+    console.log('checked', checked);
+
     return (
         <PageBackground>
             {username !== '' && <Navigate to="/app" />}
             <Box>
-                <Heading>Log In With Posting Key</Heading>
+                <Heading>Log In</Heading>
                 <Form onSubmit={form.onSubmit(handleSubmit)}>
                     <StyledLabel htmlFor={'username'}>Username</StyledLabel>
                     <Input
@@ -83,33 +101,33 @@ const Landing = () => {
                         placeholder="Username"
                         {...form.getInputProps('username')}
                     />
-                    <StyledLabel style={{ marginTop: '16px' }} htmlFor={'key'}>
-                        Posting Key
-                    </StyledLabel>
-                    <Input
-                        label="Posting Key"
-                        style={{ width: '256px' }}
-                        placeholder="1A30DM9L4JK5"
-                        {...form.getInputProps('key')}
-                    />
-                    <Button
-                        type="submit"
-                        style={{ marginTop: '2em', alignSelf: 'flex-end' }}
-                    >
-                        Login
-                    </Button>
-                </Form>
-            </Box>
-            <Box>
-                <Heading>Log In With Authority Delegation</Heading>
-                <Form onSubmit={form.onSubmit(handleSubmit)}>
-                    <StyledLabel htmlFor={'username'}>Username</StyledLabel>
-                    <Input
-                        label="Username"
-                        style={{ width: '256px' }}
-                        placeholder="Username"
-                        {...form.getInputProps('username')}
-                    />
+                    <div className={clsx({ hidden: checked })}>
+                        <StyledLabel
+                            style={{ marginTop: '16px' }}
+                            htmlFor={'key'}
+                        >
+                            Posting Key
+                        </StyledLabel>
+                        <Input
+                            label="Posting Key"
+                            style={{ width: '256px' }}
+                            placeholder="1A30DM9L4JK5"
+                            {...form.getInputProps('key')}
+                        />
+                    </div>
+                    <LabelBox>
+                        <Checkbox
+                            checked={checked}
+                            onChange={(event) =>
+                                setChecked(event.currentTarget.checked)
+                            }
+                            color="violet"
+                            style={{ marginRight: '16px' }}
+                        />
+                        <Label htmlFor="checkbox">
+                            Login With Authority Delegtion
+                        </Label>
+                    </LabelBox>
                     <Button
                         type="submit"
                         style={{ marginTop: '2em', alignSelf: 'flex-end' }}
