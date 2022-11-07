@@ -42,9 +42,10 @@ const isValidPostingKey = async (key) => {
 };
 
 const createRentals = async (cards) => {
-    const username = userService.getUsername();
-    const rawKey = getKey(username);
+    const username = await userService.getUsername();
+    const rawKey = await getKey(username);
     const key = PrivateKey.from(rawKey);
+
     const res = await client.broadcast.json(
         {
             required_posting_auths: [username],
@@ -63,8 +64,8 @@ const createRentals = async (cards) => {
 };
 
 const updateRentals = async (cards) => {
-    const username = userService.getUsername();
-    const rawKey = getKey(username);
+    const username = await userService.getUsername();
+    const rawKey = await getKey(username);
     const key = PrivateKey.from(rawKey);
 
     const res = await client.broadcast.json(
@@ -84,8 +85,8 @@ const updateRentals = async (cards) => {
 };
 
 const relistActiveRentals = async (cards) => {
-    const username = userService.getUsername();
-    const rawKey = getKey(username);
+    const username = await userService.getUsername();
+    const rawKey = await getKey(username);
     const key = PrivateKey.from(rawKey);
 
     const res = await client.broadcast.json(
@@ -105,8 +106,8 @@ const relistActiveRentals = async (cards) => {
 };
 
 const deleteRentals = async (cards) => {
-    const username = userService.getUsername();
-    const rawKey = getKey(username);
+    const username = await userService.getUsername();
+    const rawKey = await getKey(username);
     const key = PrivateKey.from(rawKey);
 
     const res = await client.broadcast.json(
