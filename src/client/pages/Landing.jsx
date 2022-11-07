@@ -111,9 +111,10 @@ const Landing = () => {
                     <LabelBox>
                         <Checkbox
                             checked={checked}
-                            onChange={(event) =>
-                                setChecked(event.currentTarget.checked)
-                            }
+                            onChange={(event) => {
+                                setChecked(event.currentTarget.checked);
+                                form.setFieldValue('key', '');
+                            }}
                             color="violet"
                             style={{ marginRight: '16px' }}
                         />
