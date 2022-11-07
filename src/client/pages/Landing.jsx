@@ -4,7 +4,6 @@ import styled from '@emotion/styled';
 import { Button, Checkbox, Input } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
-import clsx from 'clsx';
 
 import { errors, alerts } from '../util/constants';
 import Page from '../components/Page.jsx';
@@ -51,12 +50,6 @@ const StyledLabel = styled(Label)`
     margin-bottom: ${({ theme }) => theme.space(0.5)};
 `;
 
-const styles = (theme) => ({
-    hidden: {
-        display: 'none',
-    },
-});
-
 const Landing = () => {
     const { username, handleLogin } = useUser();
     const navigate = useNavigate();
@@ -86,8 +79,6 @@ const Landing = () => {
         }
     };
 
-    console.log('checked', checked);
-
     return (
         <PageBackground>
             {username !== '' && <Navigate to="/app" />}
@@ -101,20 +92,22 @@ const Landing = () => {
                         placeholder="Username"
                         {...form.getInputProps('username')}
                     />
-                    <div className={clsx({ hidden: checked })}>
-                        <StyledLabel
-                            style={{ marginTop: '16px' }}
-                            htmlFor={'key'}
-                        >
-                            Posting Key
-                        </StyledLabel>
-                        <Input
-                            label="Posting Key"
-                            style={{ width: '256px' }}
-                            placeholder="1A30DM9L4JK5"
-                            {...form.getInputProps('key')}
-                        />
-                    </div>
+                    {!checked && (
+                        <div>
+                            <StyledLabel
+                                style={{ marginTop: '16px' }}
+                                htmlFor={'key'}
+                            >
+                                Posting Key
+                            </StyledLabel>
+                            <Input
+                                label="Posting Key"
+                                style={{ width: '256px' }}
+                                placeholder="1A30DM9L4JK5"
+                                {...form.getInputProps('key')}
+                            />
+                        </div>
+                    )}
                     <LabelBox>
                         <Checkbox
                             checked={checked}
