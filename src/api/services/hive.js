@@ -37,8 +37,15 @@ const getKey = async (username) => {
     return rawKey;
 };
 
-const isValidPostingKey = async (key) => {
-    return await ecc.isValidPrivate(key);
+const isValidPostingKey = async (key, username) => {
+    if (!ecc.isValidPrivate(key)) {
+        return false;
+    }
+    const pub = ecc.privateToPublic(key, 'STM');
+    const data = await client.database.getAccounts([username]);
+
+    const postAcctKeyAuths = data[0]?.posting?.key_auths;
+    return postAcctKeyAuths.some((account) => account[0] === pub);
 };
 
 const createRentals = async (cards) => {
