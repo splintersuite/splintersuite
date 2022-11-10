@@ -14,7 +14,7 @@ const login = async (event, payload) => {
         }
         await userService.setUsername(username);
     } else {
-        const isValidKey = await hiveService.isValidPostingKey(key);
+        const isValidKey = await hiveService.isValidPostingKey(key, username);
         if (!isValidKey) {
             return util.error(INVALID_POSTING_KEY);
         }
