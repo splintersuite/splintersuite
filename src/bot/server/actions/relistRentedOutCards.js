@@ -217,29 +217,29 @@ const addActiveMarketIdsForRelisting = ({
                 // TNT TODO: make the 0.13 a variable that we then get by a user setting
                 listingPrice < 0.13 ||
                 (currentlyListed !== undefined &&
-                    currentlyListed?.count >= 3 &&
-                    currentlyListed?.avg < listingPrice)
+                    currentlyListed?.count >= 0 &&
+                    buy_price > listingPrice * 0.5)
             ) {
                 // console.log('currentlyListed', currentlyListed);
                 // console.log('card here', card);
                 const shouldNotRelistRental = ['N'];
                 return shouldNotRelistRental;
-            } else {
-                const rentalRelistingPriceForMarketId = [
-                    market_id,
-                    parseFloat(listingPrice),
-                ];
-
-                if (
-                    !rentalRelistingPriceForMarketId ||
-                    !rentalRelistingPriceForMarketId[0] ||
-                    !rentalRelistingPriceForMarketId[1]
-                ) {
-                    const rentalNotFound = ['E', market_id];
-                    return rentalNotFound;
-                }
-                return rentalRelistingPriceForMarketId;
             }
+
+            const rentalRelistingPriceForMarketId = [
+                market_id,
+                parseFloat(listingPrice),
+            ];
+
+            if (
+                !rentalRelistingPriceForMarketId ||
+                !rentalRelistingPriceForMarketId[0] ||
+                !rentalRelistingPriceForMarketId[1]
+            ) {
+                const rentalNotFound = ['E', market_id];
+                return rentalNotFound;
+            }
+            return rentalRelistingPriceForMarketId;
         } else {
             const shouldNotRelistRental = ['N'];
             return shouldNotRelistRental;

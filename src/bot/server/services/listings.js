@@ -62,14 +62,14 @@ const getListingPrice = ({
         ) {
             if (daysTillEOS < 11) {
                 return _.max([
-                    bests.bestMid + 1 * openTrades?.stdDev,
-                    bests.bestMid + 1 * tradesDuringPeriod?.stdDev,
+                    bests.bestMid + 0.25 * openTrades?.stdDev,
+                    bests.bestMid + 0.25 * tradesDuringPeriod?.stdDev,
                     lowestListingPrice * 0.99,
                 ]);
             } else {
                 return _.max([
-                    bests.bestMid + 0.5 * openTrades?.stdDev,
-                    bests.bestMid + 0.5 * tradesDuringPeriod?.stdDev,
+                    bests.bestMid + 0.25 * openTrades?.stdDev,
+                    bests.bestMid + 0.25 * tradesDuringPeriod?.stdDev,
                     lowestListingPrice * 0.99,
                 ]);
             }
