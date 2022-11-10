@@ -21,6 +21,7 @@ window.api.bot.start(async (event) => {
     // Get stats
     // ------------------------------------
     let numListed = 0;
+    let totalListings = 0;
     const startedAt = moment().format();
     const duration = !Number.isFinite(util.periodToMs(settings.dailyRelistings))
         ? util.periodToMs(1)
@@ -56,6 +57,7 @@ window.api.bot.start(async (event) => {
                 nextBotLoopTime,
             });
 
+        numListed = 0;
         // ---
         // List, relist, cancel
         // ------------------------------------
@@ -90,6 +92,8 @@ window.api.bot.start(async (event) => {
             }
         }
 
+        totalListings += numListed;
+
         listingsNum = numListed - listingsNum;
         window.api.bot.log({
             message: `Relistings: ${listingsNum}`,
@@ -112,6 +116,7 @@ window.api.bot.start(async (event) => {
         window.api.bot.log({
             message: `Relisted Active Rentals: ${numListed}`,
         });
+        totalListings += numListed;
 
         listingsNum = 0;
         hiveTransactions = 0;
@@ -123,7 +128,7 @@ window.api.bot.start(async (event) => {
             stats: {
                 startedAt,
                 endedAt: moment().format(),
-                numListed,
+                numListed: totalListings,
             },
         });
         await window.api.bot.updateLoading({ isLoading: false });
@@ -152,7 +157,7 @@ window.api.bot.start(async (event) => {
         stats: {
             startedAt,
             endedAt: moment().format(),
-            numListed,
+            numListed: totalListings,
         },
     });
 });

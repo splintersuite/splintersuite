@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import styled from '@emotion/styled';
-import { Button, Checkbox, Input } from '@mantine/core';
+import { Button, Checkbox, Input, Anchor } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
+// import { shell } from 'electron';
 
 import { errors, alerts } from '../util/constants';
 import Page from '../components/Page.jsx';
@@ -50,6 +51,15 @@ const StyledLabel = styled(Label)`
     margin-bottom: ${({ theme }) => theme.space(0.5)};
 `;
 
+const StyledAnchor = styled(Anchor)`
+    display: flex;
+    font-weight: bold;
+    font-size: 18px;
+    opacity: 1;
+    margin-left: 6px;
+    text-decoration: underline;
+`;
+
 const Landing = () => {
     const { username, handleLogin } = useUser();
     const navigate = useNavigate();
@@ -88,7 +98,7 @@ const Landing = () => {
                     <StyledLabel htmlFor={'username'}>Username</StyledLabel>
                     <Input
                         label="Username"
-                        style={{ width: '256px' }}
+                        style={{ width: '282px' }}
                         placeholder="Username"
                         {...form.getInputProps('username')}
                     />
@@ -102,8 +112,8 @@ const Landing = () => {
                             </StyledLabel>
                             <Input
                                 label="Posting Key"
-                                style={{ width: '256px' }}
-                                placeholder="1A30DM9L4JK5"
+                                style={{ width: '282px' }}
+                                placeholder="1A30DM9L4JK5..."
                                 {...form.getInputProps('key')}
                             />
                         </div>
@@ -118,9 +128,14 @@ const Landing = () => {
                             color="violet"
                             style={{ marginRight: '16px' }}
                         />
-                        <Label htmlFor="checkbox">
-                            Login With Authority Delegtion
-                        </Label>
+                        <Label htmlFor="checkbox">Login With </Label>
+                        <StyledAnchor
+                            onClick={(event) => {
+                                window.api.user.openBlog();
+                            }}
+                        >
+                            Authority Delegation
+                        </StyledAnchor>
                     </LabelBox>
                     <Button
                         type="submit"

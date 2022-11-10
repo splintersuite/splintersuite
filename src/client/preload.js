@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld('api', {
         login: (payload) => ipcRenderer.invoke('user:login', payload),
         logout: () => ipcRenderer.invoke('user:logout'),
         get: () => ipcRenderer.invoke('user:get'),
+        openBlog: () => ipcRenderer.invoke('user:openBlog'),
     },
     bot: {
         start: () => ipcRenderer.invoke('bot:start'),

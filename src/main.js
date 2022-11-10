@@ -59,6 +59,10 @@ app.on('ready', () => {
         middlewareWrapper(user.logout, 'user:logout')
     );
     ipcMain.handle('user:get', middlewareWrapper(user.get, 'user:get'));
+    ipcMain.handle('user:openBlog', (event, arg) => {
+        event.returnValue = 'Message received!';
+        require('electron').shell.openExternal(`https://www.google.com/`);
+    });
 
     ipcMain.handle('bot:start', (event) => {
         middlewareWrapper(bot.start, 'bot:start')(event);
