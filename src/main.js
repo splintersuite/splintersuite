@@ -61,7 +61,9 @@ app.on('ready', () => {
     ipcMain.handle('user:get', middlewareWrapper(user.get, 'user:get'));
     ipcMain.handle('user:openBlog', (event, arg) => {
         event.returnValue = 'Message received!';
-        require('electron').shell.openExternal(`https://www.google.com/`);
+        require('electron').shell.openExternal(
+            `https://peakd.com/splinterlands/@hackinhukk/using-splintersuite-without-a-posting-key#@splinterboost/7608900973`
+        );
     });
 
     ipcMain.handle('bot:start', (event) => {
