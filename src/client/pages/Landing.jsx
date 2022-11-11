@@ -4,7 +4,6 @@ import styled from '@emotion/styled';
 import { Button, Checkbox, Input, Anchor } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
-// import { shell } from 'electron';
 
 import { errors, alerts } from '../util/constants';
 import Page from '../components/Page.jsx';

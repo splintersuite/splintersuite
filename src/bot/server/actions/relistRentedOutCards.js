@@ -217,8 +217,8 @@ const addActiveMarketIdsForRelisting = ({
                 // TNT TODO: make the 0.13 a variable that we then get by a user setting
                 listingPrice < 0.13 ||
                 (currentlyListed !== undefined &&
-                    currentlyListed?.count >= 0 &&
-                    buy_price > listingPrice * 0.5)
+                    currentlyListed?.count > 0 &&
+                    buy_price > listingPrice * 0.1)
             ) {
                 // console.log('currentlyListed', currentlyListed);
                 // console.log('card here', card);

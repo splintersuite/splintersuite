@@ -127,8 +127,8 @@ const addPriceRelistInformationForEachCardByMarketId = ({
 
         const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
         const nowTime = new Date().getTime();
-        const nineHoursInMs = 1000 * 60 * 60 * 9;
-
+        const twelveHoursInMs = 1000 * 60 * 60 * 12;
+        const threeHoursInMs = 1000 * 60 * 60 * 3;
         if (
             marketPrices[marketKey] == null ||
             _.isEmpty(marketPrices[marketKey] || !marketPrices)
@@ -215,7 +215,8 @@ const addPriceRelistInformationForEachCardByMarketId = ({
             if (
                 rentalDetail !== undefined &&
                 lastUpdateTime > 0 &&
-                nowTime - lastUpdateTime > nineHoursInMs
+                nowTime - lastUpdateTime > twelveHoursInMs && // 12 hours, we want this to be a user setting in the future
+                rentalDetail?.last_price_update_time > threeHoursInMs
             ) {
                 listingPrice = listingPrice - listingPrice * 0.1;
             }
