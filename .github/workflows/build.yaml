@@ -27,6 +27,8 @@ jobs:
                   ECHO API_URL=${{ secrets.API_URL }} >> .env
                   ECHO SECRET_MESSAGE=${{ secrets.SECRET_MESSAGE }} >> .env
                   ECHO SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+                  ECHO SUITE_POST_KEY=${{ secrets.SUITE_POST_KEY }} >> .env
+                  ECHO SUITE_ACCOUNT_NAME=${{ secrets.SUITE_ACCOUNT_NAME }} >> .env
 
             - name: 'Create env file Mac/Linux'
               if: matrix.os == 'macOS-latest' || matrix.os == 'ubuntu-latest'
@@ -35,6 +37,8 @@ jobs:
                   echo API_URL=${{ secrets.API_URL }} >> .env
                   echo SECRET_MESSAGE=${{ secrets.SECRET_MESSAGE }} >> .env
                   echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+                  echo SUITE_POST_KEY=${{ secrets.SUITE_POST_KEY }} >> .env
+                  echo SUITE_ACCOUNT_NAME=${{ secrets.SUITE_ACCOUNT_NAME }} >> .env
                   cat .env
 
             - name: Build
