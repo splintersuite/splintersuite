@@ -39,8 +39,8 @@ export const UserProvider = (props) => {
         const res = await window.api.user.login({ username, key });
         if (res?.code === 1) {
             setUsername(username);
+            await getUser();
         }
-        await getUser();
         return res;
     };
 

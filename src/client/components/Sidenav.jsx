@@ -19,6 +19,7 @@ const Nav = styled.nav`
     height: 100vh;
     max-height: 100vh;
     width: 256px;
+    z-index: 5;
     padding-top: ${({ theme }) => theme.space(4)};
     padding-bottom: ${({ theme }) => theme.space(4)};
     background: ${({ theme }) => theme.colors.grey[900]};

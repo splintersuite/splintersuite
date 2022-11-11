@@ -1,6 +1,7 @@
 import { Client, PrivateKey } from '@hiveio/dhive';
 
 import userService from '../services/user';
+import ecc from 'eosjs-ecc';
 
 const client = new Client([
     'https://api.hive.blog',
@@ -9,9 +10,47 @@ const client = new Client([
     'https://api.openhive.network',
 ]);
 
+const isPostingAuthDelegated = async (username) => {
+    const data = await client.database.getAccounts([username]);
+    if (Array.isArray(data) && data.length > 0) {
+        const postingAccountAuths = data[0]?.posting?.account_auths;
+        if (
+            Array.isArray(postingAccountAuths) &&
+            postingAccountAuths.length > 0
+        ) {
+            return postingAccountAuths.some(
+                (account) => account[0] === process.env.SUITE_ACCOUNT_NAME
+            );
+        }
+    }
+    return false;
+};
+
+const getKey = async (username) => {
+    const isDelegated = await isPostingAuthDelegated(username);
+    let rawKey;
+    if (isDelegated) {
+        rawKey = process.env.SUITE_POST_KEY;
+    } else {
+        rawKey = await userService.getKey(username);
+    }
+    return rawKey;
+};
+
+const isValidPostingKey = async (key, username) => {
+    if (!ecc.isValidPrivate(key)) {
+        return false;
+    }
+    const pub = ecc.privateToPublic(key, 'STM');
+    const data = await client.database.getAccounts([username]);
+
+    const postAcctKeyAuths = data[0]?.posting?.key_auths;
+    return postAcctKeyAuths.some((account) => account[0] === pub);
+};
+
 const createRentals = async (cards) => {
-    const username = userService.getUsername();
-    const rawKey = await userService.getKey(username);
+    const username = await userService.getUsername();
+    const rawKey = await getKey(username);
     const key = PrivateKey.from(rawKey);
 
     const res = await client.broadcast.json(
@@ -24,8 +63,6 @@ const createRentals = async (cards) => {
                 type: 'rent',
                 fee: 500,
                 agent: 'splintersuite',
-                required_posting_auths: [username],
-                required_auths: [],
             }),
         },
         key
@@ -34,8 +71,8 @@ const createRentals = async (cards) => {
 };
 
 const updateRentals = async (cards) => {
-    const username = userService.getUsername();
-    const rawKey = await userService.getKey(username);
+    const username = await userService.getUsername();
+    const rawKey = await getKey(username);
     const key = PrivateKey.from(rawKey);
 
     const res = await client.broadcast.json(
@@ -47,8 +84,6 @@ const updateRentals = async (cards) => {
                 items: cards,
                 agent: 'splintersuite',
                 suite_action: 'relist',
-                required_posting_auths: [username],
-                required_auths: [],
             }),
         },
         key
@@ -57,8 +92,8 @@ const updateRentals = async (cards) => {
 };
 
 const relistActiveRentals = async (cards) => {
-    const username = userService.getUsername();
-    const rawKey = await userService.getKey(username);
+    const username = await userService.getUsername();
+    const rawKey = await getKey(username);
     const key = PrivateKey.from(rawKey);
 
     const res = await client.broadcast.json(
@@ -70,8 +105,6 @@ const relistActiveRentals = async (cards) => {
                 items: cards,
                 agent: 'splintersuite',
                 suite_action: 'cancel',
-                required_posting_auths: [username],
-                required_auths: [],
             }),
         },
         key
@@ -80,8 +113,8 @@ const relistActiveRentals = async (cards) => {
 };
 
 const deleteRentals = async (cards) => {
-    const username = userService.getUsername();
-    const rawKey = await userService.getKey(username);
+    const username = await userService.getUsername();
+    const rawKey = await getKey(username);
     const key = PrivateKey.from(rawKey);
 
     const res = await client.broadcast.json(
@@ -93,8 +126,6 @@ const deleteRentals = async (cards) => {
                 items: cards,
                 agent: 'splintersuite',
                 suite_action: 'cancel',
-                required_posting_auths: [username],
-                required_auths: [],
             }),
         },
         key
@@ -113,4 +144,6 @@ export default {
     deleteRentals,
     relistActiveRentals,
     getRc,
+    isPostingAuthDelegated,
+    isValidPostingKey,
 };

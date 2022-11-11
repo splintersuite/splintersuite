@@ -1,7 +1,7 @@
 'use strict';
 
-const datesUtil = require('../../util/dates');
 const hive = require('./hive');
+const _ = require('lodash');
 
 const updateRentalsStore = async ({
     username,
@@ -23,32 +23,28 @@ const updateRentalsStore = async ({
                 activeRentals,
             });
 
-        // newActiveListingsObj: {"C3-242-014BSEFUG0":{"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-52","buy_price":13.06305,"created_time":1664479305000,"uid":"C3-242-014BSEFUG0"},"C5-273-3QPDTEMU4G":{"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-53","buy_price":2.5244999999999997,"created_time":1664650299000,"uid":"C5-273-3QPDTEMU4G"},"G3-333-E8IWMRTC74":{"sell_trx_id":"dd998bc29079abcab71de53f195f9ea55942e0da-34","buy_price":2.871,"created_time":1664650299000,"uid":"G3-333-E8IWMRTC74"},"C3-333-ESIARZJMHC":{"sell_trx_id":"0b6509d4dd372da3616ce4ecc11e86144fa96a2c-5","buy_price":"0.131","created_time":1662222948000,"uid":"C3-333-ESIARZJMHC"},"C3-334-0EIEZ6HY34":{"sell_trx_id":"439dff493cd95380cd6189b0a6e118e76149d1f4-78","buy_price":2.8,"created_time":1664479305000,"uid":"C3-334-0EIEZ6HY34"},"G3-337-178IKKV7S0":{"sell_trx_id":"a0ea371597d66713f4febbad5b84901edcff3d5e-
+        const rentalDetailsObj =
+            await window.api.rentaldetails.getRentalDetails();
 
-        // newActiveRentalsObj: {"7c61a722bdc6987076b5594aed04157c0f785030-18":{"sell_trx_id":"7c61a722bdc6987076b5594aed04157c0f785030-18","buy_price":"0.223","price_change_time":null,"rental_created_time":1662997611000,"uid":"C7-364-7UGBLACFGW","next_rental_payment_time":1664725611000},"bd4cb81bacfb27afde63da132dc6f6420ea90799-6":{"sell_trx_id":"bd4cb81bacfb27afde63da132dc6f6420ea90799-6","buy_price":"1.106","price_change_time":null,"rental_created_time":1663127901000,"uid":"G7-382-558VKHEPC0","next_rental_payment_time":1664683101000},"bd4cb81bacfb27afde63da132dc6f6420ea90799-5":{"sell_trx_id":"bd4cb81bacfb27afde63da132dc6f6420ea90799-5","buy_price":"0.684","price_change_time":null,"rental_created_time":1663318824000,"uid":"G7-381-
-
-        const rentalDetailsObj = window.api.rentaldetails.getRentalDetails();
-        if (
-            !rentalDetailsObj ||
-            Object.entries(rentalDetailsObj)?.length === 0
-        ) {
-            const rentalDetails = buildNewRentalDetailsObj({
-                newActiveRentals: newActiveRentalsObj,
-                newActiveListingsObj,
-                rentalDetailsObj: null,
-            });
-            window.api.rentaldetails.updateRentalDetails({ rentalDetails });
-            return;
-        } else {
-            window.api.bot.log({
-                message: `/bot/server/services/rentalDetails/updateRentalStore found a rentalDetailsObj of :${JSON.stringify(
-                    rentalDetailsObj
-                )}`,
-            });
-        }
+        const rentalDetails = buildNewRentalDetailsObj({
+            newActiveRentalsObj,
+            newActiveListingsObj,
+            rentalDetailsObj:
+                rentalDetailsObj?.code === 1 &&
+                Object.keys(rentalDetailsObj?.data?.rentalDetails).length > 1
+                    ? rentalDetailsObj?.data?.rentalDetails
+                    : {},
+        });
+        window.api.rentaldetails.updateRentalDetails({
+            rentalDetails: JSON.stringify(rentalDetails),
+        });
+        return rentalDetails;
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/rentalDetails/updateRentalStore error: ${err.message}`,
+        });
+        window.api.bot.log({
+            message: err.stack,
         });
         throw err;
     }
@@ -91,7 +87,13 @@ const addInHiveData = async ({
 
 const addInHiveCancelData = ({ activeRentals, hiveCancels }) => {
     try {
-        const newActiveRentals = JSON.parse(JSON.stringify(activeRentals));
+        const newActiveRentals = {};
+        Object.keys(activeRentals).forEach((sell_trx_id) => {
+            newActiveRentals[activeRentals[sell_trx_id].card_id] = {
+                ...activeRentals[sell_trx_id],
+            };
+        });
+
         let numOfChanges = 0;
         let noMatch = 0;
 
@@ -107,7 +109,7 @@ const addInHiveCancelData = ({ activeRentals, hiveCancels }) => {
                 const hive_created_time = newInfo?.created_time;
                 if (hive_created_time > rental_date_time) {
                     // we need to update the activeRentalsObj
-                    newActiveRentals[sell_trx_id] = {
+                    newActiveRentals[card_id] = {
                         sell_trx_id: newInfo?.sell_trx_id,
                         buy_price: newInfo?.buy_price,
                         price_change_time: hive_created_time,
@@ -118,7 +120,7 @@ const addInHiveCancelData = ({ activeRentals, hiveCancels }) => {
                         ).getTime(),
                     };
                 } else {
-                    newActiveRentals[sell_trx_id] = {
+                    newActiveRentals[card_id] = {
                         sell_trx_id,
                         buy_price,
                         price_change_time: null,
@@ -131,7 +133,7 @@ const addInHiveCancelData = ({ activeRentals, hiveCancels }) => {
                 }
             } else {
                 noMatch = noMatch + 1;
-                newActiveRentals[sell_trx_id] = {
+                newActiveRentals[card_id] = {
                     sell_trx_id,
                     buy_price,
                     price_change_time: null,
@@ -189,7 +191,7 @@ const addInHiveRelistingData = ({ activeListingsObj, hiveRelistings }) => {
 
             if (hiveInfo && Object.entries(hiveInfo)?.length > 0) {
                 numOfChanges = numOfChanges + 1;
-                console.log(`hiveInfo: ${JSON.stringify(hiveInfo)}`);
+                // console.log(`hiveInfo: ${JSON.stringify(hiveInfo)}`);
                 const hive_created_time = hiveInfo?.created_time;
                 if (hive_created_time > listing_created_time) {
                     // create something completely new here
@@ -209,14 +211,14 @@ const addInHiveRelistingData = ({ activeListingsObj, hiveRelistings }) => {
                         created_time: listing_created_time,
                         uid,
                     };
-                    console.log(
-                        `newActiveListingsObj[uid]: ${JSON.stringify(
-                            newActiveListingsObj[uid]
-                        )}`
-                    );
-                    throw new Error(
-                        `checking newActiveListingsObj after hive_created_time was not greater than listing_created_time`
-                    );
+                    // console.log(
+                    //     `newActiveListingsObj[uid]: ${JSON.stringify(
+                    //         newActiveListingsObj[uid]
+                    //     )}`
+                    // );
+                    // throw new Error(
+                    //     `checking newActiveListingsObj after hive_created_time was not greater than listing_created_time`
+                    // );
                 }
             } else {
                 noMatch = noMatch + 1;
@@ -264,102 +266,125 @@ const addInHiveRelistingData = ({ activeListingsObj, hiveRelistings }) => {
 
 // TODO: have this handle both existing and new ones imo
 const buildNewRentalDetailsObj = ({
-    newActiveRentals,
+    newActiveRentalsObj,
     newActiveListingsObj,
     rentalDetailsObj,
 }) => {
     try {
-        const newRentalDetailsObj = {};
         const oneDayTime = 1000 * 60 * 60 * 24 * 1;
         const twoDayTime = 1000 * 60 * 60 * 24 * 2;
 
+        // new listings is actually all listings
         for (const [uid, listing] of Object.entries(newActiveListingsObj)) {
             const { sell_trx_id, buy_price, created_time } = listing;
-            if (newRentalDetailsObj[uid] == null) {
-                newRentalDetailsObj[uid] = {
+            if (rentalDetailsObj[uid] == null) {
+                // brand new listing for a card we do not know
+                rentalDetailsObj[uid] = {
                     is_rented: false,
                     last_price_update_time: created_time,
                     rental_end_time: null,
                     buy_price,
                     last_sell_trx_id: sell_trx_id,
                 };
+            } else {
+                // we have it in our object, update it if necessary
+                const currentData = rentalDetailsObj[uid];
+                if (created_time >= currentData?.last_price_update_time) {
+                    // we've had a hive update since and need to update our object
+                    // update price and update price change times
+                    rentalDetailsObj[uid] = {
+                        is_rented: false,
+                        rental_end_time: currentData?.rental_end_time,
+                        buy_price: buy_price,
+                        last_rental_payment_time:
+                            currentData?.last_rental_payment_time,
+                        last_price_update_time:
+                            currentData?.buy_price === buy_price
+                                ? currentData?.last_price_update_time
+                                : created_time,
+                        last_sell_trx_id: currentData?.last_sell_trx_id, // this is really the only thing that could change, since something could be cancelled
+                    };
+                }
+                if (currentData?.is_rented) {
+                    rentalDetailsObj[uid] = false;
+                }
             }
-            //  } else {
-            // const currentData = newRentalDetailsObj[uid];
-            // if (currentData?.last_price_update_time >= created_time) {
-            //     // this would mean that nothing has changed at all since the last price update
-            //     newRentalDetailsObj[uid] = {
-            //         is_rented: false,
-            //         rental_end_time: currentData?.rental_end_time,
-            //         buy_price: currentData?.buy_price,
-            //         last_rental_payment_time:
-            //             currentData?.last_rental_payment_time,
-            //         last_price_update_time:
-            //             currentData?.last_price_update_time,
-            //         last_sell_trx_id: currentData?.last_sell_trx_id, // this is really the only thing that could change, since something could be cancelled
-            //     };
-            // }
-            //  }
         }
 
-        for (const [sell_trx_id, rental] of Object.entries(newActiveRentals)) {
+        // new active rentals is actually all listings
+        for (const [uid, rental] of Object.entries(newActiveRentalsObj)) {
             const {
                 buy_price,
                 price_change_time,
                 rental_created_time,
-                uid,
                 next_rental_payment_time,
+                sell_trx_id,
             } = rental;
+            // rental: {"sell_trx_id":"bb8278e009541da24c62bb720e30598876dd0c3b-0","buy_price":"0.564","price_change_time":null,"rental_created_time":1666824021000,"uid":"C7-362-U28MWK4ZE8","next_rental_payment_time":1667342421000}
 
             let rental_end_time;
             const nowTime = new Date().getTime();
+            // will get reasigned later
             if (rental_created_time + oneDayTime > nowTime) {
                 // means not even 24 hours have passed since beginning of rental contract, if we cancelled its 2 days after start of contract.
                 rental_end_time = rental_created_time + twoDayTime;
             }
-            const daysAgo = datesUtil.roundedDownDaysAgo({
-                pastTime: rental_created_time,
-            });
 
-            if (daysAgo % 2 === 0) {
-                // its been at least a day, and if this is even (therefore equation solves to 0), then we need to add 2 days to the last_rental_payment
-                // or just add 1 more day to the next_rental_payment
+            if (
+                ((next_rental_payment_time - rental_created_time) /
+                    oneDayTime) %
+                    2 ===
+                1
+            ) {
+                // we need to add a day to the rental_end_time to account for the fact that the rental contracts last 2 days
                 rental_end_time = next_rental_payment_time + oneDayTime;
-                console.log(
-                    `rental_end_time: ${rental_end_time} is date: ${new Date(
-                        rental_end_time
-                    )}, that is also next_rental_payment_time: ${next_rental_payment_time} date: ${new Date(
-                        next_rental_payment_time
-                    )} plus a day to get when rental ends`
-                );
             } else {
-                // otherwise, add 24 hours to the last_rental_payment to get (or just assume its the next rental payment!)
+                // otherwise, next_rental_payment is when the contract ends, unless there is further payment (but can still be cancelled up until then)
                 rental_end_time = next_rental_payment_time;
-                console.log(
-                    `rental_end_time: ${rental_end_time} is date: ${new Date(
-                        rental_end_time
-                    )}, that is also next_rental_payment_time: ${next_rental_payment_time} date: ${new Date(
-                        next_rental_payment_time
-                    )}`
-                );
             }
-            if (price_change_time) {
+
+            let this_price_change_time = price_change_time;
+            if (
+                rentalDetailsObj[uid] !== undefined &&
+                (price_change_time == null ||
+                    rentalDetailsObj[uid].price_change_time > price_change_time)
+            ) {
+                this_price_change_time =
+                    rentalDetailsObj[uid].price_change_time;
             }
+
             const last_rental_payment_time =
                 next_rental_payment_time - oneDayTime;
 
-            newRentalDetailsObj[uid] = {
+            rentalDetailsObj[uid] = {
                 is_rented: true,
                 rental_end_time,
                 buy_price,
                 last_rental_payment_time,
-                last_price_update_time: price_change_time,
+                last_price_update_time: this_price_change_time,
                 last_sell_trx_id: sell_trx_id,
+                uid,
             };
             // we need to calc when the rental actually expires, need to see how many days ago the creation was
             // need to calculate the last_rental_payment_time, prob ditch the last_rental_payment
         }
-        return JSON.stringify(newRentalDetailsObj);
+
+        // delete old stuff not listed or rented
+        const uidsToPurge = [];
+        Object.keys(rentalDetailsObj).forEach((uid) => {
+            if (
+                newActiveListingsObj[uid] === undefined &&
+                newActiveRentalsObj[uid] === undefined
+            ) {
+                uidsToPurge.push(uid);
+            }
+        });
+
+        uidsToPurge.forEach((uid) => {
+            delete rentalDetailsObj[uid];
+        });
+
+        return rentalDetailsObj;
     } catch (err) {
         window.api.bot.log({
             message: `/bot/server/services/rentalDetails/buildNewRentalDetailsObj error: ${err.message}`,
@@ -368,8 +393,41 @@ const buildNewRentalDetailsObj = ({
     }
 };
 
+const aggListingsDataByMarketKey = ({ activeListingsObj }) => {
+    try {
+        const listingDataByMarketKey = {};
+        Object.keys(activeListingsObj).forEach((cardUID) => {
+            const cardDetails = activeListingsObj[cardUID];
+            const marketKey = `${cardDetails.card_detail_id}-${cardDetails.level}-${cardDetails.gold}-${cardDetails.edition}`;
+            if (listingDataByMarketKey[marketKey] === undefined) {
+                listingDataByMarketKey[marketKey] = {};
+                listingDataByMarketKey[marketKey].count = 0;
+                listingDataByMarketKey[marketKey].prices = [];
+            }
+            listingDataByMarketKey[marketKey].prices.push(
+                parseFloat(cardDetails.buy_price)
+            );
+            listingDataByMarketKey[marketKey].count += 1;
+        });
+        Object.keys(listingDataByMarketKey).forEach((marketKey) => {
+            const lookedup = listingDataByMarketKey[marketKey];
+            listingDataByMarketKey[marketKey] = {
+                avg: _.mean(lookedup.prices),
+                count: lookedup.count,
+            };
+        });
+        return listingDataByMarketKey;
+    } catch (err) {
+        window.api.bot.log({
+            message: `/bot/server/services/rentalDetails/aggListingsDataByMarketKey error: ${err.message}`,
+        });
+        throw err;
+    }
+};
+
 module.exports = {
     updateRentalsStore,
+    aggListingsDataByMarketKey,
 };
 
 /*

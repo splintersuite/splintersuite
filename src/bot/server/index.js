@@ -28,7 +28,10 @@ const { getCardDetailObj } = require('./actions/_helpers');
 
 const { getActiveRentalsByRentalId } = require('./services/activeRentals');
 
-const { updateRentalsStore } = require('./services/rentalDetails');
+const {
+    updateRentalsStore,
+    aggListingsDataByMarketKey,
+} = require('./services/rentalDetails');
 
 const splinterlandsService = require('./services/splinterlands');
 const _ = require('lodash');
@@ -53,19 +56,23 @@ const startRentalBot = async ({
         const activeRentals = await getActiveRentalsByRentalId(username);
 
         // listings...
-        // const activeListingsObject = await getActiveListingsObj({
-        //     collection,
-        // });
+        const activeListingsObject = await getActiveListingsObj({
+            collection,
+        });
         // window.api.bot.log({
         //     message: `/bot/server/index/startRentalBot lastCreatedTime: ${activeListingsObject?.lastCreatedTime}`,
-        // });
-        // updates rentalDetails
-        // const rentalDetails = await updateRentalsStore({
-        //     username,
-        //     activeListingsObj: activeListingsObject?.activeListingsObj,
-        //     lastCreatedTime: activeListingsObject?.lastCreatedTime,
-        //     activeRentals: activeRentals?.activeRentalsBySellTrxId,
-        // });
+        // });\\
+
+        // maintains cache of current listings/rentals
+        const rentalDetails = await updateRentalsStore({
+            username,
+            activeListingsObj: activeListingsObject?.activeListingsObj,
+            lastCreatedTime: activeListingsObject?.lastCreatedTime,
+            activeRentals: activeRentals?.activeRentalsBySellTrxId,
+        });
+        const listingDataByMarketKey = aggListingsDataByMarketKey({
+            activeListingsObj: activeListingsObject?.activeListingsObj,
+        });
 
         const groupedRentalListObj =
             await splinterlandsService.getAllGroupedRentalsByLevel();
@@ -115,8 +122,10 @@ const startRentalBot = async ({
                 collectionObj: collectionByLevelObjListedButNotRentedOut,
                 marketPrices,
                 groupedRentalListObj,
+                rentalDetails,
             }
         );
+
         const { relistingPriceForActiveMarketId } =
             await calculateRelistActiveRentalPrices({
                 collectionObj: collectionByLevelObjBeingRentedOut,
@@ -126,6 +135,7 @@ const startRentalBot = async ({
                     activeRentals.activeRentalsBySellTrxId,
                 endOfSeasonSettings,
                 groupedRentalListObj,
+                listingDataByMarketKey,
             });
 
         const listings = fmtToLimitCardsInEachHiveTx(

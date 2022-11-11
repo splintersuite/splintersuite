@@ -8,7 +8,6 @@ const getRentalDetails = (event, payload) => {
 
 const updateRentalDetails = (event, payload) => {
     const { rentalDetails } = payload;
-    console.log('/controllers/updateRentalDetails start');
     relistingsService.updateRentalDetails({ data: rentalDetails });
     return util.success();
 };

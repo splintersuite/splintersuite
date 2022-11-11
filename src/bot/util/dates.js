@@ -83,27 +83,9 @@ const isAfterTime = ({ time, dateTime }) => {
     }
 };
 
-const roundedDownDaysAgo = ({ pastTime }) => {
-    try {
-        const nowTime = new Date().getTime();
-        const msInADay = 1000 * 60 * 60 * 24;
-        const difference = nowTime - pastTime;
-        const dividedFloat = difference / msInADay;
-        const roundedDownDaysAgo = Math.floor(dividedFloat);
-
-        return roundedDownDaysAgo;
-    } catch (err) {
-        window.api.bot.log({
-            message: `/bot/server/util/dates/roundedDownDaysAgo error: ${err.message}`,
-        });
-        throw err;
-    }
-};
-
 module.exports = {
     getNumDaysAgo,
     getNumDaysFromNow,
     isAfterTime,
-    roundedDownDaysAgo,
     isBeforeTime,
 };

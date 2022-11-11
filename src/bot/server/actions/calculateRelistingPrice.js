@@ -13,6 +13,7 @@ const calculateRelistingPrice = async ({
     marketPrices,
     groupedRentalListObj,
     endOfSeasonSettings,
+    rentalDetails,
 }) => {
     try {
         const relistingPriceForEachMarketId = [];
@@ -49,6 +50,7 @@ const calculateRelistingPrice = async ({
                         marketPrices,
                         isClBcxModern: clBcxModerns[card.uid] !== undefined,
                         endOfSeasonSettings,
+                        rentalDetail: rentalDetails[card.uid],
                     });
                 if (rentalPriceForMarketId[0] === 'N') {
                     cardsUnableToFindPriceFor.push(rentalPriceForMarketId);
@@ -108,6 +110,7 @@ const addPriceRelistInformationForEachCardByMarketId = ({
     marketPrices,
     isClBcxModern,
     endOfSeasonSettings,
+    rentalDetail,
 }) => {
     try {
         const { card_detail_id, gold, edition, market_id, buy_price, uid } =
@@ -123,7 +126,9 @@ const addPriceRelistInformationForEachCardByMarketId = ({
         const currentPriceData = searchableRentList[rentListKey];
 
         const marketKey = `${card_detail_id}-${level}-${gold}-${edition}`;
-
+        const nowTime = new Date().getTime();
+        const twelveHoursInMs = 1000 * 60 * 60 * 12;
+        const threeHoursInMs = 1000 * 60 * 60 * 3;
         if (
             marketPrices[marketKey] == null ||
             _.isEmpty(marketPrices[marketKey] || !marketPrices)
@@ -200,6 +205,20 @@ const addPriceRelistInformationForEachCardByMarketId = ({
                 ];
 
                 return doNotChangeThePrice;
+            }
+
+            // if it's already been listed (or price udpated) for 6 hours, lower the price another 10%
+            const lastUpdateTime = _.max([
+                rentalDetail?.rental_end_time,
+                rentalDetail?.last_price_update_time,
+            ]);
+            if (
+                rentalDetail !== undefined &&
+                lastUpdateTime > 0 &&
+                nowTime - lastUpdateTime > twelveHoursInMs && // 12 hours, we want this to be a user setting in the future
+                rentalDetail?.last_price_update_time > threeHoursInMs
+            ) {
+                listingPrice = listingPrice - listingPrice * 0.1;
             }
 
             const rentalRelistingPriceForMarketId = [

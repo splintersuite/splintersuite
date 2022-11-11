@@ -8,7 +8,6 @@ const listingsService = require('../services/listings');
 const _ = require('lodash');
 const ALL_OPEN_TRADES = 'ALL_OPEN_TRADES';
 const TRADES_DURING_PERIOD = 'TRADES_DURING_PERIOD';
-
 const oneDayTime = 1000 * 60 * 60 * 24 * 1;
 
 const calculateRelistActiveRentalPrices = async ({
@@ -18,6 +17,7 @@ const calculateRelistActiveRentalPrices = async ({
     activeRentalsBySellTrxId,
     endOfSeasonSettings,
     groupedRentalListObj,
+    listingDataByMarketKey,
 }) => {
     try {
         const relistingPriceForActiveMarketId = [];
@@ -55,6 +55,7 @@ const calculateRelistActiveRentalPrices = async ({
                     rentalTransaction: activeRentalsBySellTrxId[card.market_id],
                     endOfSeasonSettings,
                     isClBcxModern: lowBcxModerns[card.uid] !== undefined,
+                    listingDataByMarketKey,
                 });
 
                 if (relistPriceForMarketId[0] === 'MD') {
@@ -120,10 +121,10 @@ const addActiveMarketIdsForRelisting = ({
     rentalTransaction,
     endOfSeasonSettings,
     isLowBcxModern,
+    listingDataByMarketKey,
 }) => {
     try {
         // console.log('addActiveMarketIdsForRelistings');
-
         const {
             card_detail_id,
             gold,
@@ -131,6 +132,7 @@ const addActiveMarketIdsForRelisting = ({
             market_id,
             buy_price,
             rental_date,
+            next_rental_payment,
         } = card;
 
         let _gold = 'F';
@@ -140,10 +142,13 @@ const addActiveMarketIdsForRelisting = ({
             _gold = 'F';
         }
 
-        const now = new Date().getTime();
         const rentalDateInMs = new Date(rental_date).getTime();
-        if (rentalDateInMs + oneDayTime > now) {
-            // this is so we don't cancel a rental that hasn't lasted over 24 hours at least
+
+        const nrpTime = new Date(next_rental_payment).getTime();
+
+        if (((nrpTime - rentalDateInMs) / oneDayTime) % 2 === 1) {
+            // if it is even, we aren't close to it making sense to cancel, even if timer is 24 hours in the future.  No need to try and cancel here, once
+            // days ago is a non even number, then we will have the cancel cycle coming up
             const shouldNotRelistRental = ['T'];
             return shouldNotRelistRental;
         }
@@ -207,25 +212,34 @@ const addActiveMarketIdsForRelisting = ({
             (listingPrice - buy_price) / listingPrice >
                 endOfSeasonSettings?.cancellationThreshold * lowBcxModernFactor
         ) {
-            if (listingPrice < 0.13) {
+            const currentlyListed = listingDataByMarketKey[marketKey];
+            if (
+                // TNT TODO: make the 0.13 a variable that we then get by a user setting
+                listingPrice < 0.13 ||
+                (currentlyListed !== undefined &&
+                    currentlyListed?.count > 0 &&
+                    buy_price > listingPrice * 0.1)
+            ) {
+                // console.log('currentlyListed', currentlyListed);
+                // console.log('card here', card);
                 const shouldNotRelistRental = ['N'];
                 return shouldNotRelistRental;
-            } else {
-                const rentalRelistingPriceForMarketId = [
-                    market_id,
-                    parseFloat(listingPrice),
-                ];
-
-                if (
-                    !rentalRelistingPriceForMarketId ||
-                    !rentalRelistingPriceForMarketId[0] ||
-                    !rentalRelistingPriceForMarketId[1]
-                ) {
-                    const rentalNotFound = ['E', market_id];
-                    return rentalNotFound;
-                }
-                return rentalRelistingPriceForMarketId;
             }
+
+            const rentalRelistingPriceForMarketId = [
+                market_id,
+                parseFloat(listingPrice),
+            ];
+
+            if (
+                !rentalRelistingPriceForMarketId ||
+                !rentalRelistingPriceForMarketId[0] ||
+                !rentalRelistingPriceForMarketId[1]
+            ) {
+                const rentalNotFound = ['E', market_id];
+                return rentalNotFound;
+            }
+            return rentalRelistingPriceForMarketId;
         } else {
             const shouldNotRelistRental = ['N'];
             return shouldNotRelistRental;
