@@ -56,7 +56,7 @@ window.api.bot.start(async (event) => {
                 marketPrices,
                 nextBotLoopTime,
             });
-
+        throw new Error('preventing these from going through');
         numListed = 0;
         // ---
         // List, relist, cancel

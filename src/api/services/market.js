@@ -19,9 +19,9 @@ const fetchMarketPrices = async () => {
     const currentPrices = res?.data?.currentPrices;
     const timeOfLastFetch = res?.data?.timeOfLastFetch;
 
-    const message = `fetchMarketPrices got currentPrices for ${JSON.stringify(
+    const message = `fetchMarketPrices got prices for ${JSON.stringify(
         Object.keys(res?.data?.currentPrices)?.length
-    )} number of cards from api`;
+    )} cards`;
 
     const now = moment().format('DD/MM/YYYY HH:mm:ss Z');
     logger.info(`[${now}] ${message}`);

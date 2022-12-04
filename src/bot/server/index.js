@@ -156,8 +156,8 @@ const startRentalBot = async ({
 
         return {
             listings, // array of arrays that are formated by :[uid, rentalPriceInDec]
-            relistings, // [uid, rentalPriceInDec]
-            relistActive, // [uid, rentalPriceInDec]
+            relistings, // [sell_trx_id, rentalPriceInDec]
+            relistActive, // [sell_trx_id, rentalPriceInDec]
         };
     } catch (err) {
         window.api.bot.log({

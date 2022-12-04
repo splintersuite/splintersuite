@@ -20,15 +20,17 @@ const update = async (invoice) => {
 };
 
 const confirm = async (invoice) => {
-    const { amount_due } = invoice;
+    const { amount_due, created_at } = invoice;
+    const invoice_created_time = new Date(created_at).getTime();
     const username = await userService.getUsername();
-
     const confirmIsPaid = (payment) => {
+        const paymentDateTime = new Date(payment.created_date).getTime();
         return (
             payment.token === 'DEC' &&
             payment.counterparty === username &&
             payment.type === 'withdraw' &&
-            parseFloat(payment.amount) === parseFloat(amount_due)
+            parseFloat(payment.amount) === parseFloat(amount_due) &&
+            paymentDateTime > invoice_created_time // TNT TODO: confirm that this actually works
         );
     };
 
