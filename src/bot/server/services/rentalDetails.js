@@ -11,7 +11,7 @@ const updateRentalsStore = async ({
 }) => {
     try {
         // TNT TODO: make activeListingsObj not have so much excess data, we don't need most of it so can lower RAM usage since it can be quite a lot of extra BS
-        console.log(`/bot/server/services/rentalDetails/updateRentalStore`);
+        // console.log(`/bot/server/services/rentalDetails/updateRentalStore`);
 
         // activeListingsObj: {"C3-242-014BSEFUG0":{"player":"xdww","uid":"C3-242-014BSEFUG0","card_detail_id":242,"xp":31,"gold":false,"edition":3,"market_id":"dd998bc29079abcab71de53f195f9ea55942e0da-52","buy_price":"16.148","market_listing_type":"RENT","market_listing_status":0,"market_created_date":"2022-09-03T14:35:27.000Z","last_used_block":68244366,"last_used_player":"zexn","last_used_date":"2022-09-26T10:57:02.563Z","last_transferred_block":null,"last_transferred_date":null,"alpha_xp":0,"delegated_to":null,"delegation_tx":"sm_rental_payments_68263420","skin":null,"delegated_to_display_name":null,"display_name":null,"lock_days":3,"unlock_date":"2022-07-25T15:51:15.000Z","level":4},"C3-333-UHHINJICGW":{"player":"xdww","uid":"C3-333-UHHINJICGW","card_detail_id":333,"xp":1,"gold":false,"edition":3,"market_id":"8478644fd5909e198e971b8062a02400a1a72873-0","buy_price":"0.200","market_listing_type":"RENT","market_listing_status":0,"market_created_date":"2022-09-
 

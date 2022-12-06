@@ -4,18 +4,15 @@ import userService from '../services/user';
 
 const get = async () => {};
 
-const update = async () => {
-    await invoiceService.update();
-    return util.success();
-};
+const update = async () => {};
 
 const confirm = async (event, payload) => {
     const { invoice } = payload;
 
-    const isPaid = await invoiceService.confirm(invoice);
+    const { isPaid, tx_id, paid_at } = await invoiceService.confirm(invoice);
 
     if (isPaid) {
-        const { locked } = await invoiceService.update(invoice);
+        const { locked } = await invoiceService.update(invoice, tx_id, paid_at);
         userService.setLocked(locked);
     }
 
